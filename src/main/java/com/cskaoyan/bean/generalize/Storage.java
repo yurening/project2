@@ -1,4 +1,4 @@
-package com.cskaoyan.bean.system;
+package com.cskaoyan.bean.generalize;
 
 import java.util.Date;
 

@@ -9,7 +9,7 @@
     <result column="read_count" jdbcType="VARCHAR" property="readCount" />
     <result column="pic_url" jdbcType="VARCHAR" property="picUrl" />
     <result column="sort_order" jdbcType="INTEGER" property="sortOrder" />
-    <result column="goods" jdbcType="VARCHAR" property="goods" />
+    <result column="goods" jdbcType="VARCHAR" property="goods"  typeHandler="com.cskaoyan.handler.String2ArrayTypeHandler"/>
     <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="deleted" jdbcType="BIT" property="deleted" />

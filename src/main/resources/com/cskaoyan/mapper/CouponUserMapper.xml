@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.cskaoyan.mapper.StorageMapper">
-  <resultMap id="BaseResultMap" type="com.cskaoyan.bean.generalize.Storage">
+<mapper namespace="com.cskaoyan.mapper.CouponUserMapper">
+  <resultMap id="BaseResultMap" type="com.cskaoyan.bean.generalize.CouponUser">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="key" jdbcType="VARCHAR" property="key" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="size" jdbcType="INTEGER" property="size" />
-    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="coupon_id" jdbcType="INTEGER" property="couponId" />
+    <result column="status" jdbcType="SMALLINT" property="status" />
+    <result column="used_time" jdbcType="TIMESTAMP" property="usedTime" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
     <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="deleted" jdbcType="BIT" property="deleted" />
@@ -71,15 +73,16 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, key, name, type, size, url, add_time, update_time, deleted
+    id, user_id, coupon_id, status, used_time, start_time, end_time, order_id, add_time, 
+    update_time, deleted
   </sql>
-  <select id="selectByExample" parameterType="com.cskaoyan.bean.generalize.StorageExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.cskaoyan.bean.generalize.CouponUserExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from cskaoyan_mall_storage
+    from cskaoyan_mall_coupon_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -90,47 +93,55 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from cskaoyan_mall_storage
+    from cskaoyan_mall_coupon_user
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from cskaoyan_mall_storage
+    delete from cskaoyan_mall_coupon_user
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.cskaoyan.bean.generalize.StorageExample">
-    delete from cskaoyan_mall_storage
+  <delete id="deleteByExample" parameterType="com.cskaoyan.bean.generalize.CouponUserExample">
+    delete from cskaoyan_mall_coupon_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.cskaoyan.bean.generalize.Storage">
-    insert into cskaoyan_mall_storage (id, `key`, name,
-      type, size, url, add_time, 
+  <insert id="insert" parameterType="com.cskaoyan.bean.generalize.CouponUser">
+    insert into cskaoyan_mall_coupon_user (id, user_id, coupon_id, 
+      status, used_time, start_time, 
+      end_time, order_id, add_time, 
       update_time, deleted)
-    values (#{id,jdbcType=INTEGER}, #{key,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}, 
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{couponId,jdbcType=INTEGER}, 
+      #{status,jdbcType=SMALLINT}, #{usedTime,jdbcType=TIMESTAMP}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{orderId,jdbcType=INTEGER}, #{addTime,jdbcType=TIMESTAMP}, 
       #{updateTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=BIT})
   </insert>
-  <insert id="insertSelective" parameterType="com.cskaoyan.bean.generalize.Storage">
-    insert into cskaoyan_mall_storage
+  <insert id="insertSelective" parameterType="com.cskaoyan.bean.generalize.CouponUser">
+    insert into cskaoyan_mall_coupon_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
       </if>
-      <if test="key != null">
-        key,
+      <if test="userId != null">
+        user_id,
       </if>
-      <if test="name != null">
-        name,
+      <if test="couponId != null">
+        coupon_id,
       </if>
-      <if test="type != null">
-        type,
+      <if test="status != null">
+        status,
       </if>
-      <if test="size != null">
-        size,
+      <if test="usedTime != null">
+        used_time,
       </if>
-      <if test="url != null">
-        url,
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="orderId != null">
+        order_id,
       </if>
       <if test="addTime != null">
         add_time,
@@ -146,20 +157,26 @@
       <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="key != null">
-        #{key,jdbcType=VARCHAR},
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
       </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
+      <if test="couponId != null">
+        #{couponId,jdbcType=INTEGER},
       </if>
-      <if test="type != null">
-        #{type,jdbcType=VARCHAR},
+      <if test="status != null">
+        #{status,jdbcType=SMALLINT},
       </if>
-      <if test="size != null">
-        #{size,jdbcType=INTEGER},
+      <if test="usedTime != null">
+        #{usedTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="url != null">
-        #{url,jdbcType=VARCHAR},
+      <if test="startTime != null">
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=INTEGER},
       </if>
       <if test="addTime != null">
         #{addTime,jdbcType=TIMESTAMP},
@@ -172,32 +189,38 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.cskaoyan.bean.generalize.StorageExample" resultType="java.lang.Long">
-    select count(*) from cskaoyan_mall_storage
+  <select id="countByExample" parameterType="com.cskaoyan.bean.generalize.CouponUserExample" resultType="java.lang.Long">
+    select count(*) from cskaoyan_mall_coupon_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update cskaoyan_mall_storage
+    update cskaoyan_mall_coupon_user
     <set>
       <if test="record.id != null">
         id = #{record.id,jdbcType=INTEGER},
       </if>
-      <if test="record.key != null">
-        key = #{record.key,jdbcType=VARCHAR},
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
       </if>
-      <if test="record.name != null">
-        name = #{record.name,jdbcType=VARCHAR},
+      <if test="record.couponId != null">
+        coupon_id = #{record.couponId,jdbcType=INTEGER},
       </if>
-      <if test="record.type != null">
-        type = #{record.type,jdbcType=VARCHAR},
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=SMALLINT},
       </if>
-      <if test="record.size != null">
-        size = #{record.size,jdbcType=INTEGER},
+      <if test="record.usedTime != null">
+        used_time = #{record.usedTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.url != null">
-        url = #{record.url,jdbcType=VARCHAR},
+      <if test="record.startTime != null">
+        start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endTime != null">
+        end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.orderId != null">
+        order_id = #{record.orderId,jdbcType=INTEGER},
       </if>
       <if test="record.addTime != null">
         add_time = #{record.addTime,jdbcType=TIMESTAMP},
@@ -214,13 +237,15 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update cskaoyan_mall_storage
+    update cskaoyan_mall_coupon_user
     set id = #{record.id,jdbcType=INTEGER},
-      key = #{record.key,jdbcType=VARCHAR},
-      name = #{record.name,jdbcType=VARCHAR},
-      type = #{record.type,jdbcType=VARCHAR},
-      size = #{record.size,jdbcType=INTEGER},
-      url = #{record.url,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      coupon_id = #{record.couponId,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=SMALLINT},
+      used_time = #{record.usedTime,jdbcType=TIMESTAMP},
+      start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      order_id = #{record.orderId,jdbcType=INTEGER},
       add_time = #{record.addTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       deleted = #{record.deleted,jdbcType=BIT}
@@ -228,23 +253,29 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.cskaoyan.bean.generalize.Storage">
-    update cskaoyan_mall_storage
+  <update id="updateByPrimaryKeySelective" parameterType="com.cskaoyan.bean.generalize.CouponUser">
+    update cskaoyan_mall_coupon_user
     <set>
-      <if test="key != null">
-        key = #{key,jdbcType=VARCHAR},
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
       </if>
-      <if test="name != null">
-        name = #{name,jdbcType=VARCHAR},
+      <if test="couponId != null">
+        coupon_id = #{couponId,jdbcType=INTEGER},
       </if>
-      <if test="type != null">
-        type = #{type,jdbcType=VARCHAR},
+      <if test="status != null">
+        status = #{status,jdbcType=SMALLINT},
       </if>
-      <if test="size != null">
-        size = #{size,jdbcType=INTEGER},
+      <if test="usedTime != null">
+        used_time = #{usedTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="url != null">
-        url = #{url,jdbcType=VARCHAR},
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=INTEGER},
       </if>
       <if test="addTime != null">
         add_time = #{addTime,jdbcType=TIMESTAMP},
@@ -258,13 +289,15 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.cskaoyan.bean.generalize.Storage">
-    update cskaoyan_mall_storage
-    set key = #{key,jdbcType=VARCHAR},
-      name = #{name,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR},
-      size = #{size,jdbcType=INTEGER},
-      url = #{url,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKey" parameterType="com.cskaoyan.bean.generalize.CouponUser">
+    update cskaoyan_mall_coupon_user
+    set user_id = #{userId,jdbcType=INTEGER},
+      coupon_id = #{couponId,jdbcType=INTEGER},
+      status = #{status,jdbcType=SMALLINT},
+      used_time = #{usedTime,jdbcType=TIMESTAMP},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      order_id = #{orderId,jdbcType=INTEGER},
       add_time = #{addTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       deleted = #{deleted,jdbcType=BIT}

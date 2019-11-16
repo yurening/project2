@@ -10,7 +10,7 @@
     <result column="discount_member" jdbcType="INTEGER" property="discountMember" />
     <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime" />
+    <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime"/>
     <result column="deleted" jdbcType="BIT" property="deleted" />
   </resultMap>
   <sql id="Example_Where_Clause">
