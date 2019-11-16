@@ -1,8 +1,11 @@
 package com.cskaoyan.bean.goods;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import lombok.Data;
 
+import java.math.BigDecimal;
+import java.sql.Blob;
+import java.util.Date;
+@Data
 public class Goods {
     private Integer id;
 
@@ -14,7 +17,7 @@ public class Goods {
 
     private Integer brandId;
 
-    private String gallery;
+    private String[] gallery;
 
     private String keywords;
 
@@ -45,6 +48,7 @@ public class Goods {
     private Boolean deleted;
 
     private String detail;
+    //private Blob detail;
 
     public Integer getId() {
         return id;
@@ -86,12 +90,12 @@ public class Goods {
         this.brandId = brandId;
     }
 
-    public String getGallery() {
+    public String[] getGallery() {
         return gallery;
     }
 
-    public void setGallery(String gallery) {
-        this.gallery = gallery == null ? null : gallery.trim();
+    public void setGallery(String[] gallery) {
+        this.gallery = gallery;
     }
 
     public String getKeywords() {
@@ -213,4 +217,12 @@ public class Goods {
     public void setDetail(String detail) {
         this.detail = detail == null ? null : detail.trim();
     }
+
+    /*public Blob getDetail() {
+        return detail;
+    }
+
+    public void setDetail(Blob detail) {
+        this.detail = detail;
+    }*/
 }

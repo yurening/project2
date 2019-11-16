@@ -1,0 +1,40 @@
+package com.cskaoyan.mapper;
+
+import com.cskaoyan.bean.user.*;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+
+public interface UserMapper {
+    //user
+    List<ReqParamFromDb> selectUserList(@Param("requestList")RequestList requestList);
+    int selectTotal();
+
+    //address
+    List<Address> selectAddressByExample(AddressExample example);
+
+    long countAddressByExample(AddressExample example);
+
+    String selectNameById(@Param("id")int id);
+
+    //collect
+    long countCollectByExample(CollectExample example);
+
+    List<Collect> selectCollectByExample(CollectExample example);
+
+    //footprint
+    long countFootprintByExample(FootPrintExample example);
+
+    List<FootPrint> selectFootprintByExample(FootPrintExample example);
+
+    //history
+    long countHistoryByExample(HistoryExample example);
+    List<History> selectHistoryByExample(HistoryExample example);
+
+    //feedback
+    long countFeedbackByExample(FeedbackExample example);
+    List<Feedback> selectFeedbackByExample(FeedbackExample example);
+
+}

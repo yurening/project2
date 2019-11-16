@@ -1,7 +1,16 @@
 package com.cskaoyan.service;
+import java.math.BigDecimal;
+import java.util.Date;
 
+import com.cskaoyan.bean.mall.brand.AllBrandsInfo;
+import com.cskaoyan.bean.mall.brand.CreatBrand;
+import com.cskaoyan.bean.mall.brand.MallBrand;
+import com.cskaoyan.bean.mall.brand.MallBrandExample;
 import com.cskaoyan.bean.mall.region.*;
+import com.cskaoyan.mapper.MallBrandMapper;
 import com.cskaoyan.mapper.MallRegionMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +22,8 @@ public class MallServiceImpl implements MallService {
 
     @Autowired
     MallRegionMapper mallRegionMapper;
+    @Autowired
+    MallBrandMapper mallBrandMapper;
 
     @Override
     public List<MallRegionI> getAllRegion() {
@@ -67,5 +78,62 @@ public class MallServiceImpl implements MallService {
             mallRegionIIIS.add(mallRegionIII);
         }
         return mallRegionIIIS;
+    }
+
+    @Override
+    public AllBrandsInfo getAllBrandByplso(Integer page, Integer limit, String sort, String order,String name,Integer id) {
+        PageHelper.startPage(page,limit);
+        String newName = "%"+name+"%";
+        MallBrandExample example = new MallBrandExample();
+        example.setOrderByClause(sort+" "+order);
+        if(id!=null&&name==null){
+            example.createCriteria().andIdEqualTo(id);
+        }
+        if(name!=null&&id==null){
+            example.createCriteria().andNameLike(newName);
+        }
+        if(id==null&&name==null){
+            example.createCriteria().andIdIsNotNull();
+        }
+        if(id!=null&&name!=null){
+            example.createCriteria().andIdEqualTo(id).andNameLike(newName);
+        }
+
+        List<MallBrand> mallBrands = mallBrandMapper.selectByExample(example);
+        PageInfo<MallBrand> pageInfo=new PageInfo<>(mallBrands);
+        long total = pageInfo.getTotal();
+
+        AllBrandsInfo allBrandsInfo = new AllBrandsInfo();
+        allBrandsInfo.setItems(mallBrands);
+        allBrandsInfo.setTotal((int) total);
+
+        return allBrandsInfo;
+    }
+
+    @Override
+    public MallBrand creatBrand(CreatBrand creatBrand) {
+        MallBrandExample example = new MallBrandExample();
+
+        MallBrand mallBrand = new MallBrand();
+        mallBrand.setName(creatBrand.getName());
+        mallBrand.setDesc(creatBrand.getDesc());
+        mallBrand.setPicUrl(creatBrand.getPicUrl());
+        mallBrand.setFloorPrice(new BigDecimal(creatBrand.getDesc()));
+        mallBrand.setAddTime(new Date());
+        mallBrand.setUpdateTime(new Date());
+        mallBrand.setDeleted(false);
+        mallBrandMapper.insert(mallBrand);
+
+        /*example.createCriteria().andPicUrlEqualTo(creatBrand.getPicUrl()).andNameEqualTo(creatBrand.getName());*/
+        example.createCriteria().andIdEqualTo(mallBrandMapper.getlastInsert());
+        List<MallBrand> mallBrands = mallBrandMapper.selectByExample(example);
+        return mallBrands.get(0);
+    }
+
+    @Override
+    public void deleteBrand(MallBrand mallBrand) {
+        MallBrandExample example = new MallBrandExample();
+        example.createCriteria().andIdEqualTo(mallBrand.getId());
+        mallBrandMapper.deleteByExample(example);
     }
 }

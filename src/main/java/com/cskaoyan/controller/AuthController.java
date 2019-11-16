@@ -71,7 +71,7 @@ public class AuthController {
      * */
     @RequestMapping("info")
     public BaseReqVo info(@RequestParam("token") String token) {
-        //System.out.println(token);
+        //SystemBean.out.println(token);
         HashMap<String,Object> map = new HashMap<>();
         Admin admin = authService.getUsernameByUsername(token);
         String roleIdArray = admin.getRole_ids();
@@ -101,6 +101,14 @@ public class AuthController {
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         baseReqVo.setErrno(0);
         baseReqVo.setData(map);
+        baseReqVo.setErrmsg("成功");
+        return baseReqVo;
+    }
+
+    @RequestMapping("logout")
+    public BaseReqVo logout() {
+        BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
+        baseReqVo.setErrno(0);
         baseReqVo.setErrmsg("成功");
         return baseReqVo;
     }
