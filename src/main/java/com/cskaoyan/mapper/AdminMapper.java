@@ -2,10 +2,10 @@ package com.cskaoyan.mapper;
 
 import com.cskaoyan.bean.system.Admin;
 import com.cskaoyan.bean.system.AdminExample;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-@Mapper
+
 public interface AdminMapper {
     long countByExample(AdminExample example);
 
@@ -28,16 +28,4 @@ public interface AdminMapper {
     int updateByPrimaryKeySelective(Admin record);
 
     int updateByPrimaryKey(Admin record);
-
-    @Select({"select count(id) from cskaoyan_mall_goods"})
-    int getGoodsTotal();
-
-    @Select({"select count(id) from cskaoyan_mall_user"})
-    int getUserTotal();
-
-    @Select({"select count(id) from cskaoyan_mall_goods_product"})
-    int getProductTotal();
-
-    @Select({"select count(id) from cskaoyan_mall_order"})
-    int getOrderTotal();
 }

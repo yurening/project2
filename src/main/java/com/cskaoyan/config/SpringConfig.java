@@ -19,15 +19,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 
 @Configuration
 @ComponentScan(value = "com.cskaoyan",excludeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION,value = {Controller.class,
         EnableWebMvc.class}))
+@EnableWebMvc
 public class SpringConfig {
 
-    @Bean
+    /*@Bean
     public DruidDataSource druidDataSource() {
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
@@ -35,29 +37,35 @@ public class SpringConfig {
         dataSource.setUsername("root");
         dataSource.setPassword("123456");
         return dataSource;
-    }
+    }*/
 
     //mybatis
-    @Bean
+    /*@Bean
     public SqlSessionFactoryBean sqlSessionFactory(DruidDataSource dataSource) {
         SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource);
         return sessionFactoryBean;
-    }
+    }*/
 
-    @Bean
+    /*@Bean
     public MapperScannerConfigurer getMapperScannerConfigurer(){
         MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
         mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory");
         mapperScannerConfigurer.setBasePackage("com.cs666.mapper");
         return mapperScannerConfigurer;
-    }
+    }*/
 
     //注册事务管理器
-    @Bean
+/*    @Bean
     public DataSourceTransactionManager dataSourceTransactionManager(DruidDataSource dataSource){
         DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
         dataSourceTransactionManager.setDataSource(dataSource);
         return dataSourceTransactionManager;
+    }*/
+    @Bean
+    public CommonsMultipartResolver commonsMultipartResolver(){
+        CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
+        commonsMultipartResolver.setMaxUploadSize(1024 * 1000);
+        return commonsMultipartResolver;
     }
 }
