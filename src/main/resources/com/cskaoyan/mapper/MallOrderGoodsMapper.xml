@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cskaoyan.mapper.MallOrderGoodsMapper">
-  <resultMap id="BaseResultMap" type="com.cskaoyan.bean.mall.order.MallOrderGoods">
+  <resultMap id="BaseResultMap" type="com.cskaoyan.bean.order.MallOrderGoods">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="order_id" jdbcType="INTEGER" property="orderId" />
     <result column="goods_id" jdbcType="INTEGER" property="goodsId" />
@@ -79,7 +79,7 @@
     id, order_id, goods_id, goods_name, goods_sn, product_id, number, price, specifications, 
     pic_url, comment, add_time, update_time, deleted
   </sql>
-  <select id="selectByExample" parameterType="com.cskaoyan.bean.mall.order.MallOrderGoodsExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.cskaoyan.bean.order.MallOrderGoodsExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -93,13 +93,13 @@
       order by ${orderByClause}
     </if>
   </select>
-  <delete id="deleteByExample" parameterType="com.cskaoyan.bean.mall.order.MallOrderGoodsExample">
+  <delete id="deleteByExample" parameterType="com.cskaoyan.bean.order.MallOrderGoodsExample">
     delete from cskaoyan_mall_order_goods
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insertSelective" parameterType="com.cskaoyan.bean.mall.order.MallOrderGoods">
+  <insert id="insertSelective" parameterType="com.cskaoyan.bean.order.MallOrderGoods">
     insert into cskaoyan_mall_order_goods
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -190,7 +190,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.cskaoyan.bean.mall.order.MallOrderGoodsExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.cskaoyan.bean.order.MallOrderGoodsExample" resultType="java.lang.Long">
     select count(*) from cskaoyan_mall_order_goods
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -266,7 +266,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.cskaoyan.bean.mall.order.MallOrderGoods">
+  <update id="updateByPrimaryKeySelective" parameterType="com.cskaoyan.bean.order.MallOrderGoods">
     update cskaoyan_mall_order_goods
     <set>
       <if test="orderId != null">

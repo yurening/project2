@@ -75,7 +75,7 @@
     id, username, password, last_login_ip, last_login_time, avatar, add_time, update_time, 
     deleted, role_ids
   </sql>
-  <select id="selectByExample" parameterType="com.cskaoyan.bean.system.AdminExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.cskaoyan.bean.systemBean.AdminExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -99,7 +99,7 @@
     delete from cskaoyan_mall_admin
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.cskaoyan.bean.system.AdminExample">
+  <delete id="deleteByExample" parameterType="com.cskaoyan.bean.systemBean.AdminExample">
     delete from cskaoyan_mall_admin
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -182,7 +182,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.cskaoyan.bean.system.AdminExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.cskaoyan.bean.systemBean.AdminExample" resultType="java.lang.Long">
     select count(*) from cskaoyan_mall_admin
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

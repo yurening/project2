@@ -1,6 +1,6 @@
 package com.cskaoyan.mapper;
 
-
+import com.cskaoyan.bean.order.MallOrderGoods;
 import com.cskaoyan.bean.order.MallOrderGoods;
 import com.cskaoyan.bean.order.MallOrderGoodsExample;
 import org.apache.ibatis.annotations.*;
