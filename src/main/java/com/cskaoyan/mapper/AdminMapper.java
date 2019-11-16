@@ -1,6 +1,6 @@
 package com.cskaoyan.mapper;
 
-import com.cskaoyan.bean.Admin;
+import com.cskaoyan.bean.system.Admin;
 import com.cskaoyan.bean.system.AdminExample;
 import org.apache.ibatis.annotations.*;
 
