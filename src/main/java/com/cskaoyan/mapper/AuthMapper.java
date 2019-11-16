@@ -1,7 +1,7 @@
 package com.cskaoyan.mapper;
 
 import com.cskaoyan.bean.Admin;
-/*import com.cskaoyan.bean.AdminExample;*/
+import com.cskaoyan.bean.system.AdminExample;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -64,9 +64,9 @@ public interface AuthMapper {
           "role_ids = #{roleIds,jdbcType=VARCHAR}",
         "where id = #{id,jdbcType=INTEGER}"
     })
-    int updateByPrimaryKey(Admin record);*/
+    int updateByPrimaryKey(Admin record);
 
-    /*@Select({
+    @Select({
             "select",
             "id, username, password, last_login_ip, last_login_time, avatar, add_time, update_time, ",
             "deleted, role_ids",
