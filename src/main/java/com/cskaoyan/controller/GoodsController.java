@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.ws.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,15 @@ public class GoodsController {
     @RequestMapping("goods/update")
     public ResponseType updateGoods(@RequestBody CreateGoods createGoods){
         int i = goodsService.updateGoods(createGoods);
+        ResponseType responseType = new ResponseType();
+        responseType.setErrmsg("成功");
+        responseType.setErrno(0);
+        return responseType;
+    }
+
+    @RequestMapping("goods/delete")
+    public ResponseType deleteLogic(@RequestBody Goods goods){
+        goodsService.deleteGoods(goods);
         ResponseType responseType = new ResponseType();
         responseType.setErrmsg("成功");
         responseType.setErrno(0);

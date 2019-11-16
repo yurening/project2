@@ -2,6 +2,7 @@ package com.cskaoyan.service;
 
 import com.cskaoyan.bean.goods.CategoryResp;
 import com.cskaoyan.bean.goods.CreateGoods;
+import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.ResponseType;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface GoodsService {
     int createGoods(CreateGoods createGoods);
     CreateGoods getGoodsDetail(Integer id);
     int updateGoods(CreateGoods createGoods);
+    int deleteGoods(Goods goods);
 }

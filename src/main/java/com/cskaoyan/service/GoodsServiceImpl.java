@@ -32,7 +32,7 @@ public class GoodsServiceImpl implements GoodsService {
                                    String goodsSn,String name) {
         //查找
         GoodsExample goodsExample = new GoodsExample();
-        GoodsExample.Criteria criteria = goodsExample.createCriteria();
+        GoodsExample.Criteria criteria = goodsExample.createCriteria().andDeletedEqualTo(false);
         if(!StringUtils.isEmpty(goodsSn)){
             criteria.andGoodsSnEqualTo(goodsSn);
         }
@@ -115,13 +115,10 @@ public class GoodsServiceImpl implements GoodsService {
         for (Goods goods2 : goods1) {
             goodsId = goods2.getId();
         }
-        /*String goodsSn = goods.getGoodsSn();
-        int goodsId = Integer.parseInt(goodsSn);*/
         List<Attribute> attributes = createGoods.getAttributes();
         List<Product> products = createGoods.getProducts();
         List<Specification> specifications = createGoods.getSpecifications();
         //插入商品基本信息部分
-        //goodsMapper.insertSelective(goods);
         for (Attribute attribute : attributes) {
             attribute.setGoodsId(goodsId);
             attribute.setAddTime(new Date());
@@ -177,29 +174,90 @@ public class GoodsServiceImpl implements GoodsService {
     public int updateGoods(CreateGoods createGoods) {
         Goods goods = createGoods.getGoods();
         goods.setUpdateTime(new Date());
-        goodsMapper.updateByPrimaryKey(goods);
+
         //获取goodsID
         Integer goodsId = goods.getId();
         List<Attribute> attributes = createGoods.getAttributes();
         List<Product> products = createGoods.getProducts();
         List<Specification> specifications = createGoods.getSpecifications();
+
+        //删除原来的数据
+        GoodsExample goodsExample = new GoodsExample();
+        goodsExample.createCriteria().andIdEqualTo(goodsId);
+        goodsMapper.deleteByExample(goodsExample);
+        AttributeExample attributeExample = new AttributeExample();
+        attributeExample.createCriteria().andGoodsIdEqualTo(goodsId);
+        attributeMapper.deleteByExample(attributeExample);
+        ProductExample productExample = new ProductExample();
+        productExample.createCriteria().andGoodsIdEqualTo(goodsId);
+        productMapper.deleteByExample(productExample);
+        SpecificationExample specificationExample = new SpecificationExample();
+        specificationExample.createCriteria().andGoodsIdEqualTo(goodsId);
+        specificationMapper.deleteByExample(specificationExample);
+
         //插入商品基本信息部分
-        goodsMapper.updateByPrimaryKey(goods);
+        goodsMapper.insertSelective(goods);
         for (Attribute attribute : attributes) {
             attribute.setGoodsId(goodsId);
             attribute.setUpdateTime(new Date());
-            attributeMapper.updateByPrimaryKey(attribute);
+            attributeMapper.insertSelective(attribute);
         }
         for (Product product : products) {
             product.setGoodsId(goodsId);
             product.setUpdateTime(new Date());
-            productMapper.updateByPrimaryKey(product);
+            productMapper.insertSelective(product);
         }
         for (Specification specification : specifications) {
             specification.setGoodsId(goodsId);
             specification.setUpdateTime(new Date());
+            specificationMapper.insertSelective(specification);
+        }
+        return 0;
+    }
+
+    @Override
+    public int deleteGoods(Goods goods) {
+        Integer goodsId = goods.getId();
+        Goods goods1 = goodsMapper.selectByPrimaryKey(goodsId);
+        goods1.setDeleted(true);
+        goods1.setUpdateTime(new Date());
+        goodsMapper.updateByPrimaryKey(goods1);
+
+        AttributeExample attributeExample = new AttributeExample();
+        attributeExample.createCriteria().andGoodsIdEqualTo(goodsId);
+        List<Attribute> attributes = attributeMapper.selectByExample(attributeExample);
+        for (Attribute attribute : attributes) {
+            attribute.setUpdateTime(new Date());
+            attribute.setDeleted(true);
+            attributeMapper.updateByPrimaryKey(attribute);
+        }
+
+        ProductExample ProductExample = new ProductExample();
+        ProductExample.createCriteria().andGoodsIdEqualTo(goodsId);
+        List<Product> products = productMapper.selectByExample(ProductExample);
+        for (Product product : products) {
+            product.setUpdateTime(new Date());
+            product.setDeleted(true);
+            productMapper.updateByPrimaryKey(product);
+        }
+
+        SpecificationExample specificationExample = new SpecificationExample();
+        specificationExample.createCriteria().andGoodsIdEqualTo(goodsId);
+        List<Specification> specifications = specificationMapper.selectByExample(specificationExample);
+        for (Specification specification : specifications) {
+            specification.setUpdateTime(new Date());
+            specification.setDeleted(true);
             specificationMapper.updateByPrimaryKey(specification);
         }
+
+
+
+       /* ProductExample productExample = new ProductExample();
+        productExample.createCriteria().andGoodsIdEqualTo(goodsId);
+        productMapper.deleteByExample(productExample);
+        SpecificationExample specificationExample = new SpecificationExample();
+        specificationExample.createCriteria().andGoodsIdEqualTo(goodsId);
+        specificationMapper.deleteByExample(specificationExample);*/
         return 0;
     }
 
