@@ -4,7 +4,7 @@ import com.cskaoyan.bean.Admin;
 
 import java.util.List;
 
-public interface AdminService {
+public interface AuthService {
 
     Admin getUsernameByUsername(String username);
 

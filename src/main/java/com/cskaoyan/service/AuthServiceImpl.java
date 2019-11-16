@@ -7,17 +7,17 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.Admin;
-import com.cskaoyan.mapper.AdminMapper;
+import com.cskaoyan.mapper.AuthMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AuthServiceImpl implements AuthService {
 
     @Autowired
-    AdminMapper mapper;
+    AuthMapper mapper;
 
     @Override
     public Admin getUsernameByUsername(String username) {

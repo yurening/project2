@@ -9,7 +9,7 @@ package com.cskaoyan.controller;
 import com.cskaoyan.bean.Admin;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.converter.StringStringArrConverter;
-import com.cskaoyan.service.AdminService;
+import com.cskaoyan.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RestController
-@RequestMapping("admin/auth/")
-public class AdminController {
+@RequestMapping("admin/auth")
+public class AuthController {
     @Autowired
-    AdminService adminService;
+    AuthService authService;
 
     @RequestMapping("login")
     public BaseReqVo login(@RequestBody Admin admin) {
@@ -35,7 +35,7 @@ public class AdminController {
             baseReqVo.setErrmsg("账号不可为空,请输入");
             return baseReqVo;
         }
-        Admin admin1 = adminService.getUsernameByUsername(username);
+        Admin admin1 = authService.getUsernameByUsername(username);
         if (admin1 == null) {
             baseReqVo.setErrno(401);
             baseReqVo.setErrmsg("用户不存在,请确认后重新输入");
@@ -73,7 +73,7 @@ public class AdminController {
     public BaseReqVo info(@RequestParam("token") String token) {
         //System.out.println(token);
         HashMap<String,Object> map = new HashMap<>();
-        Admin admin = adminService.getUsernameByUsername(token);
+        Admin admin = authService.getUsernameByUsername(token);
         String roleIdArray = admin.getRole_ids();
         String[] roleIds = new StringStringArrConverter().convert(roleIdArray);
         List<String> roleNames = new LinkedList<>();
@@ -81,14 +81,14 @@ public class AdminController {
         Boolean permission = roleIdArray.contains("1");    //如果是超级管理员就拥有全部权限
         if (permission) {
             for (String roleId: roleIds) {
-                String roleName = adminService.getRoleNameById(roleId);
+                String roleName = authService.getRoleNameById(roleId);
                 roleNames.add(roleName);
             }
             permsList.add("*");       //许可路径
         }else {
             for (String roleId: roleIds) {
-                String roleName = adminService.getRoleNameById(roleId);
-                List<String>  perms  = adminService.getPermsNameByRoleId(roleId);
+                String roleName = authService.getRoleNameById(roleId);
+                List<String>  perms  = authService.getPermsNameByRoleId(roleId);
                 roleNames.add(roleName);
                 permsList.addAll(perms);
             }

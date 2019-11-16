@@ -7,9 +7,8 @@
 package com.cskaoyan.controller;
 
 import com.cskaoyan.bean.BaseReqVo;
-import com.cskaoyan.service.AdminService;
+import com.cskaoyan.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +19,7 @@ import java.util.HashMap;
 public class DashboardController {
 
     @Autowired
-    AdminService adminService;
+    AuthService authService;
 
     /**
      * @Respones
@@ -39,10 +38,10 @@ public class DashboardController {
     public BaseReqVo dashboard() {
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         HashMap<String, Integer> map = new HashMap<>();
-        int goodsTotal = adminService.getGoodsTotal();
-        int userTotal = adminService.getUserTotal();
-        int productTotal = adminService.getProductTotal();
-        int orderTotal = adminService.getOrderTotal();
+        int goodsTotal = authService.getGoodsTotal();
+        int userTotal = authService.getUserTotal();
+        int productTotal = authService.getProductTotal();
+        int orderTotal = authService.getOrderTotal();
         map.put("goodsTotal",goodsTotal);
         map.put("userTotal",userTotal);
         map.put("productTotal",productTotal);

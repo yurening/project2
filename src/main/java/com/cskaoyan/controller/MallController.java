@@ -19,7 +19,7 @@ public class MallController {
     @Autowired
     MallService mallService;
 
-    @RequestMapping("admin/auth/login")
+    /*@RequestMapping("admin/auth/login")
     public BaseReqVo login(@RequestBody Login login){
         BaseReqVo baseReqVo = new BaseReqVo();
         baseReqVo.setData("1195ea17-fc25-48a3-8d06-65c3b0f055a7");
@@ -46,7 +46,7 @@ public class MallController {
         baseReqVo.setErrno(0);
 
         return baseReqVo;
-    }
+    }*/
 
     @RequestMapping("admin/region/list")
     public BaseReqVo getRegionList(){

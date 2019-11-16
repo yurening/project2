@@ -21,7 +21,7 @@ public class GoodsController {
     @Autowired
     GoodsService goodsService;
 
-    @RequestMapping("auth/login")
+    /*@RequestMapping("auth/login")
     public ResponseType login(@RequestBody UserTest user, HttpServletRequest request){
         String sessionId = request.getSession().getId();
         ResponseType responseType = new ResponseType();
@@ -47,7 +47,7 @@ public class GoodsController {
         baseReqVo.setErrmsg("成功");
         baseReqVo.setErrno(0);
         return baseReqVo;
-    }
+    }*/
 
     @RequestMapping("goods/list")
     public ResponseType showGoods(Integer page,Integer limit,

@@ -1,12 +1,12 @@
 package com.cskaoyan.mapper;
 
 import com.cskaoyan.bean.Admin;
-import com.cskaoyan.bean.AdminExample;
+/*import com.cskaoyan.bean.AdminExample;*/
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 @Mapper
-public interface AdminMapper {
+public interface AuthMapper {
     /*long countByExample(AdminExample example);
 
     int deleteByExample(AdminExample example);
@@ -42,7 +42,7 @@ public interface AdminMapper {
         "from cskaoyan_mall_admin",
         "where id = #{id,jdbcType=INTEGER}"
     })
-    @ResultMap("com.cskaoyan.mapper.AdminMapper.BaseResultMap")
+    @ResultMap("com.cskaoyan.mapper.AuthMapper.BaseResultMap")
     Admin selectByPrimaryKey(Integer id);
 
     int updateByExampleSelective(@Param("record") Admin record, @Param("example") AdminExample example);
