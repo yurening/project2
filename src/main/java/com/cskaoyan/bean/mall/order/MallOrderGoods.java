@@ -1,4 +1,4 @@
-package com.cskaoyan.bean.order;
+package com.cskaoyan.bean.mall.order;
 
 import java.math.BigDecimal;
 import java.util.Date;

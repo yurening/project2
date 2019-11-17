@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cskaoyan.mapper.MallOrderMapper">
-  <resultMap id="BaseResultMap" type="com.cskaoyan.bean.order.MallOrder">
+  <resultMap id="BaseResultMap" type="com.cskaoyan.bean.mall.order.MallOrder">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
@@ -88,12 +88,12 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, user_id, order_sn, order_status, consignee, mobile, address, message, goods_price, 
-    freight_price, coupon_price, integral_price, groupon_price, order_price, actual_price, 
-    pay_id, pay_time, ship_sn, ship_channel, ship_time, confirm_time, comments, end_time, 
+    id, user_id, order_sn, order_status, consignee, mobile, address, message, goods_price,
+    freight_price, coupon_price, integral_price, groupon_price, order_price, actual_price,
+    pay_id, pay_time, ship_sn, ship_channel, ship_time, confirm_time, comments, end_time,
     add_time, update_time, deleted
   </sql>
-  <select id="selectByExample" parameterType="com.cskaoyan.bean.order.MallOrderExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.cskaoyan.bean.mall.order.MallOrderExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -107,13 +107,13 @@
       order by ${orderByClause}
     </if>
   </select>
-  <delete id="deleteByExample" parameterType="com.cskaoyan.bean.order.MallOrderExample">
+  <delete id="deleteByExample" parameterType="com.cskaoyan.bean.mall.order.MallOrderExample">
     delete from cskaoyan_mall_order
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insertSelective" parameterType="com.cskaoyan.bean.order.MallOrder">
+  <insert id="insertSelective" parameterType="com.cskaoyan.bean.mall.order.MallOrder">
     insert into cskaoyan_mall_order
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -276,7 +276,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.cskaoyan.bean.order.MallOrderExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.cskaoyan.bean.mall.order.MallOrderExample" resultType="java.lang.Long">
     select count(*) from cskaoyan_mall_order
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -400,7 +400,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.cskaoyan.bean.order.MallOrder">
+  <update id="updateByPrimaryKeySelective" parameterType="com.cskaoyan.bean.mall.order.MallOrder">
     update cskaoyan_mall_order
     <set>
       <if test="userId != null">
