@@ -13,19 +13,19 @@ public class UserServiceImpl implements UserService{
     @Autowired
     UserMapper userMapper;
 
+
     @Override
-    public List<ReqParamFromDb> selectUserList(RequestList requestList) {
-        PageHelper.startPage(requestList.getPage(),requestList.getLimit());
-        List<ReqParamFromDb> lists = userMapper.selectUserList(requestList);
-        return lists;
+    public long countUserByExample(UserExample example) {
+        return userMapper.countUserByExample(example);
     }
 
     @Override
-    public int selectTotal() {
-        return userMapper.selectTotal();
+    public List<User> selectUserByExample(UserRequest userRequest, UserExample example) {
+        PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
+        return userMapper.selectUserByExample(example);
     }
 
-//address
+    //address
     public List<Address> selectAddress(AddressRequest addressRequest,AddressExample addressExample){
         PageHelper.startPage(addressRequest.getPage(),addressRequest.getLimit());
         List<Address> lists = userMapper.selectAddressByExample(addressExample);

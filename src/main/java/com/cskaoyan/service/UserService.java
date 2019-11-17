@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface UserService {
     //user
-    List<ReqParamFromDb> selectUserList(RequestList requestList);
-    int selectTotal();
+    long countUserByExample(UserExample example);
+    List<User> selectUserByExample(UserRequest userRequest,UserExample example);
     //address
     public List<Address> selectAddress(AddressRequest addressRequest,AddressExample addressExample);
     long countAddressByExample(AddressExample example);
