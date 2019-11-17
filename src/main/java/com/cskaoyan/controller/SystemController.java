@@ -2,9 +2,7 @@ package com.cskaoyan.controller;
 
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.generalize.Storage;
-import com.cskaoyan.bean.systemBean.Admin;
-import com.cskaoyan.bean.systemBean.Log;
-import com.cskaoyan.bean.systemBean.Role;
+import com.cskaoyan.bean.systemBean.*;
 import com.cskaoyan.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -193,6 +191,20 @@ public class SystemController {
         systemService.storageDelete(storage);
         baseReqVo.setErrmsg("成功");
         baseReqVo.setErrno(0);
+        return baseReqVo;
+    }
+
+    @RequestMapping("role/permissions")
+    public BaseReqVo rolePermissions(Integer roleId){
+        BaseReqVo baseReqVo = new BaseReqVo();
+        List<SystemPermissions> systemPermissionsList = systemService.rolePermissions();
+        List<Permission> permissionList = systemService.permissionList();
+        baseReqVo.setErrmsg("成功");
+        baseReqVo.setErrno(0);
+        HashMap<String,Object> hashMap = new HashMap<>();
+        hashMap.put("systemPermissions",systemPermissionsList);
+        hashMap.put("assignedPermissions",permissionList);
+        baseReqVo.setData(hashMap);
         return baseReqVo;
     }
 }

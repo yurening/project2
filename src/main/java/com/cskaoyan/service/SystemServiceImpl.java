@@ -3,10 +3,7 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.Storage;
 import com.cskaoyan.bean.generalize.StorageExample;
 import com.cskaoyan.bean.systemBean.*;
-import com.cskaoyan.mapper.AdminMapper;
-import com.cskaoyan.mapper.LogMapper;
-import com.cskaoyan.mapper.RoleMapper;
-import com.cskaoyan.mapper.StorageMapper;
+import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +26,12 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     StorageMapper storageMapper;
+
+    @Autowired
+    RolePermissionsMapper rolePermissionsMapper;
+
+    @Autowired
+    PermissionMapper permissionMapper;
 
     @Override
     public HashMap<String,Object> adminList(Integer page, Integer limit, String username, String sort, String order) {
@@ -205,5 +208,19 @@ public class SystemServiceImpl implements SystemService {
         storage.setDeleted(true);
         storage.setUpdateTime(new Date());
         storageMapper.updateByPrimaryKey(storage);
+    }
+
+    @Override
+    public List<SystemPermissions> rolePermissions() {
+        List<SystemPermissions> systemPermissionsList =
+                rolePermissionsMapper.rolePermissionsMapperList();
+        return systemPermissionsList;
+    }
+
+    @Override
+    public List<Permission> permissionList() {
+        PermissionExample permissionExample = new PermissionExample();
+        List<Permission> permissionList = permissionMapper.selectByExample(permissionExample);
+        return permissionList;
     }
 }
