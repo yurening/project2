@@ -1,5 +1,6 @@
 package com.cskaoyan.controller;
 
+import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.goods.*;
 import com.cskaoyan.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class GoodsController {
         Map map = new HashMap();
         map.put("categoryList",categoryList);
         map.put("brandList",brand);
-        ResponseType responseType = new ResponseType();
+        ResponseType<Object> responseType = new ResponseType();
         responseType.setErrno(0);
         responseType.setErrmsg("成功");
         responseType.setData(map);
@@ -50,11 +51,11 @@ public class GoodsController {
 
     @RequestMapping("goods/create")
     public ResponseType createGoods(@RequestBody CreateGoods createGoods){
-        int goods = goodsService.createGoods(createGoods);
-        ResponseType responseType = new ResponseType();
+        ResponseType goods = goodsService.createGoods(createGoods);
+        /*ResponseType responseType = new ResponseType();
         responseType.setErrmsg("成功");
-        responseType.setErrno(0);
-        return responseType;
+        responseType.setErrno(0);*/
+        return goods;
     }
 
     @RequestMapping("goods/detail")

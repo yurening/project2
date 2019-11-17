@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ResponseType<T> {
-    private Integer errno;
+    private int errno;
     private String errmsg;
     private T data;
 }

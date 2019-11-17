@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,15 +54,9 @@ public class GoodsServiceImpl implements GoodsService {
         goodsData.setTotal(total);
         //封装ResponseType
         ResponseType responseType = new ResponseType();
-        if(total==0){
-            responseType.setData(null);
-            responseType.setErrno(500);
-            responseType.setErrmsg("没有满足条件的商品呦");
-        }else{
-            responseType.setErrmsg("成功");
-            responseType.setErrno(0);
-            responseType.setData(goodsData);
-        }
+        responseType.setErrmsg("成功");
+        responseType.setErrno(0);
+        responseType.setData(goodsData);
         return responseType;
     }
 
@@ -108,9 +103,27 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public int createGoods(CreateGoods createGoods) {
+    public ResponseType createGoods(CreateGoods createGoods) {
+        ResponseType responseType = new ResponseType();
         Goods goods = createGoods.getGoods();
+        //判断必填写项是否为空，空则返回错误信息
+        String goodsSn = goods.getGoodsSn();
+        if (StringUtils.isEmpty(goodsSn)){
+            responseType.setErrno(500);
+            return responseType;
+        }
+        //判断填写的内容是不是数字且位数在6到10位之间
+        if (!goodsSn.matches("^[0-9]{6,10}")){
+            responseType.setErrno(500);
+            return responseType;
+        }
+        //判断商品名是否为空，空则返回错误信息
         String name = goods.getName();
+        if (StringUtils.isEmpty(name)){
+            responseType.setErrno(500);
+            return responseType;
+        }
+
         goods.setAddTime(new Date());
         goodsMapper.insertSelective(goods);
         //获取goodsID
@@ -121,6 +134,7 @@ public class GoodsServiceImpl implements GoodsService {
         for (Goods goods2 : goods1) {
             goodsId = goods2.getId();
         }
+        //获取各个配置的集合
         List<Attribute> attributes = createGoods.getAttributes();
         List<Product> products = createGoods.getProducts();
         List<Specification> specifications = createGoods.getSpecifications();
@@ -140,7 +154,7 @@ public class GoodsServiceImpl implements GoodsService {
             specification.setAddTime(new Date());
             specificationMapper.insertSelective(specification);
         }
-        return 0;
+        return responseType;
     }
 
     @Override

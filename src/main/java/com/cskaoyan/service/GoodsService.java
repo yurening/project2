@@ -13,7 +13,7 @@ public interface GoodsService {
                              String goodSn, String name);
     List<CategoryResp> getCategory();
     List<CategoryResp> getBrand();
-    int createGoods(CreateGoods createGoods);
+    ResponseType createGoods(CreateGoods createGoods);
     CreateGoods getGoodsDetail(Integer id);
     int updateGoods(CreateGoods createGoods);
     int deleteGoods(Goods goods);
