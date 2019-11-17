@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface UserMapper {
     //user
-    List<ReqParamFromDb> selectUserList(@Param("requestList")RequestList requestList);
-    int selectTotal();
+    long countUserByExample(UserExample example);
+    List<User> selectUserByExample(UserExample example);
 
     //address
     List<Address> selectAddressByExample(AddressExample example);

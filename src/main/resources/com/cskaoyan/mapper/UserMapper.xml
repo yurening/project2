@@ -3,45 +3,76 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cskaoyan.mapper.UserMapper">
-    <resultMap id="reqMap" type="com.cskaoyan.bean.user.ReqParamFromDb">
-        <result property="id" column="id"/>
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
-        <result property="gender" column="gender"/>
-        <result property="birthday" column="birthday"/>
-        <result property="lastLoginTime" column="last_login_time"/>
-        <result property="lastLoginIp" column="last_login_ip"/>
-        <result property="userlevel" column="user_level"/>
-        <result property="nickname" column="nickname"/>
-        <result property="mobile" column="mobile"/>
-        <result property="avatar" column="avatar"/>
-        <result property="weixinOpenid" column="weixin_openid"/>
-        <result property="status" column="status"/>
-        <result property="addTime" column="add_time"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="deleted" column="deleted"/>
+    <resultMap id="UserBaseResultMap" type="com.cskaoyan.bean.user.User">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="gender" jdbcType="TINYINT" property="gender" />
+        <result column="birthday" jdbcType="DATE" property="birthday" />
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+        <result column="last_login_ip" jdbcType="VARCHAR" property="lastLoginIp" />
+        <result column="user_level" jdbcType="TINYINT" property="userLevel" />
+        <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+        <result column="weixin_openid" jdbcType="VARCHAR" property="weixinOpenid" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="deleted" jdbcType="BIT" property="deleted" />
     </resultMap>
-<select id="selectUserList" resultMap="reqMap">
-    select uf.id,username,password,gender,birthday,last_login_time,last_login_ip,user_level,nickname,mobile,avatar,weixin_openid,status,
-uf.add_time,uf.update_time,uf.deleted from cskaoyan_mall_user_formid uf left join  cskaoyan_mall_user u on formId = u.id
- <where>
-     <trim prefixOverrides="and">
-         <if test="requestList.username!=null&amp;requestList.username!=''">
-             u.username = #{requestList.username}
-         </if>
-         <if test="requestList.mobile!=null&amp;requestList.mobile!=''">
-             and u.mobile = #{requestList.mobile}
-         </if>
-     </trim>
-
- </where>
-
-
-order by uf.add_time ${requestList.order}
-
-</select>
-    <select id="selectTotal" resultType="int">
-        select count(*) from cskaoyan_mall_user_formid uf left join  cskaoyan_mall_user u on formId = u.id
+    <sql id="Base_Column_List_User">
+    id, username, password, gender, birthday, last_login_time, last_login_ip, user_level,
+    nickname, mobile, avatar, weixin_openid, status, add_time, update_time, deleted
+  </sql>
+    <sql id="Example_Where_Clause_User">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <select id="countUserByExample" parameterType="com.cskaoyan.bean.user.UserExample" resultType="java.lang.Long">
+        select count(*) from cskaoyan_mall_user
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause_User" />
+        </if>
+    </select>
+    <select id="selectUserByExample" parameterType="com.cskaoyan.bean.user.UserExample" resultMap="UserBaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List_User" />
+        from cskaoyan_mall_user
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause_User" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
     </select>
 
     <!--address-->
