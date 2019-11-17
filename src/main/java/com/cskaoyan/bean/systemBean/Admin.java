@@ -1,4 +1,4 @@
-package com.cskaoyan.bean.system;
+package com.cskaoyan.bean.systemBean;
 
 import java.util.Date;
 

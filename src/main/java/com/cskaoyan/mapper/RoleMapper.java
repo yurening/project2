@@ -1,7 +1,7 @@
 package com.cskaoyan.mapper;
 
-import com.cskaoyan.bean.system.Role;
-import com.cskaoyan.bean.system.RoleExample;
+import com.cskaoyan.bean.systemBean.Role;
+import com.cskaoyan.bean.systemBean.RoleExample;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

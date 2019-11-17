@@ -1,7 +1,7 @@
 package com.cskaoyan.mapper;
 
-import com.cskaoyan.bean.system.Log;
-import com.cskaoyan.bean.system.LogExample;
+import com.cskaoyan.bean.systemBean.Log;
+import com.cskaoyan.bean.systemBean.LogExample;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
