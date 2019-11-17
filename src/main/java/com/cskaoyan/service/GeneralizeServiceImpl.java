@@ -79,6 +79,7 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     @Override
     public void adDelete(Ad ad) {
         ad.setDeleted(true);
+        ad.setUpdateTime(new Date());
         adMapper.updateByPrimaryKey(ad);
     }
 
@@ -151,6 +152,7 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     @Override
     public void couponDelete(Coupon coupon) {
         coupon.setDeleted(true);
+        coupon.setUpdateTime(new Date());
         couponMapper.updateByPrimaryKey(coupon);
     }
 
@@ -195,6 +197,7 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     @Override
     public void topicDelete(Topic topic) {
         topic.setDeleted(true);
+        topic.setUpdateTime(new Date());
         topicMapper.updateByPrimaryKey(topic);
     }
 
@@ -276,6 +279,7 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     @Override
     public void grouponDelete(GrouponRules grouponRules) {
         grouponRules.setDeleted(true);
+        grouponRules.setUpdateTime(new Date());
         grouponRulesMapper.updateByPrimaryKey(grouponRules);
     }
 }

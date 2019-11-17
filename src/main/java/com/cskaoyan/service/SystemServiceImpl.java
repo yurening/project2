@@ -92,6 +92,7 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public void adminDelete(Admin admin) {
         admin.setDeleted(true);
+        admin.setUpdateTime(new Date());
         adminMapper.updateByPrimaryKey(admin);
     }
 
@@ -167,6 +168,7 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public void roleDelete(Role role) {
         role.setDeleted(true);
+        role.setUpdateTime(new Date());
         roleMapper.updateByPrimaryKey(role);
     }
 
@@ -201,6 +203,7 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public void storageDelete(Storage storage) {
         storage.setDeleted(true);
+        storage.setUpdateTime(new Date());
         storageMapper.updateByPrimaryKey(storage);
     }
 }
