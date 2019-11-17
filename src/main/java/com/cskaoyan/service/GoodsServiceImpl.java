@@ -45,7 +45,7 @@ public class GoodsServiceImpl implements GoodsService {
         PageHelper.startPage(page,limit);
         String str = sort + " " + order;
         goodsExample.setOrderByClause(str);
-        List<Goods> goods = goodsMapper.selectByExample(goodsExample);
+        List<Goods> goods = goodsMapper.selectByExampleWithBLOBs(goodsExample);
         //封装data
         long total = goodsSize;
         GoodsData goodsData = new GoodsData();
@@ -53,9 +53,15 @@ public class GoodsServiceImpl implements GoodsService {
         goodsData.setTotal(total);
         //封装ResponseType
         ResponseType responseType = new ResponseType();
-        responseType.setErrmsg("成功");
-        responseType.setErrno(0);
-        responseType.setData(goodsData);
+        if(total==0){
+            responseType.setData(null);
+            responseType.setErrno(500);
+            responseType.setErrmsg("没有满足条件的商品呦");
+        }else{
+            responseType.setErrmsg("成功");
+            responseType.setErrno(0);
+            responseType.setData(goodsData);
+        }
         return responseType;
     }
 
@@ -142,12 +148,15 @@ public class GoodsServiceImpl implements GoodsService {
         GoodsExample goodsExample = new GoodsExample();
         goodsExample.createCriteria().andIdEqualTo(id);
         List<CreateGoods> list = new ArrayList<>();
-        List<Goods> goods = goodsMapper.selectByExample(goodsExample);
+        List<Goods> goods = goodsMapper.selectByExampleWithBLOBs(goodsExample);
         CreateGoods createGoods = new CreateGoods();
         for (Goods good : goods) {
-            Integer brandId = good.getBrandId();
+            //Integer brandId = good.getBrandId();
             Integer categoryId = good.getCategoryId();
-            Integer[] integers = new Integer[]{brandId,categoryId};
+            Category category = categoryMapper.selectByPrimaryKey(categoryId);
+            Integer pid = category.getPid();
+            //Integer[] integers = new Integer[]{brandId,categoryId};
+            Integer[] integers = new Integer[]{pid,categoryId};
             createGoods.setCategoryIds(integers);
             //attributes
             AttributeExample attributeExample = new AttributeExample();
