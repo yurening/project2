@@ -106,6 +106,9 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.cskaoyan.bean.generalize.GrouponRules">
+    <selectKey order="AFTER" keyColumn="id" keyProperty="id" resultType="int">
+      select LAST_INSERT_ID() as id
+    </selectKey>
     insert into cskaoyan_mall_groupon_rules (id, goods_id, goods_name, 
       pic_url, discount, discount_member, 
       add_time, update_time, expire_time, 

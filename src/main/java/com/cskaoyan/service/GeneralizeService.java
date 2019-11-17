@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface GeneralizeService {
 
-    List<Ad> queryAd(Integer page,Integer limit,String name,String content,String sort,String order);
+    HashMap<String,Object> queryAd(Integer page,Integer limit,String name,String content,String sort,String order);
 
     Ad adCreate(Ad ad);
 
@@ -15,12 +15,12 @@ public interface GeneralizeService {
 
     void adDelete(Ad ad);
 
-    List<Coupon> queryCoupon(Integer page,Integer limit,String name,
+    HashMap<String, Object> queryCoupon(Integer page,Integer limit,String name,
                              Integer type,Integer status,String sort,String order);
 
     Coupon selectCouponById(Integer id);
 
-    List<CouponUser> queryUserByCouponId(Integer page,Integer limit
+    HashMap<String, Object> queryUserByCouponId(Integer page,Integer limit
             ,Integer couponId,String sort,String order,Integer userId,Integer status);
 
     Coupon couponCreate(Coupon coupon);
@@ -29,17 +29,9 @@ public interface GeneralizeService {
 
     void couponDelete(Coupon coupon);
 
-    List<Topic> topicList(Integer page,Integer limit,String title ,String subtitle,String sort,String order);
+    HashMap<String, Object> topicList(Integer page,Integer limit,String title ,String subtitle,String sort,String order);
 
     Topic topicCreate(Topic topic);
-
-    Integer totalAd();
-
-    Integer totalCoupon();
-
-    Integer totalUser();
-
-    Integer totalTopic();
 
     Topic topicUpdate(Topic topic);
 

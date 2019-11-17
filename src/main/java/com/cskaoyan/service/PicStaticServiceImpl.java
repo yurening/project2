@@ -12,6 +12,7 @@ public class PicStaticServiceImpl implements PicStaticService {
 
     @Override
     public StaticPhoto addFile(StaticPhoto staticPhoto) {
+        staticPhoto.setDeleted(false);
         staticPhotoMapper.insert(staticPhoto);
         /*System.out.println(staticPhoto);*/
         StaticPhoto staticPhoto1 = staticPhotoMapper.selectByPrimaryKey(staticPhoto.getId());
