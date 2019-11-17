@@ -1,4 +1,6 @@
-package com.cskaoyan.bean.order;
+package com.cskaoyan.bean.mall.order;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -36,6 +38,7 @@ public class MallOrder {
 
     private String payId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
 
     private String shipSn;
