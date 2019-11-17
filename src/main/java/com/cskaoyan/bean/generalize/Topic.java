@@ -10,7 +10,7 @@ public class Topic {
 
     private String subtitle;
 
-    private BigDecimal price;
+    private String price;
 
     private String readCount;
 
@@ -52,11 +52,11 @@ public class Topic {
         this.subtitle = subtitle == null ? null : subtitle.trim();
     }
 
-    public BigDecimal getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 

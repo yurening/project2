@@ -108,6 +108,9 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.cskaoyan.bean.generalize.Ad">
+    <selectKey order="AFTER" keyColumn="id" keyProperty="id" resultType="int">
+      select LAST_INSERT_ID() as id
+    </selectKey>
     insert into cskaoyan_mall_ad (id, name, link, 
       url, position, content, 
       start_time, end_time, enabled, 

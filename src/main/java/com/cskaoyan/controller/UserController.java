@@ -5,7 +5,6 @@ import com.cskaoyan.mapper.UserMapper;
 import com.cskaoyan.service.UserService;
 import com.cskaoyan.utils.TransferDateUtils;
 import com.github.pagehelper.PageInfo;
-import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,43 +23,26 @@ public class UserController {
     @Autowired
     UserService userService;
     @RequestMapping("admin/user/list")
-    public BaseReqVo list(RequestList requestList){
-        List<ReqParamFromDb> lists = userService.selectUserList(requestList);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        List<ReqParam> paramList = new ArrayList<>();
-        for (ReqParamFromDb list : lists) {
-            ReqParam reqParam = new ReqParam();
-            reqParam.setId(list.getId());
-            reqParam.setUsername(list.getUsername());
-            reqParam.setPassword(list.getPassword());
-            reqParam.setGender(list.getGender());
-            reqParam.setBirthday(TransferDateUtils.date2String(list.getBirthday()));
-            reqParam.setLastLoginTime(TransferDateUtils.date2String(list.getLastLoginTime()));
-            reqParam.setLastLoginIp(list.getLastLoginIp());
-            reqParam.setUserLevel(list.getUserlevel());
-            reqParam.setNickname(list.getNickname());
-            reqParam.setMobile(list.getMobile());
-            reqParam.setAvatar(list.getAvatar());
-            reqParam.setWeixinOpenid(list.getWeixinOpenid());
-            reqParam.setStatus(list.getStatus());
-            reqParam.setAddTime(TransferDateUtils.date2String(list.getAddTime()));
-            reqParam.setUpdateTime(TransferDateUtils.date2String(list.getUpdateTime()));
-            if(list.getDeleted()==0) {
-                reqParam.setDeleted(false);
-            }else if(list.getDeleted()==1){
-                reqParam.setDeleted(true);
-            }
-            paramList.add(reqParam);
+    public BaseReqVo list(UserRequest userRequest){
+        BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
+        UserExample userExample = new UserExample();
+        UserExample.Criteria criteria = userExample.createCriteria();
+        if(userRequest.getUsername()!=null&&userRequest.getUsername()!=""){
+            criteria.andUsernameLike("%"+userRequest.getUsername()+"%");
         }
-        long total = userService.selectTotal();
+        if(userRequest.getMobile()!=null&&userRequest.getMobile()!=""){
+            criteria.andMobileLike(userRequest.getMobile()+"%");
+        }
+        userExample.setOrderByClause("add_time desc");
+        List<User> list = userService.selectUserByExample(userRequest, userExample);
+        long total = userService.countUserByExample(userExample);
         Map<String,Object> map = new HashMap<>();
         map.put("total",total);
-        map.put("items",paramList);
-        BaseReqVo baseReqVo1 = new BaseReqVo();
-        baseReqVo.setData(map);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        map.put("items",list);
+        objectBaseReqVo.setData(map);
+        objectBaseReqVo.setErrmsg("成功");
+        objectBaseReqVo.setErrno(0);
+        return objectBaseReqVo;
     }
 
     @RequestMapping("admin/address/list")
@@ -69,7 +51,7 @@ public class UserController {
         AddressExample addressExample = new AddressExample();
         AddressExample.Criteria criteria = addressExample.createCriteria();
         if(addressRequest.getName()!=null&&addressRequest.getName()!=""){
-            criteria.andNameEqualTo(addressRequest.getName());
+            criteria.andNameLike("%"+addressRequest.getName()+"%");
         }
         if(addressRequest.getUserId()!=null&&addressRequest.getUserId()!=""){
             criteria.andUserIdEqualTo(new Integer(addressRequest.getUserId()));

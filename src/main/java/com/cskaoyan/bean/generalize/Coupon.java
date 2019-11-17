@@ -1,5 +1,7 @@
 package com.cskaoyan.bean.generalize;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -12,13 +14,13 @@ public class Coupon {
 
     private String tag;
 
-    private Integer total;
+    private String total;
 
-    private BigDecimal discount;
+    private String discount;
 
-    private BigDecimal min;
+    private String min;
 
-    private Short limit;
+    private String limit;
 
     private Short type;
 
@@ -32,14 +34,18 @@ public class Coupon {
 
     private Short timeType;
 
-    private Short days;
+    private String days;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT + 8")
     private Date startTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT + 8")
     private Date endTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT + 8")
     private Date addTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT + 8")
     private Date updateTime;
 
     private Boolean deleted;
@@ -76,35 +82,35 @@ public class Coupon {
         this.tag = tag == null ? null : tag.trim();
     }
 
-    public Integer getTotal() {
+    public String getTotal() {
         return total;
     }
 
-    public void setTotal(Integer total) {
+    public void setTotal(String total) {
         this.total = total;
     }
 
-    public BigDecimal getDiscount() {
+    public String getDiscount() {
         return discount;
     }
 
-    public void setDiscount(BigDecimal discount) {
+    public void setDiscount(String discount) {
         this.discount = discount;
     }
 
-    public BigDecimal getMin() {
+    public String getMin() {
         return min;
     }
 
-    public void setMin(BigDecimal min) {
+    public void setMin(String min) {
         this.min = min;
     }
 
-    public Short getLimit() {
+    public String getLimit() {
         return limit;
     }
 
-    public void setLimit(Short limit) {
+    public void setLimit(String limit) {
         this.limit = limit;
     }
 
@@ -156,11 +162,11 @@ public class Coupon {
         this.timeType = timeType;
     }
 
-    public Short getDays() {
+    public String getDays() {
         return days;
     }
 
-    public void setDays(Short days) {
+    public void setDays(String days) {
         this.days = days;
     }
 

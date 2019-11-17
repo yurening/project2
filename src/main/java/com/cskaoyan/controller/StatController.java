@@ -7,13 +7,27 @@
 package com.cskaoyan.controller;
 
 import com.cskaoyan.bean.BaseReqVo;
+import com.cskaoyan.bean.stat.GoodsCount;
+import com.cskaoyan.bean.stat.OrderCount;
+import com.cskaoyan.bean.stat.UserCount;
+import com.cskaoyan.service.StatService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.management.monitor.StringMonitor;
+import javax.validation.constraints.Max;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("admin/stat/")
 public class StatController {
 
+    @Autowired
+    StatService statService;
 
     /**
      * @Respones
@@ -30,7 +44,20 @@ public class StatController {
      * */
     @RequestMapping("user")
     public BaseReqVo user() {
-        return null;
+        BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
+        List<Object> stringList = new ArrayList<>();
+        List<UserCount> list = statService.getUserDayCountList();
+        stringList.add("day");
+        stringList.add("users");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("columns",stringList);
+        map.put("rows",list);
+
+        baseReqVo.setErrno(0);
+        baseReqVo.setData(map);
+        baseReqVo.setErrmsg("成功");
+        return baseReqVo;
     }
 
 
@@ -99,7 +126,24 @@ public class StatController {
      * }*/
     @RequestMapping("order")
     public BaseReqVo order() {
-        return null;
+        BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
+        List<Object> stringList = new ArrayList<>();
+        List<OrderCount> list = statService.getOrderDayCountList();
+
+        stringList.add("day");
+        stringList.add("orders");
+        stringList.add("customers");
+        stringList.add("amount");
+        stringList.add("pcr");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("columns",stringList);
+        map.put("rows",list);
+
+        baseReqVo.setErrno(0);
+        baseReqVo.setData(map);
+        baseReqVo.setErrmsg("成功");
+        return baseReqVo;
     }
 
 
@@ -159,6 +203,21 @@ public class StatController {
      * }*/
     @RequestMapping("goods")
     public BaseReqVo goods() {
-        return null;
+        BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
+        List<Object> stringList = new ArrayList<>();
+        List<GoodsCount> list = statService.getGoodsDayCountList();
+        stringList.add("day");
+        stringList.add("orders");
+        stringList.add("products");
+        stringList.add("amount");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("columns",stringList);
+        map.put("rows",list);
+
+        baseReqVo.setErrno(0);
+        baseReqVo.setData(map);
+        baseReqVo.setErrmsg("成功");
+        return baseReqVo;
     }
 }

@@ -71,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, key, name, type, size, url, add_time, update_time, deleted
+    id, `key`, name, type, size, url, add_time, update_time, deleted
   </sql>
   <select id="selectByExample" parameterType="com.cskaoyan.bean.generalize.StorageExample" resultMap="BaseResultMap">
     select
@@ -260,7 +260,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.cskaoyan.bean.generalize.Storage">
     update cskaoyan_mall_storage
-    set key = #{key,jdbcType=VARCHAR},
+    set `key` = #{key,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
       type = #{type,jdbcType=VARCHAR},
       size = #{size,jdbcType=INTEGER},
