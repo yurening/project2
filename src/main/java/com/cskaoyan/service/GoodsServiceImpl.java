@@ -109,7 +109,8 @@ public class GoodsServiceImpl implements GoodsService {
         //判断必填写项是否为空，空则返回错误信息
         String goodsSn = goods.getGoodsSn();
         if (StringUtils.isEmpty(goodsSn)){
-            responseType.setErrno(500);
+            responseType.setErrno(507);
+            responseType.setErrmsg("必填项没有填写");
             return responseType;
         }
         //判断填写的内容是不是数字且位数在6到10位之间
@@ -272,9 +273,6 @@ public class GoodsServiceImpl implements GoodsService {
             specification.setDeleted(true);
             specificationMapper.updateByPrimaryKey(specification);
         }
-
-
-
        /* ProductExample productExample = new ProductExample();
         productExample.createCriteria().andGoodsIdEqualTo(goodsId);
         productMapper.deleteByExample(productExample);
