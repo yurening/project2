@@ -46,7 +46,7 @@ public class GeneralizeServiceImpl implements GeneralizeService{
             criteria.andNameLike("%" + name + "%");
         }
         if (content != null){
-            criteria.andContentLike("%" + name + "%");
+            criteria.andContentLike("%" + content + "%");
         }
         long l = adMapper.countByExample(adExample);
         adExample.setOrderByClause(sort + " " + order);
