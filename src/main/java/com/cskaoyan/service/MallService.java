@@ -9,6 +9,7 @@ import com.cskaoyan.bean.mall.keyword.MallKeyword;
 import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.mall.order.MallOrderDetails;
 import com.cskaoyan.bean.mall.region.MallRegion;
+import com.cskaoyan.bean.wx_index.IndexBean;
 
 import java.util.List;
 
@@ -52,4 +53,6 @@ public interface MallService {
     void deleteKeyword(MallKeyword mallKeyword);
 
     MallKeyword updateKeyword(MallKeyword mallKeyword);
+
+    List<IndexBean.BrandListBean> getBrandList();
 }
