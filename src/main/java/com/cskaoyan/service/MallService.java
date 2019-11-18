@@ -1,8 +1,6 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.mall.BaseListInfo;
-import com.cskaoyan.bean.mall.brand.AllBrandsInfo;
-import com.cskaoyan.bean.mall.brand.CreatBrand;
 import com.cskaoyan.bean.mall.brand.MallBrand;
 import com.cskaoyan.bean.mall.category.MallCatagoryL1Info;
 import com.cskaoyan.bean.mall.category.MallCategory;
@@ -10,16 +8,16 @@ import com.cskaoyan.bean.mall.issue.MallIssue;
 import com.cskaoyan.bean.mall.keyword.MallKeyword;
 import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.mall.order.MallOrderDetails;
-import com.cskaoyan.bean.mall.region.MallRegionI;
+import com.cskaoyan.bean.mall.region.MallRegion;
 
 import java.util.List;
 
 public interface MallService {
-    List<MallRegionI> getAllRegion();
+    List<MallRegion> getAllRegion();
 
-    AllBrandsInfo getAllBrandByplso(Integer page, Integer limit, String sort, String order,String name,Integer id);
+    BaseListInfo<MallBrand> getAllBrandByplso(Integer page, Integer limit, String sort, String order,String name,Integer id);
 
-    MallBrand creatBrand(CreatBrand creatBrand);
+    MallBrand creatBrand(MallBrand mallBrand);
 
     void deleteBrand(MallBrand mallBrand);
 
