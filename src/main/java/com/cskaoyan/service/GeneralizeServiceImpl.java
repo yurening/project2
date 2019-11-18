@@ -3,11 +3,13 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.*;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.GoodsExample;
+import com.cskaoyan.bean.wx_index.IndexBean;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -281,5 +283,96 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         grouponRules.setDeleted(true);
         grouponRules.setUpdateTime(new Date());
         grouponRulesMapper.updateByPrimaryKey(grouponRules);
+    }
+
+    @Override
+    public List<IndexBean.CouponListBean> getCouponList() {
+        CouponExample couponExample = new CouponExample();
+        couponExample.createCriteria().andDeletedEqualTo(false);
+        List<Coupon> coupons = couponMapper.selectByExample(couponExample);
+        List<IndexBean.CouponListBean> couponList = new ArrayList<>();
+        for (Coupon coupon : coupons) {
+            IndexBean.CouponListBean couponListBean = new IndexBean.CouponListBean();
+            couponListBean.setDays(coupon.getDays());
+            couponListBean.setDesc(coupon.getDesc());
+            couponListBean.setDiscount(coupon.getDiscount());
+            couponListBean.setEndTime(coupon.getEndTime());
+            couponListBean.setId(coupon.getId());
+            couponListBean.setMin(coupon.getMin());
+            couponListBean.setName(coupon.getName());
+            couponListBean.setStartTime(coupon.getStartTime());
+            couponListBean.setTag(coupon.getTag());
+            couponList.add(couponListBean);
+        }
+        return couponList;
+    }
+
+    @Override
+    public List<IndexBean.BannerBean> getBanner() {
+        AdExample adExample = new AdExample();
+        adExample.createCriteria().andDeletedEqualTo(false);
+        List<Ad> ads = adMapper.selectByExample(adExample);
+        List<IndexBean.BannerBean> bannerList = new ArrayList<>();
+        for (Ad ad : ads) {
+            IndexBean.BannerBean bannerBean = new IndexBean.BannerBean();
+            bannerBean.setId(ad.getId());
+            bannerBean.setName(ad.getName());
+            bannerBean.setLink(ad.getLink());
+            bannerBean.setUrl(ad.getUrl());
+            bannerBean.setPosition(ad.getPosition());
+            bannerBean.setContent(ad.getContent());
+            bannerBean.setEnabled(ad.getEnabled());
+            bannerBean.setAddTime(ad.getAddTime());
+            bannerBean.setUpdateTime(ad.getUpdateTime());
+            bannerBean.setDeleted(false);
+            bannerList.add(bannerBean);
+        }
+        return bannerList;
+    }
+
+    @Override
+    public List<IndexBean.TopicListBean> getTopicList() {
+        TopicExample topicExample = new TopicExample();
+        topicExample.createCriteria().andDeletedEqualTo(false);
+        List<Topic> topics = topicMapper.selectByExample(topicExample);
+        List<IndexBean.TopicListBean> topicList = new ArrayList<>();
+        for (Topic topic : topics) {
+            IndexBean.TopicListBean topicListBean = new IndexBean.TopicListBean();
+            topicListBean.setId(topic.getId());
+            topicListBean.setTitle(topic.getTitle());
+            topicListBean.setSubtitle(topic.getSubtitle());
+            topicListBean.setPrice(topic.getPrice());
+            topicListBean.setReadCount(topic.getReadCount());
+            topicListBean.setPicUrl(topic.getPicUrl());
+            topicList.add(topicListBean);
+        }
+        return topicList;
+    }
+
+    @Override
+    public List<IndexBean.GrouponListBean> getGrouponList() {
+        GrouponRulesExample grouponRulesExample = new GrouponRulesExample();
+        grouponRulesExample.createCriteria().andDeletedEqualTo(false);
+        List<GrouponRules> grouponRules = grouponRulesMapper.selectByExample(grouponRulesExample);
+        List<IndexBean.GrouponListBean> grouponList = new ArrayList<>();
+        for (GrouponRules grouponRule : grouponRules) {
+            GoodsExample goodsExample = new GoodsExample();
+            goodsExample.createCriteria().andIdEqualTo(grouponRule.getGoodsId()).andDeletedEqualTo(false);
+            List<Goods> goods = goodsMapper.selectByExample(goodsExample);
+            Goods simpleGoods = goods.get(0);
+            IndexBean.GrouponListBean grouponListBean = new IndexBean.GrouponListBean();
+            grouponListBean.setGroupon_member(grouponRule.getDiscountMember());
+            grouponListBean.setGroupon_price(simpleGoods.getRetailPrice().subtract(grouponRule.getDiscount()));
+            IndexBean.GrouponListBean.GoodsBean g = new IndexBean.GrouponListBean.GoodsBean();
+            g.setId(simpleGoods.getId());
+            g.setName(simpleGoods.getName());
+            g.setBrief(simpleGoods.getBrief());
+            g.setPicUrl(simpleGoods.getPicUrl());
+            g.setCounterPrice(simpleGoods.getCounterPrice());
+            g.setRetailPrice(simpleGoods.getRetailPrice());
+            grouponListBean.setGoods(g);
+            grouponList.add(grouponListBean);
+        }
+        return grouponList;
     }
 }

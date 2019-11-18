@@ -2,6 +2,7 @@ package com.cskaoyan.service;
 
 import java.util.Date;
 
+import com.cskaoyan.bean.goods.BrandExample;
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.brand.MallBrand;
 import com.cskaoyan.bean.mall.brand.MallBrandExample;
@@ -16,6 +17,7 @@ import com.cskaoyan.bean.mall.order.*;
 import com.cskaoyan.bean.mall.region.*;
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.user.UserExample;
+import com.cskaoyan.bean.wx_index.IndexBean;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -324,5 +326,23 @@ public class MallServiceImpl implements MallService {
         mallKeyword.setUpdateTime(new Date());
         mallKeywordMapper.updateByPrimaryKey(mallKeyword);
         return mallKeyword;
+    }
+
+    @Override
+    public List<IndexBean.BrandListBean> getBrandList() {
+        MallBrandExample brandExample = new MallBrandExample();
+        brandExample.createCriteria().andDeletedEqualTo(false);
+        List<IndexBean.BrandListBean> brandList = new ArrayList<>();
+        List<MallBrand> mallBrands = mallBrandMapper.selectByExample(brandExample);
+        for (MallBrand mallBrand : mallBrands) {
+            IndexBean.BrandListBean brandListBean = new IndexBean.BrandListBean();
+            brandListBean.setId(mallBrand.getId());
+            brandListBean.setName(mallBrand.getName());
+            brandListBean.setDesc(mallBrand.getDesc());
+            brandListBean.setPicUrl(mallBrand.getPicUrl());
+            brandListBean.setFloorPrice(mallBrand.getFloorPrice());
+            brandList.add(brandListBean);
+        }
+        return brandList;
     }
 }
