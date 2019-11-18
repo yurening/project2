@@ -2,7 +2,6 @@ package com.cskaoyan.controller;
 
 import java.util.List;
 
-
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.BaseReqVo;
 import com.cskaoyan.bean.mall.brand.MallBrand;
