@@ -282,5 +282,12 @@ public class GoodsServiceImpl implements GoodsService {
         return 0;
     }
 
+    @Override
+    public Long getGoodsCount() {
+        GoodsExample goodsExample = new GoodsExample();
+        long l = goodsMapper.countByExample(goodsExample);
+        return l;
+    }
+
 
 }

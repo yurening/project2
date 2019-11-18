@@ -17,4 +17,5 @@ public interface GoodsService {
     CreateGoods getGoodsDetail(Integer id);
     int updateGoods(CreateGoods createGoods);
     int deleteGoods(Goods goods);
+    Long getGoodsCount();
 }
