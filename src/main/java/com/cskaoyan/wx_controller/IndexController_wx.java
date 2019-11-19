@@ -1,7 +1,6 @@
 package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
-import com.cskaoyan.bean.mall.category.MallCatagoryL1Info;
 import com.cskaoyan.bean.mall.category.MallCategory;
 import com.cskaoyan.bean.wx_index.CatalogIndex;
 import com.cskaoyan.bean.wx_index.HomeIndex;
@@ -53,9 +52,6 @@ public class IndexController_wx {
         }
         catalogIndex.setCurrentCategory(allCategory.get(0));
         catalogIndex.setCurrentSubCategory(allCategory.get(0).getChildren());
-        for (MallCategory category : allCategory) {
-            category.setChildren(null);
-        }
         catalogIndex.setCategoryList(allCategory);
         baseReqVo.setData(catalogIndex);
         baseReqVo.setErrmsg("成功");
@@ -74,7 +70,6 @@ public class IndexController_wx {
         CatalogIndex catalogIndex = new CatalogIndex();
         catalogIndex.setCurrentCategory(category);
         catalogIndex.setCurrentSubCategory(category.getChildren());
-        category.setChildren(null);
         baseReqVo.setErrmsg("成功");
         baseReqVo.setData(catalogIndex);
         return baseReqVo;
