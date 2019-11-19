@@ -1,4 +1,3 @@
-/*
 package com.cskaoyan;
 
 import com.cskaoyan.bean.systemBean.SystemPermission;
@@ -44,5 +43,11 @@ public class MyTest {
         }
     }
 
+    @Test
+    public void mytest2(){
+        List<String> strings = new ArrayList<>();
+        for (String string : strings) {
+            System.out.println(string);
+        }
+    }
 }
-*/
