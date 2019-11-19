@@ -9,7 +9,8 @@ import com.cskaoyan.bean.mall.keyword.MallKeyword;
 import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.mall.order.MallOrderDetails;
 import com.cskaoyan.bean.mall.region.MallRegion;
-import com.cskaoyan.bean.wx_index.IndexBean;
+import com.cskaoyan.bean.wx_index.CatalogIndex;
+import com.cskaoyan.bean.wx_index.HomeIndex;
 
 import java.util.List;
 
@@ -54,5 +55,7 @@ public interface MallService {
 
     MallKeyword updateKeyword(MallKeyword mallKeyword);
 
-    List<IndexBean.BrandListBean> getBrandList();
+    List<HomeIndex.BrandListBean> getBrandList();
+
+    MallCategory getCategoryById(Integer id);
 }
