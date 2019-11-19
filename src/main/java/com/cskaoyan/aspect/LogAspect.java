@@ -46,7 +46,7 @@ public class LogAspect {
         if (request.getRequestURI().contains("auth/login")){
 
         }
-        String ip = request.getRemoteAddr();
+        String ip= request.getRemoteAddr();
         log.setIp(ip);
         //String admin = (String) request.getSession().getAttribute("admin");
         log.setStatus(true);
@@ -78,7 +78,10 @@ public class LogAspect {
         } else if(requestURI.contains("role/delete")){
             log.setAction("删除管理权限");
             log.setType(1);
-        }else if(requestURI.contains("create")){
+        } else if (requestURI.contains("role/permissions")){
+            log.setAction("管理员授权");
+            log.setType(1);
+        } else if(requestURI.contains("create")){
             log.setAction("创建");
             log.setType(0);
         } else if(requestURI.contains("logout")){
@@ -123,13 +126,19 @@ public class LogAspect {
 
     @AfterReturning("logPointCut()")
     public void myafterReturning(){
-        if (request.getRequestURI().contains("auth/info")){
-            admin = request.getParameter("token");
+        if (request.getRequestURI() != null) {
+            if (request.getRequestURI().contains("auth/info")) {
+                admin = request.getParameter("token");
+            }
         }
-        if (!request.getRequestURI().contains("list")) {
-            if (log.getAdmin() != null) {
-                if (!request.getMethod().equals("OPTIONS")) {
-                    systemService.insertLog(log);
+        if (request.getRequestURI() != null) {
+            if (!request.getRequestURI().contains("list")) {
+                if (log.getAdmin() != null) {
+                    if (!request.getMethod().equals("OPTIONS")) {
+                        if (!request.getRequestURI().contains("options")) {
+                            systemService.insertLog(log);
+                        }
+                    }
                 }
             }
         }
@@ -154,9 +163,13 @@ public class LogAspect {
                 log.setComment("未知异常");
             }
         }
-        if (!request.getRequestURI().contains("list")) {
-            if (log.getAdmin() != null) {
-                systemService.insertLog(log);
+        if (request.getRequestURI()!= null) {
+            if (!request.getRequestURI().contains("list")) {
+                if (!request.getRequestURI().contains("options")) {
+                    if (log.getAdmin() != null) {
+                        systemService.insertLog(log);
+                    }
+                }
             }
         }
     }

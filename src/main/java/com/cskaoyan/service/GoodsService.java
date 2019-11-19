@@ -29,6 +29,9 @@ public interface GoodsService {
 
 
 
+
+
+
     List<HomeIndex.NewGoodsListBean> getNewGoodsList();
 
 
