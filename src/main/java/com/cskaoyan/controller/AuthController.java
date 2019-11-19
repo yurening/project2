@@ -10,15 +10,24 @@ import com.cskaoyan.bean.Admin;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.converter.StringStringArrConverter;
 import com.cskaoyan.service.AuthService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import javax.naming.spi.InitialContextFactory;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 @RestController
 @RequestMapping("admin/auth")
@@ -27,7 +36,7 @@ public class AuthController {
     AuthService authService;
 
     @RequestMapping("login")
-    public BaseReqVo login(@RequestBody Admin admin) {
+    public BaseReqVo login(@RequestBody Admin admin, HttpServletRequest request) {
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         String username = admin.getUsername();
         if ("".equals(username)) {
@@ -45,6 +54,7 @@ public class AuthController {
             baseReqVo.setErrno(0);
             baseReqVo.setData(username);
             baseReqVo.setErrmsg("成功");
+            request.getSession().setAttribute("admin",username);
             return baseReqVo;
         }else {
             baseReqVo.setErrno(605);
@@ -57,7 +67,7 @@ public class AuthController {
      * @request
      * token:mall123
      *
-     * @Respones
+     * @Response
      * {
      * 	"errno": 0,
      * 	"data": {
@@ -70,15 +80,15 @@ public class AuthController {
      * }
      * */
     @RequestMapping("info")
-    public BaseReqVo info(@RequestParam("token") String token) {
+    public BaseReqVo info(@RequestParam("token") String token,HttpServletRequest request) {
         //SystemBean.out.println(token);
         HashMap<String,Object> map = new HashMap<>();
         Admin admin = authService.getUsernameByUsername(token);
-        String roleIdArray = admin.getRole_ids();
-        String[] roleIds = new StringStringArrConverter().convert(roleIdArray);
-        List<String> roleNames = new LinkedList<>();
-        List<String> permsList = new LinkedList<>();
-        Boolean permission = roleIdArray.contains("1");    //如果是超级管理员就拥有全部权限
+        String[] roleIds = admin.getRole_ids();
+        String roleIdArray = Arrays.toString(roleIds);
+        List<String> roleNames = new ArrayList<>();
+        List<String> permsList = new ArrayList<>();
+        boolean permission = roleIdArray.contains("1");    //如果是超级管理员就拥有全部权限
         if (permission) {
             for (String roleId: roleIds) {
                 String roleName = authService.getRoleNameById(roleId);
@@ -90,6 +100,13 @@ public class AuthController {
                 String roleName = authService.getRoleNameById(roleId);
                 List<String>  perms  = authService.getPermsNameByRoleId(roleId);
                 roleNames.add(roleName);
+              /*  List<String> permList = new ArrayList<>();
+                for (String s : perms) {
+                    System.out.println(s);
+                    String s1 = request.getMethod()+"/"+s.replace(":","/");
+                    System.out.println(s1);
+                    permList.add(s1);
+                }*/
                 permsList.addAll(perms);
             }
         }
@@ -112,4 +129,22 @@ public class AuthController {
         baseReqVo.setErrmsg("成功");
         return baseReqVo;
     }
+
+/*
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+        IniSecurityManagerFactory managerFactory = new IniSecurityManagerFactory("classpath:shiro-realm.ini");
+        SecurityManager securityManager = managerFactory.getInstance();
+        SecurityUtils.setSecurityManager(securityManager);
+
+        return null;
+    }
+
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        return null;
+    }
+
+*/
+
 }
