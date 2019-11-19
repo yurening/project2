@@ -12,13 +12,21 @@ public interface GoodsService {
     ResponseType getAllGoods(Integer page, Integer limit,
                              String order, String sort,
                              String goodSn, String name);
+
     List<CategoryResp> getCategory();
+
     List<CategoryResp> getBrand();
+
     ResponseType createGoods(CreateGoods createGoods);
+
     CreateGoods getGoodsDetail(Integer id);
+
     int updateGoods(CreateGoods createGoods);
+
     int deleteGoods(Goods goods);
+
     Long getGoodsCount();
+
     List<IndexBean.NewGoodsListBean> getNewGoodsList();
 
     List<IndexBean.ChannelBean> getChannel();
