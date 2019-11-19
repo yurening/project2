@@ -1,5 +1,7 @@
 package com.cskaoyan.bean.mall.category;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class MallCategory {
 
     private Boolean deleted;
 
+    @JsonIgnore
     private List<MallCategory> children;
 
     public List<MallCategory> getChildren() {

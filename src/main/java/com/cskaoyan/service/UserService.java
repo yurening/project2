@@ -30,4 +30,5 @@ public interface UserService {
     long countFeedbackByExample(FeedbackExample example);
     List<Feedback> selectFeedbackByExample(FeedBackRequest feedBackRequest,FeedbackExample example);
 
+    User getUserByUsername(String username);
 }

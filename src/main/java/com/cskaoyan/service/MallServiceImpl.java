@@ -2,7 +2,7 @@ package com.cskaoyan.service;
 
 import java.util.Date;
 
-import com.cskaoyan.bean.goods.BrandExample;
+import com.cskaoyan.bean.goods.CategoryExample;
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.brand.MallBrand;
 import com.cskaoyan.bean.mall.brand.MallBrandExample;
@@ -17,7 +17,8 @@ import com.cskaoyan.bean.mall.order.*;
 import com.cskaoyan.bean.mall.region.*;
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.user.UserExample;
-import com.cskaoyan.bean.wx_index.IndexBean;
+import com.cskaoyan.bean.wx_index.CatalogIndex;
+import com.cskaoyan.bean.wx_index.HomeIndex;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -329,13 +330,13 @@ public class MallServiceImpl implements MallService {
     }
 
     @Override
-    public List<IndexBean.BrandListBean> getBrandList() {
+    public List<HomeIndex.BrandListBean> getBrandList() {
         MallBrandExample brandExample = new MallBrandExample();
         brandExample.createCriteria().andDeletedEqualTo(false);
-        List<IndexBean.BrandListBean> brandList = new ArrayList<>();
+        List<HomeIndex.BrandListBean> brandList = new ArrayList<>();
         List<MallBrand> mallBrands = mallBrandMapper.selectByExample(brandExample);
         for (MallBrand mallBrand : mallBrands) {
-            IndexBean.BrandListBean brandListBean = new IndexBean.BrandListBean();
+            HomeIndex.BrandListBean brandListBean = new HomeIndex.BrandListBean();
             brandListBean.setId(mallBrand.getId());
             brandListBean.setName(mallBrand.getName());
             brandListBean.setDesc(mallBrand.getDesc());
@@ -344,5 +345,21 @@ public class MallServiceImpl implements MallService {
             brandList.add(brandListBean);
         }
         return brandList;
+    }
+
+    @Override
+    public MallCategory getCategoryById(Integer id) {
+        MallCategoryExample categoryExample1 = new MallCategoryExample();
+        categoryExample1.createCriteria().andIdEqualTo(id);
+        List<MallCategory> categoryList1 = mallCategoryMapper.selectByExample(categoryExample1);
+        if (categoryList1 == null) {
+            return null;
+        }
+        MallCategory category = categoryList1.get(0);
+        MallCategoryExample categoryExample2 = new MallCategoryExample();
+        categoryExample2.createCriteria().andPidEqualTo(category.getId());
+        List<MallCategory> categoryList2 = mallCategoryMapper.selectByExample(categoryExample2);
+        category.setChildren(categoryList2);
+        return category;
     }
 }

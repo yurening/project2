@@ -37,4 +37,5 @@ public interface UserMapper {
     long countFeedbackByExample(FeedbackExample example);
     List<Feedback> selectFeedbackByExample(FeedbackExample example);
 
+    User getUserByUsername(String username);
 }

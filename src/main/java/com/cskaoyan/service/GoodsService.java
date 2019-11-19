@@ -4,7 +4,7 @@ import com.cskaoyan.bean.goods.CategoryResp;
 import com.cskaoyan.bean.goods.CreateGoods;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.ResponseType;
-import com.cskaoyan.bean.wx_index.IndexBean;
+import com.cskaoyan.bean.wx_index.HomeIndex;
 
 import java.util.List;
 
@@ -26,12 +26,16 @@ public interface GoodsService {
     int deleteGoods(Goods goods);
 
     Long getGoodsCount();
+<<<<<<< HEAD
 
     List<IndexBean.NewGoodsListBean> getNewGoodsList();
+=======
+    List<HomeIndex.NewGoodsListBean> getNewGoodsList();
+>>>>>>> a100a27900f3bf16fee2673c26f3397ca3ebcc84
 
-    List<IndexBean.ChannelBean> getChannel();
+    List<HomeIndex.ChannelBean> getChannel();
 
-    List<IndexBean.HotGoodsListBean> getHotGoodsList();
+    List<HomeIndex.HotGoodsListBean> getHotGoodsList();
 
-    List<IndexBean.FloorGoodsListBean> getFloorGoodsList();
+    List<HomeIndex.FloorGoodsListBean> getFloorGoodsList();
 }

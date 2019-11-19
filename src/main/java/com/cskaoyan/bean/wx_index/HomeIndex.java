@@ -5,7 +5,7 @@ import com.cskaoyan.bean.goods.Goods;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-  public  class IndexBean {
+  public  class HomeIndex {
         private List<NewGoodsListBean> newGoodsList;
         private List<CouponListBean> couponList;
         private List<ChannelBean> channel;
