@@ -1,6 +1,9 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.generalize.Coupon;
+import com.cskaoyan.bean.generalize.CouponExample;
 import com.cskaoyan.bean.goods.*;
+import com.cskaoyan.bean.wx_index.IndexBean;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +112,8 @@ public class GoodsServiceImpl implements GoodsService {
         //判断必填写项是否为空，空则返回错误信息
         String goodsSn = goods.getGoodsSn();
         if (StringUtils.isEmpty(goodsSn)){
-            responseType.setErrno(500);
+            responseType.setErrno(507);
+            responseType.setErrmsg("必填项没有填写");
             return responseType;
         }
         //判断填写的内容是不是数字且位数在6到10位之间
@@ -272,9 +276,6 @@ public class GoodsServiceImpl implements GoodsService {
             specification.setDeleted(true);
             specificationMapper.updateByPrimaryKey(specification);
         }
-
-
-
        /* ProductExample productExample = new ProductExample();
         productExample.createCriteria().andGoodsIdEqualTo(goodsId);
         productMapper.deleteByExample(productExample);
@@ -284,5 +285,99 @@ public class GoodsServiceImpl implements GoodsService {
         return 0;
     }
 
+    @Override
+    public Long getGoodsCount() {
+        GoodsExample goodsExample = new GoodsExample();
+        long l = goodsMapper.countByExample(goodsExample);
+        return l;
+    }
+
+
+    public List<IndexBean.NewGoodsListBean> getNewGoodsList() {
+        GoodsExample goodsExample = new GoodsExample();
+        goodsExample.createCriteria().andIsNewEqualTo(true).andDeletedEqualTo(false);
+        List<Goods> goodsList = goodsMapper.selectByExample(goodsExample);
+        List<IndexBean.NewGoodsListBean> newGoodsList = new ArrayList<>();
+        for (Goods goods : goodsList) {
+            IndexBean.NewGoodsListBean newGoodsListBean = new IndexBean.NewGoodsListBean();
+            newGoodsListBean.setBrief(goods.getBrief());
+            newGoodsListBean.setCounterPrice(goods.getCounterPrice());
+            newGoodsListBean.setId(goods.getId());
+            newGoodsListBean.setIsHot(goods.getIsHot());
+            newGoodsListBean.setName(goods.getName());
+            newGoodsListBean.setPicUrl(goods.getPicUrl());
+            newGoodsListBean.setRetailPrice(goods.getRetailPrice());
+            newGoodsListBean.setIsNew(true);
+            newGoodsList.add(newGoodsListBean);
+        }
+        return newGoodsList;
+    }
+
+    @Override
+    public List<IndexBean.ChannelBean> getChannel() {
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.createCriteria().andLevelEqualTo("L1").andDeletedEqualTo(false);
+        List<Category> categorieList = categoryMapper.selectByExample(categoryExample);
+        List<IndexBean.ChannelBean> channel = new ArrayList<>();
+        for (Category category : categorieList) {
+            IndexBean.ChannelBean channelBean = new IndexBean.ChannelBean();
+            channelBean.setId(category.getId());
+            channelBean.setIconUrl(category.getIconUrl());
+            channelBean.setName(category.getName());
+            channel.add(channelBean);
+        }
+        return channel;
+    }
+
+    @Override
+    public List<IndexBean.HotGoodsListBean> getHotGoodsList() {
+        GoodsExample goodsExample = new GoodsExample();
+        goodsExample.createCriteria().andIsHotEqualTo(true).andDeletedEqualTo(false);
+        List<Goods> goodsList = goodsMapper.selectByExample(goodsExample);
+        List<IndexBean.HotGoodsListBean> hotGoodsList = new ArrayList<>();
+        for (Goods goods : goodsList) {
+            IndexBean.HotGoodsListBean hotGoodsListBean = new IndexBean.HotGoodsListBean();
+            hotGoodsListBean.setBrief(goods.getBrief());
+            hotGoodsListBean.setCounterPrice(goods.getCounterPrice());
+            hotGoodsListBean.setId(goods.getId());
+            hotGoodsListBean.setName(goods.getName());
+            hotGoodsListBean.setPicUrl(goods.getPicUrl());
+            hotGoodsListBean.setRetailPrice(goods.getRetailPrice());
+            hotGoodsListBean.setIsNew(goods.getIsNew());
+            hotGoodsListBean.setIsHot(true);
+            hotGoodsList.add(hotGoodsListBean);
+        }
+        return hotGoodsList;
+    }
+
+    @Override
+    public List<IndexBean.FloorGoodsListBean> getFloorGoodsList() {
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.createCriteria().andLevelEqualTo("L1").andDeletedEqualTo(false);
+        List<Category> categories = categoryMapper.selectByExample(categoryExample);
+        List<IndexBean.FloorGoodsListBean> floorGoodsList = new ArrayList<>();
+        for (Category category : categories) {
+            categoryExample = new CategoryExample();
+            categoryExample.createCriteria().andPidEqualTo(category.getId());
+            List<Category> categoriesSec = categoryMapper.selectByExample(categoryExample);
+            List<Goods> goods = new ArrayList<>();
+            outer: for (Category categorySec : categoriesSec) {
+                GoodsExample goodsExample = new GoodsExample();
+                goodsExample.createCriteria().andCategoryIdEqualTo(categorySec.getId());
+                for (Goods goodsSec : goodsMapper.selectByExample(goodsExample)) {
+                    if (goods.size() >= 6) {
+                        break outer;
+                    }
+                    goods.add(goodsSec);
+                }
+            }
+            IndexBean.FloorGoodsListBean floorGoodsListBean = new IndexBean.FloorGoodsListBean();
+            floorGoodsListBean.setId(category.getId());
+            floorGoodsListBean.setName(category.getName());
+            floorGoodsListBean.setGoodsList(goods);
+            floorGoodsList.add(floorGoodsListBean);
+        }
+        return floorGoodsList;
+    }
 
 }

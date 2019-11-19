@@ -2,11 +2,8 @@ package com.cskaoyan.controller;
 
 import java.util.List;
 
-
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.BaseReqVo;
-import com.cskaoyan.bean.mall.brand.AllBrandsInfo;
-import com.cskaoyan.bean.mall.brand.CreatBrand;
 import com.cskaoyan.bean.mall.brand.MallBrand;
 import com.cskaoyan.bean.mall.category.MallCatagoryL1Info;
 import com.cskaoyan.bean.mall.category.MallCategory;
@@ -14,7 +11,7 @@ import com.cskaoyan.bean.mall.issue.MallIssue;
 import com.cskaoyan.bean.mall.keyword.MallKeyword;
 import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.mall.order.MallOrderDetails;
-import com.cskaoyan.bean.mall.region.MallRegionI;
+import com.cskaoyan.bean.mall.region.MallRegion;
 import com.cskaoyan.service.MallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +25,7 @@ public class MallController {
 
     @RequestMapping("admin/region/list")
     public BaseReqVo getRegionList(){
-        List<MallRegionI> allRegions= mallService.getAllRegion();
+        List<MallRegion> allRegions= mallService.getAllRegion();
         BaseReqVo baseReqVo = new BaseReqVo();
         baseReqVo.setData(allRegions);
         baseReqVo.setErrmsg("成功");
@@ -39,7 +36,7 @@ public class MallController {
     @RequestMapping("admin/brand/list")
     public BaseReqVo getBrandList(Integer page,Integer limit,String sort,String order,String name,Integer id){
         BaseReqVo baseReqVo = new BaseReqVo();
-        AllBrandsInfo allBrandsInfo=mallService.getAllBrandByplso(page,limit,sort,order,name,id);
+        BaseListInfo<MallBrand> allBrandsInfo=mallService.getAllBrandByplso(page,limit,sort,order,name,id);
         baseReqVo.setData(allBrandsInfo);
         baseReqVo.setErrmsg("成功");
         baseReqVo.setErrno(0);
@@ -48,9 +45,9 @@ public class MallController {
 
 
     @RequestMapping("admin/brand/create")
-    public BaseReqVo creatBrand(@RequestBody CreatBrand creatBrand){
+    public BaseReqVo creatBrand(@RequestBody MallBrand mallBrand){
         BaseReqVo baseReqVo = new BaseReqVo();
-        MallBrand newBrand= mallService.creatBrand(creatBrand);
+        MallBrand newBrand= mallService.creatBrand(mallBrand);
         baseReqVo.setData(newBrand);
         baseReqVo.setErrmsg("成功");
         baseReqVo.setErrno(0);
