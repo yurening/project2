@@ -1,16 +1,13 @@
 package com.cskaoyan.service;
 
-import com.cskaoyan.bean.generalize.Coupon;
-import com.cskaoyan.bean.generalize.CouponExample;
 import com.cskaoyan.bean.goods.*;
-import com.cskaoyan.bean.wx_index.IndexBean;
+import com.cskaoyan.bean.wx_index.HomeIndex;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -286,13 +283,20 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<IndexBean.NewGoodsListBean> getNewGoodsList() {
+    public Long getGoodsCount() {
+        GoodsExample goodsExample = new GoodsExample();
+        long l = goodsMapper.countByExample(goodsExample);
+        return l;
+    }
+
+
+    public List<HomeIndex.NewGoodsListBean> getNewGoodsList() {
         GoodsExample goodsExample = new GoodsExample();
         goodsExample.createCriteria().andIsNewEqualTo(true).andDeletedEqualTo(false);
         List<Goods> goodsList = goodsMapper.selectByExample(goodsExample);
-        List<IndexBean.NewGoodsListBean> newGoodsList = new ArrayList<>();
+        List<HomeIndex.NewGoodsListBean> newGoodsList = new ArrayList<>();
         for (Goods goods : goodsList) {
-            IndexBean.NewGoodsListBean newGoodsListBean = new IndexBean.NewGoodsListBean();
+            HomeIndex.NewGoodsListBean newGoodsListBean = new HomeIndex.NewGoodsListBean();
             newGoodsListBean.setBrief(goods.getBrief());
             newGoodsListBean.setCounterPrice(goods.getCounterPrice());
             newGoodsListBean.setId(goods.getId());
@@ -307,13 +311,13 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<IndexBean.ChannelBean> getChannel() {
+    public List<HomeIndex.ChannelBean> getChannel() {
         CategoryExample categoryExample = new CategoryExample();
         categoryExample.createCriteria().andLevelEqualTo("L1").andDeletedEqualTo(false);
         List<Category> categorieList = categoryMapper.selectByExample(categoryExample);
-        List<IndexBean.ChannelBean> channel = new ArrayList<>();
+        List<HomeIndex.ChannelBean> channel = new ArrayList<>();
         for (Category category : categorieList) {
-            IndexBean.ChannelBean channelBean = new IndexBean.ChannelBean();
+            HomeIndex.ChannelBean channelBean = new HomeIndex.ChannelBean();
             channelBean.setId(category.getId());
             channelBean.setIconUrl(category.getIconUrl());
             channelBean.setName(category.getName());
@@ -323,13 +327,13 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<IndexBean.HotGoodsListBean> getHotGoodsList() {
+    public List<HomeIndex.HotGoodsListBean> getHotGoodsList() {
         GoodsExample goodsExample = new GoodsExample();
         goodsExample.createCriteria().andIsHotEqualTo(true).andDeletedEqualTo(false);
         List<Goods> goodsList = goodsMapper.selectByExample(goodsExample);
-        List<IndexBean.HotGoodsListBean> hotGoodsList = new ArrayList<>();
+        List<HomeIndex.HotGoodsListBean> hotGoodsList = new ArrayList<>();
         for (Goods goods : goodsList) {
-            IndexBean.HotGoodsListBean hotGoodsListBean = new IndexBean.HotGoodsListBean();
+            HomeIndex.HotGoodsListBean hotGoodsListBean = new HomeIndex.HotGoodsListBean();
             hotGoodsListBean.setBrief(goods.getBrief());
             hotGoodsListBean.setCounterPrice(goods.getCounterPrice());
             hotGoodsListBean.setId(goods.getId());
@@ -344,19 +348,19 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<IndexBean.FloorGoodsListBean> getFloorGoodsList() {
+    public List<HomeIndex.FloorGoodsListBean> getFloorGoodsList() {
         CategoryExample categoryExample = new CategoryExample();
         categoryExample.createCriteria().andLevelEqualTo("L1").andDeletedEqualTo(false);
         List<Category> categories = categoryMapper.selectByExample(categoryExample);
-        List<IndexBean.FloorGoodsListBean> floorGoodsList = new ArrayList<>();
+        List<HomeIndex.FloorGoodsListBean> floorGoodsList = new ArrayList<>();
         for (Category category : categories) {
             categoryExample = new CategoryExample();
-            categoryExample.createCriteria().andPidEqualTo(category.getId());
+            categoryExample.createCriteria().andPidEqualTo(category.getId()).andDeletedEqualTo(false);
             List<Category> categoriesSec = categoryMapper.selectByExample(categoryExample);
             List<Goods> goods = new ArrayList<>();
             outer: for (Category categorySec : categoriesSec) {
                 GoodsExample goodsExample = new GoodsExample();
-                goodsExample.createCriteria().andCategoryIdEqualTo(categorySec.getId());
+                goodsExample.createCriteria().andCategoryIdEqualTo(categorySec.getId()).andDeletedEqualTo(false);
                 for (Goods goodsSec : goodsMapper.selectByExample(goodsExample)) {
                     if (goods.size() >= 6) {
                         break outer;
@@ -364,7 +368,7 @@ public class GoodsServiceImpl implements GoodsService {
                     goods.add(goodsSec);
                 }
             }
-            IndexBean.FloorGoodsListBean floorGoodsListBean = new IndexBean.FloorGoodsListBean();
+            HomeIndex.FloorGoodsListBean floorGoodsListBean = new HomeIndex.FloorGoodsListBean();
             floorGoodsListBean.setId(category.getId());
             floorGoodsListBean.setName(category.getName());
             floorGoodsListBean.setGoodsList(goods);
@@ -373,4 +377,417 @@ public class GoodsServiceImpl implements GoodsService {
         return floorGoodsList;
     }
 
+    public static class DataBean {
+        /**
+         * currentCategory : {"id":1036098,"name":"男装","keywords":"男装关键字","desc":"男装简介","pid":0,"iconUrl":"http://192.168.2.100:8081/wx/storage/fetch/eqnkzk7aw2ihjhpj5nfg.jpg","picUrl":"http://192.168.2.100:8081/wx/storage/fetch/m6nspdmn9il21qgueo6r.jpg","level":"L1","sortOrder":50,"addTime":"2019-11-18 05:58:00","updateTime":"2019-11-18 09:57:22","deleted":false}
+         * categoryList : [{"id":1036098,"name":"男装","keywords":"男装关键字","desc":"男装简介","pid":0,"iconUrl":"http://192.168.2.100:8081/wx/storage/fetch/eqnkzk7aw2ihjhpj5nfg.jpg","picUrl":"http://192.168.2.100:8081/wx/storage/fetch/m6nspdmn9il21qgueo6r.jpg","level":"L1","sortOrder":50,"addTime":"2019-11-18 05:58:00","updateTime":"2019-11-18 09:57:22","deleted":false},{"id":1036103,"name":"女装","keywords":"女装关键字","desc":"女装简介","pid":0,"iconUrl":"http://192.168.2.100:8081/wx/storage/fetch/zoius8gnlnz3sfv6qec6.jpg","picUrl":"http://192.168.2.100:8081/wx/storage/fetch/5ed97l7zcm59e8mo4ied.jpg","level":"L1","sortOrder":50,"addTime":"2019-11-18 10:49:07","updateTime":"2019-11-18 10:49:07","deleted":false}]
+         * currentSubCategory : [{"id":1036099,"name":"男休闲裤","keywords":"男休闲裤关键字","desc":"男休闲裤简介","pid":1036098,"iconUrl":"http://192.168.2.100:8081/wx/storage/fetch/5gou6qjt7wqgrbnv4e54.jpg","picUrl":"http://192.168.2.100:8081/wx/storage/fetch/wxs1gr99y78j1d0c23a0.jpg","level":"L2","sortOrder":50,"addTime":"2019-11-18 05:58:35","updateTime":"2019-11-18 09:58:44","deleted":false},{"id":1036102,"name":"男牛仔裤","keywords":"男牛仔裤关键字","desc":"男牛仔裤简介","pid":1036098,"iconUrl":"http://192.168.2.100:8081/wx/storage/fetch/hdvcii8ksghcqg316p3r.jpeg","picUrl":"http://192.168.2.100:8081/wx/storage/fetch/4xjbk4fnzljoepjmxh4v.jpg","level":"L2","sortOrder":50,"addTime":"2019-11-18 09:58:06","updateTime":"2019-11-18 09:58:06","deleted":false}]
+         */
+
+        private CurrentCategoryBean currentCategory;
+        private List<CategoryListBean> categoryList;
+        private List<CurrentSubCategoryBean> currentSubCategory;
+
+        public CurrentCategoryBean getCurrentCategory() {
+            return currentCategory;
+        }
+
+        public void setCurrentCategory(CurrentCategoryBean currentCategory) {
+            this.currentCategory = currentCategory;
+        }
+
+        public List<CategoryListBean> getCategoryList() {
+            return categoryList;
+        }
+
+        public void setCategoryList(List<CategoryListBean> categoryList) {
+            this.categoryList = categoryList;
+        }
+
+        public List<CurrentSubCategoryBean> getCurrentSubCategory() {
+            return currentSubCategory;
+        }
+
+        public void setCurrentSubCategory(List<CurrentSubCategoryBean> currentSubCategory) {
+            this.currentSubCategory = currentSubCategory;
+        }
+
+        public static class CurrentCategoryBean {
+            /**
+             * id : 1036098
+             * name : 男装
+             * keywords : 男装关键字
+             * desc : 男装简介
+             * pid : 0
+             * iconUrl : http://192.168.2.100:8081/wx/storage/fetch/eqnkzk7aw2ihjhpj5nfg.jpg
+             * picUrl : http://192.168.2.100:8081/wx/storage/fetch/m6nspdmn9il21qgueo6r.jpg
+             * level : L1
+             * sortOrder : 50
+             * addTime : 2019-11-18 05:58:00
+             * updateTime : 2019-11-18 09:57:22
+             * deleted : false
+             */
+
+            private int id;
+            private String name;
+            private String keywords;
+            private String desc;
+            private int pid;
+            private String iconUrl;
+            private String picUrl;
+            private String level;
+            private int sortOrder;
+            private String addTime;
+            private String updateTime;
+            private boolean deleted;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getKeywords() {
+                return keywords;
+            }
+
+            public void setKeywords(String keywords) {
+                this.keywords = keywords;
+            }
+
+            public String getDesc() {
+                return desc;
+            }
+
+            public void setDesc(String desc) {
+                this.desc = desc;
+            }
+
+            public int getPid() {
+                return pid;
+            }
+
+            public void setPid(int pid) {
+                this.pid = pid;
+            }
+
+            public String getIconUrl() {
+                return iconUrl;
+            }
+
+            public void setIconUrl(String iconUrl) {
+                this.iconUrl = iconUrl;
+            }
+
+            public String getPicUrl() {
+                return picUrl;
+            }
+
+            public void setPicUrl(String picUrl) {
+                this.picUrl = picUrl;
+            }
+
+            public String getLevel() {
+                return level;
+            }
+
+            public void setLevel(String level) {
+                this.level = level;
+            }
+
+            public int getSortOrder() {
+                return sortOrder;
+            }
+
+            public void setSortOrder(int sortOrder) {
+                this.sortOrder = sortOrder;
+            }
+
+            public String getAddTime() {
+                return addTime;
+            }
+
+            public void setAddTime(String addTime) {
+                this.addTime = addTime;
+            }
+
+            public String getUpdateTime() {
+                return updateTime;
+            }
+
+            public void setUpdateTime(String updateTime) {
+                this.updateTime = updateTime;
+            }
+
+            public boolean isDeleted() {
+                return deleted;
+            }
+
+            public void setDeleted(boolean deleted) {
+                this.deleted = deleted;
+            }
+        }
+
+        public static class CategoryListBean {
+            /**
+             * id : 1036098
+             * name : 男装
+             * keywords : 男装关键字
+             * desc : 男装简介
+             * pid : 0
+             * iconUrl : http://192.168.2.100:8081/wx/storage/fetch/eqnkzk7aw2ihjhpj5nfg.jpg
+             * picUrl : http://192.168.2.100:8081/wx/storage/fetch/m6nspdmn9il21qgueo6r.jpg
+             * level : L1
+             * sortOrder : 50
+             * addTime : 2019-11-18 05:58:00
+             * updateTime : 2019-11-18 09:57:22
+             * deleted : false
+             */
+
+            private int id;
+            private String name;
+            private String keywords;
+            private String desc;
+            private int pid;
+            private String iconUrl;
+            private String picUrl;
+            private String level;
+            private int sortOrder;
+            private String addTime;
+            private String updateTime;
+            private boolean deleted;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getKeywords() {
+                return keywords;
+            }
+
+            public void setKeywords(String keywords) {
+                this.keywords = keywords;
+            }
+
+            public String getDesc() {
+                return desc;
+            }
+
+            public void setDesc(String desc) {
+                this.desc = desc;
+            }
+
+            public int getPid() {
+                return pid;
+            }
+
+            public void setPid(int pid) {
+                this.pid = pid;
+            }
+
+            public String getIconUrl() {
+                return iconUrl;
+            }
+
+            public void setIconUrl(String iconUrl) {
+                this.iconUrl = iconUrl;
+            }
+
+            public String getPicUrl() {
+                return picUrl;
+            }
+
+            public void setPicUrl(String picUrl) {
+                this.picUrl = picUrl;
+            }
+
+            public String getLevel() {
+                return level;
+            }
+
+            public void setLevel(String level) {
+                this.level = level;
+            }
+
+            public int getSortOrder() {
+                return sortOrder;
+            }
+
+            public void setSortOrder(int sortOrder) {
+                this.sortOrder = sortOrder;
+            }
+
+            public String getAddTime() {
+                return addTime;
+            }
+
+            public void setAddTime(String addTime) {
+                this.addTime = addTime;
+            }
+
+            public String getUpdateTime() {
+                return updateTime;
+            }
+
+            public void setUpdateTime(String updateTime) {
+                this.updateTime = updateTime;
+            }
+
+            public boolean isDeleted() {
+                return deleted;
+            }
+
+            public void setDeleted(boolean deleted) {
+                this.deleted = deleted;
+            }
+        }
+
+        public static class CurrentSubCategoryBean {
+            /**
+             * id : 1036099
+             * name : 男休闲裤
+             * keywords : 男休闲裤关键字
+             * desc : 男休闲裤简介
+             * pid : 1036098
+             * iconUrl : http://192.168.2.100:8081/wx/storage/fetch/5gou6qjt7wqgrbnv4e54.jpg
+             * picUrl : http://192.168.2.100:8081/wx/storage/fetch/wxs1gr99y78j1d0c23a0.jpg
+             * level : L2
+             * sortOrder : 50
+             * addTime : 2019-11-18 05:58:35
+             * updateTime : 2019-11-18 09:58:44
+             * deleted : false
+             */
+
+            private int id;
+            private String name;
+            private String keywords;
+            private String desc;
+            private int pid;
+            private String iconUrl;
+            private String picUrl;
+            private String level;
+            private int sortOrder;
+            private String addTime;
+            private String updateTime;
+            private boolean deleted;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getKeywords() {
+                return keywords;
+            }
+
+            public void setKeywords(String keywords) {
+                this.keywords = keywords;
+            }
+
+            public String getDesc() {
+                return desc;
+            }
+
+            public void setDesc(String desc) {
+                this.desc = desc;
+            }
+
+            public int getPid() {
+                return pid;
+            }
+
+            public void setPid(int pid) {
+                this.pid = pid;
+            }
+
+            public String getIconUrl() {
+                return iconUrl;
+            }
+
+            public void setIconUrl(String iconUrl) {
+                this.iconUrl = iconUrl;
+            }
+
+            public String getPicUrl() {
+                return picUrl;
+            }
+
+            public void setPicUrl(String picUrl) {
+                this.picUrl = picUrl;
+            }
+
+            public String getLevel() {
+                return level;
+            }
+
+            public void setLevel(String level) {
+                this.level = level;
+            }
+
+            public int getSortOrder() {
+                return sortOrder;
+            }
+
+            public void setSortOrder(int sortOrder) {
+                this.sortOrder = sortOrder;
+            }
+
+            public String getAddTime() {
+                return addTime;
+            }
+
+            public void setAddTime(String addTime) {
+                this.addTime = addTime;
+            }
+
+            public String getUpdateTime() {
+                return updateTime;
+            }
+
+            public void setUpdateTime(String updateTime) {
+                this.updateTime = updateTime;
+            }
+
+            public boolean isDeleted() {
+                return deleted;
+            }
+
+            public void setDeleted(boolean deleted) {
+                this.deleted = deleted;
+            }
+        }
+    }
 }

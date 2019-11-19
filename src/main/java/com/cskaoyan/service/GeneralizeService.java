@@ -1,7 +1,7 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.generalize.*;
-import com.cskaoyan.bean.wx_index.IndexBean;
+import com.cskaoyan.bean.wx_index.HomeIndex;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,12 +50,12 @@ public interface GeneralizeService {
 
     void grouponDelete(GrouponRules grouponRules);
 
-    List<IndexBean.CouponListBean> getCouponList();
+    List<HomeIndex.CouponListBean> getCouponList();
 
-    List<IndexBean.BannerBean> getBanner();
+    List<HomeIndex.BannerBean> getBanner();
 
-    List<IndexBean.TopicListBean> getTopicList();
+    List<HomeIndex.TopicListBean> getTopicList();
 
 
-    List<IndexBean.GrouponListBean> getGrouponList();
+    List<HomeIndex.GrouponListBean> getGrouponList();
 }

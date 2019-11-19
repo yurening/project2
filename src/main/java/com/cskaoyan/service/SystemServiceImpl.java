@@ -223,4 +223,9 @@ public class SystemServiceImpl implements SystemService {
         List<Permission> permissionList = permissionMapper.selectByExample(permissionExample);
         return permissionList;
     }
+
+    @Override
+    public void insertLog(Log log) {
+        logMapper.insert(log);
+    }
 }

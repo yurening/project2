@@ -1,10 +1,7 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.generalize.Storage;
-import com.cskaoyan.bean.systemBean.Admin;
-import com.cskaoyan.bean.systemBean.Permission;
-import com.cskaoyan.bean.systemBean.Role;
-import com.cskaoyan.bean.systemBean.SystemPermissions;
+import com.cskaoyan.bean.systemBean.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,4 +36,6 @@ public interface SystemService {
     List<SystemPermissions> rolePermissions();
 
     List<Permission> permissionList();
+
+    void insertLog(Log log);
 }
