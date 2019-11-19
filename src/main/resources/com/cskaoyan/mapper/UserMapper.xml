@@ -404,4 +404,7 @@
             order by ${orderByClause}
         </if>
     </select>
+    <select id="getUserByUsername" resultMap="UserBaseResultMap">
+        select username,password from cskaoyan_mall_user where username = #{username}
+    </select>
 </mapper>

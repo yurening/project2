@@ -94,5 +94,10 @@ public class UserServiceImpl implements UserService{
         return userMapper.selectFeedbackByExample(example);
     }
 
+    @Override
+    public User getUserByUsername(String username) {
+        return userMapper.getUserByUsername(username);
+    }
+
 
 }

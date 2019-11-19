@@ -3,7 +3,7 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.*;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.GoodsExample;
-import com.cskaoyan.bean.wx_index.IndexBean;
+import com.cskaoyan.bean.wx_index.HomeIndex;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -376,13 +376,13 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     }
 
     @Override
-    public List<IndexBean.CouponListBean> getCouponList() {
+    public List<HomeIndex.CouponListBean> getCouponList() {
         CouponExample couponExample = new CouponExample();
         couponExample.createCriteria().andDeletedEqualTo(false);
         List<Coupon> coupons = couponMapper.selectByExample(couponExample);
-        List<IndexBean.CouponListBean> couponList = new ArrayList<>();
+        List<HomeIndex.CouponListBean> couponList = new ArrayList<>();
         for (Coupon coupon : coupons) {
-            IndexBean.CouponListBean couponListBean = new IndexBean.CouponListBean();
+            HomeIndex.CouponListBean couponListBean = new HomeIndex.CouponListBean();
             couponListBean.setDays(coupon.getDays());
             couponListBean.setDesc(coupon.getDesc());
             couponListBean.setDiscount(coupon.getDiscount());
@@ -398,13 +398,13 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     }
 
     @Override
-    public List<IndexBean.BannerBean> getBanner() {
+    public List<HomeIndex.BannerBean> getBanner() {
         AdExample adExample = new AdExample();
         adExample.createCriteria().andDeletedEqualTo(false);
         List<Ad> ads = adMapper.selectByExample(adExample);
-        List<IndexBean.BannerBean> bannerList = new ArrayList<>();
+        List<HomeIndex.BannerBean> bannerList = new ArrayList<>();
         for (Ad ad : ads) {
-            IndexBean.BannerBean bannerBean = new IndexBean.BannerBean();
+            HomeIndex.BannerBean bannerBean = new HomeIndex.BannerBean();
             bannerBean.setId(ad.getId());
             bannerBean.setName(ad.getName());
             bannerBean.setLink(ad.getLink());
@@ -421,13 +421,13 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     }
 
     @Override
-    public List<IndexBean.TopicListBean> getTopicList() {
+    public List<HomeIndex.TopicListBean> getTopicList() {
         TopicExample topicExample = new TopicExample();
         topicExample.createCriteria().andDeletedEqualTo(false);
         List<Topic> topics = topicMapper.selectByExample(topicExample);
-        List<IndexBean.TopicListBean> topicList = new ArrayList<>();
+        List<HomeIndex.TopicListBean> topicList = new ArrayList<>();
         for (Topic topic : topics) {
-            IndexBean.TopicListBean topicListBean = new IndexBean.TopicListBean();
+            HomeIndex.TopicListBean topicListBean = new HomeIndex.TopicListBean();
             topicListBean.setId(topic.getId());
             topicListBean.setTitle(topic.getTitle());
             topicListBean.setSubtitle(topic.getSubtitle());
@@ -440,20 +440,20 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     }
 
     @Override
-    public List<IndexBean.GrouponListBean> getGrouponList() {
+    public List<HomeIndex.GrouponListBean> getGrouponList() {
         GrouponRulesExample grouponRulesExample = new GrouponRulesExample();
         grouponRulesExample.createCriteria().andDeletedEqualTo(false);
         List<GrouponRules> grouponRules = grouponRulesMapper.selectByExample(grouponRulesExample);
-        List<IndexBean.GrouponListBean> grouponList = new ArrayList<>();
+        List<HomeIndex.GrouponListBean> grouponList = new ArrayList<>();
         for (GrouponRules grouponRule : grouponRules) {
             GoodsExample goodsExample = new GoodsExample();
             goodsExample.createCriteria().andIdEqualTo(grouponRule.getGoodsId()).andDeletedEqualTo(false);
             List<Goods> goods = goodsMapper.selectByExample(goodsExample);
             Goods simpleGoods = goods.get(0);
-            IndexBean.GrouponListBean grouponListBean = new IndexBean.GrouponListBean();
+            HomeIndex.GrouponListBean grouponListBean = new HomeIndex.GrouponListBean();
             grouponListBean.setGroupon_member(grouponRule.getDiscountMember());
             grouponListBean.setGroupon_price(simpleGoods.getRetailPrice().subtract(grouponRule.getDiscount()));
-            IndexBean.GrouponListBean.GoodsBean g = new IndexBean.GrouponListBean.GoodsBean();
+            HomeIndex.GrouponListBean.GoodsBean g = new HomeIndex.GrouponListBean.GoodsBean();
             g.setId(simpleGoods.getId());
             g.setName(simpleGoods.getName());
             g.setBrief(simpleGoods.getBrief());

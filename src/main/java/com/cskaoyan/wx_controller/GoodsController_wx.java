@@ -36,11 +36,4 @@ public class GoodsController_wx {
         return responseType;
     }
 
-    @RequestMapping("brand/list")
-    public ResponseType brandList(@RequestBody Integer page,
-                                  @RequestBody Integer size){
-        ResponseType responseType = new ResponseType();
-        return responseType;
-    }
-
 }
