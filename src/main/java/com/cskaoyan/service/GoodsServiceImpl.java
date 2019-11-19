@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-<<<<<<< HEAD
+
 import java.math.BigDecimal;
 import java.util.*;
-=======
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
->>>>>>> a100a27900f3bf16fee2673c26f3397ca3ebcc84
+
 
 @Service
 public class GoodsServiceImpl implements GoodsService {
