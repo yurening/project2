@@ -3,11 +3,14 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.*;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.GoodsExample;
+import com.cskaoyan.bean.mall.order.MallOrderGoods;
+import com.cskaoyan.bean.mall.order.MallOrderGoodsExample;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,11 +51,11 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         if (content != null){
             criteria.andContentLike("%" + content + "%");
         }
-        long l = adMapper.countByExample(adExample);
         adExample.setOrderByClause(sort + " " + order);
         List<Ad> adList = adMapper.selectByExample(adExample);
+        int total = adList.size();
         HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("total",Math.toIntExact(l));
+        hashMap.put("total",total);
         hashMap.put("items",adList);
         return hashMap;
     }
@@ -99,10 +102,10 @@ public class GeneralizeServiceImpl implements GeneralizeService{
             criteria.andStatusEqualTo(status.shortValue());
         }
         criteria.andDeletedEqualTo(false);
-        long l = couponMapper.countByExample(couponExample);
         couponExample.setOrderByClause(sort + " " + order);
         List<Coupon> couponList = couponMapper.selectByExample(couponExample);
-        hashMap.put("total",Math.toIntExact(l));
+        int total = couponList.size();
+        hashMap.put("total",total);
         hashMap.put("items",couponList);
         return hashMap;
     }
@@ -126,12 +129,12 @@ public class GeneralizeServiceImpl implements GeneralizeService{
             criteria.andStatusEqualTo(status.shortValue());
         }
         criteria.andDeletedEqualTo(false);
-        long l = couponUserMapper.countByExample(couponUserExample);
         HashMap<String, Object> hashMap = new HashMap<>();
         criteria.andCouponIdEqualTo(couponId);
         couponUserExample.setOrderByClause(sort + " " + order);
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
-        hashMap.put("total",Math.toIntExact(l));
+        int total = couponUsers.size();
+        hashMap.put("total",total);
         hashMap.put("items",couponUsers);
         return hashMap;
     }
@@ -169,10 +172,10 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         }
         criteria.andDeletedEqualTo(false);
         HashMap<String, Object> hashMap = new HashMap<>();
-        long l = topicMapper.countByExample(topicExample);
         topicExample.setOrderByClause(sort + " " + order);
         List<Topic> topicList = topicMapper.selectByExample(topicExample);
-        hashMap.put("total",Math.toIntExact(l));
+        int total = topicList.size();
+        hashMap.put("total",total);
         hashMap.put("items",topicList);
         return hashMap;
     }
@@ -211,10 +214,10 @@ public class GeneralizeServiceImpl implements GeneralizeService{
             criteria.andGoodsIdEqualTo(goodsId);
         }
         criteria.andDeletedEqualTo(false);
-        long l = grouponRulesMapper.countByExample(grouponRulesExample);
         grouponRulesExample.setOrderByClause(sort + " " + order);
         List<GrouponRules> grouponRulesList = grouponRulesMapper.selectByExample(grouponRulesExample);
-        hashMap.put("total",Math.toIntExact(l));
+        int total = grouponRulesList.size();
+        hashMap.put("total",total);
         hashMap.put("items",grouponRulesList);
         return hashMap;
     }
@@ -241,18 +244,109 @@ public class GeneralizeServiceImpl implements GeneralizeService{
     @Override
     public HashMap<String, Object> grouponListRecord(Integer page, Integer limit, String sort, String order,Integer goodsId) {
         PageHelper.startPage(page,limit);
+        List<HashMap> hashMapList = new ArrayList<>();
         GrouponExample grouponExample = new GrouponExample();
         GrouponExample.Criteria criteria = grouponExample.createCriteria();
-        if (goodsId != null){
-            criteria.andIdEqualTo(goodsId);
-        }
         criteria.andDeletedEqualTo(false);
-        long l = grouponMapper.countByExample(grouponExample);
-        grouponExample.setOrderByClause(sort + " " + order);
+        grouponExample.setOrderByClause("groupon_id" + " " + order);
         List<Groupon> grouponList = grouponMapper.selectByExample(grouponExample);
+        List<GrouponRules> grouponRulesList = new ArrayList<>();
+        List<Goods> goodsList = new ArrayList<>();
+        if (grouponList.size() > 0 ) {
+            List<Integer> rulesIds = new ArrayList<>();
+            List<Integer> goodsIds = new ArrayList<>();
+            for (Groupon groupon : grouponList) {
+                rulesIds.add(groupon.getRulesId());
+            }
+            GrouponRulesExample grouponRulesExample = new GrouponRulesExample();
+            GrouponRulesExample.Criteria criteriaRules = grouponRulesExample.createCriteria();
+            criteriaRules.andIdIn(rulesIds);
+            if (goodsId != null) {
+                criteriaRules.andGoodsIdEqualTo(goodsId);
+            }
+            grouponRulesList = grouponRulesMapper.selectByExample(grouponRulesExample);
+            if (grouponRulesList.size() > 0) {
+                for (GrouponRules grouponRules : grouponRulesList) {
+                    Integer goodsId1 = grouponRules.getGoodsId();
+                    goodsIds.add(goodsId1);
+                }
+                GoodsExample goodsExample = new GoodsExample();
+                GoodsExample.Criteria criteriaGoods = goodsExample.createCriteria();
+                criteriaGoods.andIdIn(goodsIds);
+                goodsList = goodsMapper.selectByExample(goodsExample);
+                Integer id = 0;
+                HashMap<String, Object> hashMap = new HashMap<>();
+                List<HashMap> subGroupons = new ArrayList<>();
+                for (Groupon groupon : grouponList) {
+                    if (!groupon.getGrouponId().equals(id)) {
+                        hashMap.put("subGroupons", subGroupons);
+                        subGroupons = new ArrayList<>();
+                        hashMapList.add(hashMap);
+                        hashMap = new HashMap<>();
+                        id = groupon.getGrouponId();
+                        hashMap.put("groupon", groupon);
+                        Integer rulesId = groupon.getRulesId();
+                        for (GrouponRules grouponRules : grouponRulesList) {
+                            if (grouponRules.getId() == rulesId) {
+                                hashMap.put("rules", grouponRules);
+                                for (Goods goods : goodsList) {
+                                    if (grouponRules.getGoodsId().equals(goods.getId())) {
+                                        hashMap.put("goods", goods);
+                                    }
+                                }
+                            }
+                        }
+                        HashMap<String, Object> subGroupon = new HashMap<>();
+                        subGroupon.put("orderId", groupon.getOrderId());
+                        subGroupon.put("userId", groupon.getUserId());
+                        subGroupons.add(subGroupon);
+                    } else {
+                        HashMap<String, Object> subGroupon = new HashMap<>();
+                        subGroupon.put("orderId", groupon.getOrderId());
+                        subGroupon.put("userId", groupon.getUserId());
+                        subGroupons.add(subGroupon);
+                    }
+                }
+                hashMap.put("subGroupons", subGroupons);
+                hashMapList.add(hashMap);
+            }
+        }
+            /*for (Groupon groupon : grouponList) {
+
+                List<HashMap> subGroupons = new ArrayList<>();
+                Integer rulesId = groupon.getRulesId();
+                GrouponRulesExample grouponRulesExample = new GrouponRulesExample();
+                GrouponRulesExample.Criteria criteriaRules = grouponRulesExample.createCriteria();
+                criteriaRules.andIdEqualTo(rulesId);
+                if (goodsId != null) {
+                    criteriaRules.andGoodsIdEqualTo(goodsId);
+                }
+                List<GrouponRules> grouponRulesList = grouponRulesMapper.selectByExample(grouponRulesExample);
+                if (grouponRulesList.size() == 0) {
+                    continue;
+                }
+                GrouponRules grouponRules = grouponRulesList.get(0);
+                Integer goodsId1 = grouponRules.getGoodsId();
+                GoodsExample goodsExample = new GoodsExample();
+                GoodsExample.Criteria criteriaGoods = goodsExample.createCriteria();
+                criteriaGoods.andIdEqualTo(goodsId1);
+                List<Goods> goodsList = goodsMapper.selectByExample(goodsExample);
+                HashMap<String, Object> h = new HashMap<>();
+                h.put("groupon", groupon);
+                h.put("goods", goodsList.get(0));
+                h.put("rules", grouponRules);
+                Integer grouponId = groupon.getGrouponId();
+
+                hashMapList.add(h);
+            }
+        }*/
+        if (hashMapList.size() > 0) {
+            hashMapList.remove(0);
+        }
+        int total = hashMapList.size();
         HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("total",Math.toIntExact(l));
-        hashMap.put("items",grouponList);
+        hashMap.put("total",total);
+        hashMap.put("items",hashMapList);
         return hashMap;
     }
 
