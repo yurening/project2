@@ -4,7 +4,7 @@ package com.cskaoyan.wx_controller;
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.BaseRespVo;
 import com.cskaoyan.bean.mall.wx_order.WxOrder;
-import com.cskaoyan.bean.mall.wx_order.WxOrderId;
+import com.cskaoyan.bean.mall.wx_order.WxId;
 import com.cskaoyan.bean.mall.wx_order.WxOrderDetail;
 import com.cskaoyan.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +39,13 @@ public class OrderController_wx {
     }
 
     @RequestMapping("cancel")
-    public BaseRespVo cancelOrder(@RequestBody WxOrderId wxOrder){
+    public BaseRespVo cancelOrder(@RequestBody WxId wxOrder){
         orderService.cancelOrder(wxOrder.getOrderId());
         return BaseRespVo.ok(null);
     }
 
     @RequestMapping("delete")
-    public BaseRespVo deleteOrder(@RequestBody WxOrderId wxOrder){
+    public BaseRespVo deleteOrder(@RequestBody WxId wxOrder){
         orderService.deleteOrder(wxOrder.getOrderId());
         return BaseRespVo.ok(null);
     }
