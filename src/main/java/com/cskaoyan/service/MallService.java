@@ -58,4 +58,6 @@ public interface MallService {
     List<HomeIndex.BrandListBean> getBrandList();
 
     MallCategory getCategoryById(Integer id);
+
+    List<MallRegion> regionListByPid(Integer pid);
 }

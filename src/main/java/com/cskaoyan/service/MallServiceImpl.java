@@ -362,4 +362,13 @@ public class MallServiceImpl implements MallService {
         category.setChildren(categoryList2);
         return category;
     }
+
+    @Override
+    public List<MallRegion> regionListByPid(Integer pid) {
+        MallRegionExample mallRegionExample = new MallRegionExample();
+        MallRegionExample.Criteria criteria = mallRegionExample.createCriteria();
+        criteria.andPidEqualTo(pid);
+        List<MallRegion> mallRegionList = mallRegionMapper.selectByExample(mallRegionExample);
+        return mallRegionList;
+    }
 }

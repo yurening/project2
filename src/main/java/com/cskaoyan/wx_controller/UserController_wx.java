@@ -1,19 +1,27 @@
 package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
+import com.cskaoyan.bean.mall.region.MallRegion;
 import com.cskaoyan.bean.user.CouponRequest;
 import com.cskaoyan.bean.user.UserRequest;
+import com.cskaoyan.service.MallService;
 import com.cskaoyan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class UserController_wx {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    MallService mallService;
+
     @RequestMapping("wx/search/index")
     public BaseReqVo searchIndex(){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
@@ -101,6 +109,16 @@ public class UserController_wx {
         objectBaseReqVo.setErrno(0);
         objectBaseReqVo.setErrmsg("成功");
         return objectBaseReqVo;
+    }
+
+    @RequestMapping("wx/region/list")
+    public BaseReqVo regionList(Integer pid){
+        List<MallRegion> mallRegionList =  mallService.regionListByPid(pid);
+        BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
+        baseReqVo.setErrmsg("成功");
+        baseReqVo.setErrno(0);
+        baseReqVo.setData(mallRegionList);
+        return baseReqVo;
     }
 }
 
