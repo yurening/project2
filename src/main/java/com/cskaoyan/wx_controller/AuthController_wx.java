@@ -9,12 +9,21 @@ package com.cskaoyan.wx_controller;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.service.UserService;
+import com.cskaoyan.shiro.AuthToken;
+import com.cskaoyan.utils.TransferDateUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.crypto.hash.Hash;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 
 @RestController
@@ -24,29 +33,52 @@ public class AuthController_wx {
     @Autowired
     UserService userService;
 
+
+    /**@request
+     * {
+     *     "username": "wx",
+     *     "password": "admin123"
+     * }
+     * @Response
+     * {
+     *     "errno": 0,
+     *     "data": {
+     *         "userInfo": {
+     *             "nickName": "wx",
+     *             "avatarUrl": ""
+     *         },
+         *     "tokenExpire": "2019-11-20T02:57:54.969",
+     *         "token": "7zgz6kn8em6vkiwg5nvnj1i44n06t596"
+     *     },
+     *     "errmsg": "成功"
+     * }
+     * */
     @RequestMapping("login")
     public BaseReqVo login(@RequestBody User user) {
-        BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
-        String username = user.getUsername();
-        User user1 = userService.getUserByUsername(username);
-        if (user1 == null) {
-            baseReqVo.setErrno(402);
-            baseReqVo.setErrmsg("用户不存在,请确认后重新输入");
-            return baseReqVo;
+        AuthToken authenticationToken = new AuthToken(user.getUsername(), user.getPassword(),"wx");
+        Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.login(authenticationToken);
+        } catch (AuthenticationException e) {
+            return BaseReqVo.fail(505,"账号或密码输入有误,请确认后重新输入");
+            //e.printStackTrace();
         }
-        else if (user1.getPassword().equals(user1.getPassword())) {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("userInfo",username);
-            map.put("token",username);
-            baseReqVo.setErrno(0);
-            baseReqVo.setData(map);
-            baseReqVo.setErrmsg("成功");
-            return baseReqVo;
-        }else {
-            baseReqVo.setErrno(605);
-            baseReqVo.setErrmsg("账号或密码输入有误,请确认后重新输入");
-            return baseReqVo;
-        }
+        User userLogin = (User) subject.getPrincipal();
+        HashMap<String, String> userInfoMap = new HashMap<>();
+        userInfoMap.put("nickName",userLogin.getNickname());
+        userInfoMap.put("avatarUrl",userLogin.getAvatar());
+
+        Serializable sessionId = subject.getSession().getId();
+        LocalDateTime date = LocalDateTime.now();
+        date.plusDays(1);
+        userService.updateLoginTime(user.getId());
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("userInfo",userInfoMap);
+        map.put("tokenExpire",date);
+        map.put("token",sessionId);
+
+        return BaseReqVo.ok(map);
     }
 
     @RequestMapping("logout")

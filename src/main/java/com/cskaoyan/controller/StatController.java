@@ -11,6 +11,9 @@ import com.cskaoyan.bean.stat.GoodsCount;
 import com.cskaoyan.bean.stat.OrderCount;
 import com.cskaoyan.bean.stat.UserCount;
 import com.cskaoyan.service.StatService;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +46,7 @@ public class StatController {
      * }
      * */
     @RequestMapping("user")
+    @RequiresPermissions(value = {"user:query","*"}, logical = Logical.OR)
     public BaseReqVo user() {
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         List<Object> stringList = new ArrayList<>();

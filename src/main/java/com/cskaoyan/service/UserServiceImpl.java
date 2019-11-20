@@ -99,5 +99,10 @@ public class UserServiceImpl implements UserService{
         return userMapper.getUserByUsername(username);
     }
 
+    @Override
+    public void updateLoginTime(Integer id) {
+        userMapper.updateLoginTime(id);
+    }
+
 
 }

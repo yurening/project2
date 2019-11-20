@@ -19,4 +19,6 @@ public interface AuthService {
     int getProductTotal();
 
     int getOrderTotal();
+
+    List<String> getPermsMethodNameByRoleId(String roleId);
 }

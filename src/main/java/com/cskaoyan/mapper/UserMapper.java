@@ -1,7 +1,6 @@
 package com.cskaoyan.mapper;
 
 import com.cskaoyan.bean.user.*;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -38,4 +37,6 @@ public interface UserMapper {
     List<Feedback> selectFeedbackByExample(FeedbackExample example);
 
     User getUserByUsername(String username);
+
+    void updateLoginTime(Integer id);
 }

@@ -6,6 +6,7 @@ import com.cskaoyan.service.UserService;
 import com.cskaoyan.utils.TransferDateUtils;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,8 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+
     @RequestMapping("admin/user/list")
     public BaseReqVo list(UserRequest userRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();

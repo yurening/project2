@@ -31,4 +31,7 @@ public interface UserService {
     List<Feedback> selectFeedbackByExample(FeedBackRequest feedBackRequest,FeedbackExample example);
 
     User getUserByUsername(String username);
+
+    void updateLoginTime(Integer id);
+
 }
