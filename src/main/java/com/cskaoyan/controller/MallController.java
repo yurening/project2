@@ -3,7 +3,7 @@ package com.cskaoyan.controller;
 import java.util.List;
 
 import com.cskaoyan.bean.mall.BaseListInfo;
-import com.cskaoyan.bean.mall.BaseReqVo;
+import com.cskaoyan.bean.mall.BaseRespVo;
 import com.cskaoyan.bean.mall.brand.MallBrand;
 import com.cskaoyan.bean.mall.category.MallCatagoryL1Info;
 import com.cskaoyan.bean.mall.category.MallCategory;
@@ -24,199 +24,199 @@ public class MallController {
     MallService mallService;
 
     @RequestMapping("admin/region/list")
-    public BaseReqVo getRegionList(){
+    public BaseRespVo getRegionList(){
         List<MallRegion> allRegions= mallService.getAllRegion();
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(allRegions);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(allRegions);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/brand/list")
-    public BaseReqVo getBrandList(Integer page,Integer limit,String sort,String order,String name,Integer id){
-        BaseReqVo baseReqVo = new BaseReqVo();
+    public BaseRespVo getBrandList(Integer page, Integer limit, String sort, String order, String name, Integer id){
+        BaseRespVo baseRespVo = new BaseRespVo();
         BaseListInfo<MallBrand> allBrandsInfo=mallService.getAllBrandByplso(page,limit,sort,order,name,id);
-        baseReqVo.setData(allBrandsInfo);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        baseRespVo.setData(allBrandsInfo);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
 
     @RequestMapping("admin/brand/create")
-    public BaseReqVo creatBrand(@RequestBody MallBrand mallBrand){
-        BaseReqVo baseReqVo = new BaseReqVo();
+    public BaseRespVo creatBrand(@RequestBody MallBrand mallBrand){
+        BaseRespVo baseRespVo = new BaseRespVo();
         MallBrand newBrand= mallService.creatBrand(mallBrand);
-        baseReqVo.setData(newBrand);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        baseRespVo.setData(newBrand);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/brand/update")
-    public BaseReqVo updateBrand(@RequestBody MallBrand mallBrand){
-        BaseReqVo baseReqVo = new BaseReqVo();
+    public BaseRespVo updateBrand(@RequestBody MallBrand mallBrand){
+        BaseRespVo baseRespVo = new BaseRespVo();
         mallService.updateBrandByPrimaryKey(mallBrand);
-        baseReqVo.setData(mallBrand);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        baseRespVo.setData(mallBrand);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/brand/delete")
-    public BaseReqVo deleteBrand(@RequestBody MallBrand mallBrand){
-        BaseReqVo baseReqVo = new BaseReqVo();
+    public BaseRespVo deleteBrand(@RequestBody MallBrand mallBrand){
+        BaseRespVo baseRespVo = new BaseRespVo();
         mallService.deleteBrand(mallBrand);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/order/list")
-    public BaseReqVo getOrderList(Integer page,Integer limit,String sort,String order,String orderSn,Integer userId,Short[] orderStatusArray){
-        BaseReqVo baseReqVo = new BaseReqVo();
+    public BaseRespVo getOrderList(Integer page, Integer limit, String sort, String order, String orderSn, Integer userId, Short[] orderStatusArray){
+        BaseRespVo baseRespVo = new BaseRespVo();
         BaseListInfo<MallOrder> baseListInfo = mallService.checkOrderList(page, limit, sort, order, userId, orderSn, orderStatusArray);
-        baseReqVo.setData(baseListInfo);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        baseRespVo.setData(baseListInfo);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/order/detail")
-    public BaseReqVo getOrderDetail(Integer id){
+    public BaseRespVo getOrderDetail(Integer id){
         MallOrderDetails mallOrderDetails = mallService.checkOrderDetails(id);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(mallOrderDetails);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(mallOrderDetails);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/category/list")
-    public BaseReqVo getCategoryList(){
+    public BaseRespVo getCategoryList(){
         List<MallCategory> allCategory = mallService.getAllCategory();
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(allCategory);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(allCategory);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/category/l1")
-    public BaseReqVo getL1CategoryList(){
+    public BaseRespVo getL1CategoryList(){
         List<MallCatagoryL1Info> l1Category = mallService.getL1Category();
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(l1Category);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(l1Category);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/category/create")
-    public BaseReqVo createCategory(@RequestBody MallCategory mallCategory){
+    public BaseRespVo createCategory(@RequestBody MallCategory mallCategory){
         MallCategory newCategory = mallService.insertCategory(mallCategory);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(newCategory);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(newCategory);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/category/delete")
-    public BaseReqVo deleteCategory(@RequestBody MallCategory mallCategory){
+    public BaseRespVo deleteCategory(@RequestBody MallCategory mallCategory){
         mallService.deleteCategory(mallCategory);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/category/update")
-    public BaseReqVo updateCategory(@RequestBody MallCategory mallCategory){
+    public BaseRespVo updateCategory(@RequestBody MallCategory mallCategory){
         mallService.updateCategory(mallCategory);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/issue/list")
-    public BaseReqVo getIssueList(Integer page,Integer limit,String sort,String order,String question){
-        BaseReqVo baseReqVo = new BaseReqVo();
+    public BaseRespVo getIssueList(Integer page, Integer limit, String sort, String order, String question){
+        BaseRespVo baseRespVo = new BaseRespVo();
         BaseListInfo<MallIssue> baseListInfo = mallService.checkIssueList(page, limit, sort, order, question);
-        baseReqVo.setData(baseListInfo);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        baseRespVo.setData(baseListInfo);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
 
     @RequestMapping("admin/issue/create")
-    public BaseReqVo createIssue(@RequestBody MallIssue mallIssue){
+    public BaseRespVo createIssue(@RequestBody MallIssue mallIssue){
         MallIssue newIssue = mallService.insertIssue(mallIssue);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(newIssue);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(newIssue);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/issue/delete")
-    public BaseReqVo deleteIssue(@RequestBody MallIssue mallIssue){
+    public BaseRespVo deleteIssue(@RequestBody MallIssue mallIssue){
         mallService.deleteIssue(mallIssue);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/issue/update")
-    public BaseReqVo updateIssue(@RequestBody MallIssue mallIssue){
+    public BaseRespVo updateIssue(@RequestBody MallIssue mallIssue){
         MallIssue newIssue = mallService.updateIssue(mallIssue);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(newIssue);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(newIssue);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/keyword/list")
-    public BaseReqVo getKeywordList(Integer page,Integer limit,String sort,String order,String keyword,String url){
-        BaseReqVo baseReqVo = new BaseReqVo();
+    public BaseRespVo getKeywordList(Integer page, Integer limit, String sort, String order, String keyword, String url){
+        BaseRespVo baseRespVo = new BaseRespVo();
         BaseListInfo<MallKeyword> baseListInfo = mallService.checkKeywordList(page, limit, sort, order, keyword,url);
-        baseReqVo.setData(baseListInfo);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        baseRespVo.setData(baseListInfo);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/keyword/create")
-    public BaseReqVo createKeyword(@RequestBody MallKeyword mallKeyword){
+    public BaseRespVo createKeyword(@RequestBody MallKeyword mallKeyword){
         MallKeyword newKeyword = mallService.insertKeyword(mallKeyword);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(newKeyword);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(newKeyword);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/keyword/delete")
-    public BaseReqVo deleteKeyword(@RequestBody MallKeyword mallKeyword){
+    public BaseRespVo deleteKeyword(@RequestBody MallKeyword mallKeyword){
         mallService.deleteKeyword(mallKeyword);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 
     @RequestMapping("admin/keyword/update")
-    public BaseReqVo updateKeyword(@RequestBody MallKeyword mallKeyword){
+    public BaseRespVo updateKeyword(@RequestBody MallKeyword mallKeyword){
         MallKeyword newKeyword = mallService.updateKeyword(mallKeyword);
-        BaseReqVo baseReqVo = new BaseReqVo();
-        baseReqVo.setData(newKeyword);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        BaseRespVo baseRespVo = new BaseRespVo();
+        baseRespVo.setData(newKeyword);
+        baseRespVo.setErrmsg("成功");
+        baseRespVo.setErrno(0);
+        return baseRespVo;
     }
 }

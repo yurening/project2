@@ -235,7 +235,7 @@ public class CommentExample {
             return (Criteria) this;
         }
 
-        public Criteria andTypeEqualTo(Byte value) {
+        public Criteria andTypeEqualTo(Integer value) {
             addCriterion("type =", value, "type");
             return (Criteria) this;
         }

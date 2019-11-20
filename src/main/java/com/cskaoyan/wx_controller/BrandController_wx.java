@@ -23,6 +23,7 @@ public class BrandController_wx {
 
     @RequestMapping("brand/detail")
     public ResponseType brandDetail(Integer id){
-        return new ResponseType();
+        ResponseType brandById = brandService.getBrandById(id);
+        return brandById;
     }
 }
