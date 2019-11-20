@@ -53,4 +53,12 @@ public class OtherServiceImpl implements OtherService {
         hashMap.put("totalPages",totalPages);
         return hashMap;
     }
+
+    @Override
+    public void footprintDelete(Integer id) {
+        FootPrintExample footPrintExample = new FootPrintExample();
+        FootPrintExample.Criteria criteria = footPrintExample.createCriteria();
+        criteria.andIdEqualTo(id);
+        footPrintMapper.deleteByExample(footPrintExample);
+    }
 }

@@ -8,4 +8,6 @@ public interface OtherService {
     void feedbackSubmit(Feedback feedback, Integer userId);
 
     HashMap<String, Object> footprintList(Integer page, Integer size, Integer userId);
+
+    void footprintDelete(Integer id);
 }
