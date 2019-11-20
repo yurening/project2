@@ -312,4 +312,24 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+    <select id="getGoodsCountByUserId" resultType="int">
+      select sum(number) from cskaoyan_mall_cart
+      <where>
+        <if test="checked != null">
+          checked = #{checked,jdbcType=BOOLEAN}
+        </if>
+        and user_id = #{userId,jdbcType=INTEGER}
+      </where>
+    </select>
+
+  <select id="getGoodsAmountByUserId" resultType="double">
+    select sum(price*number) from cskaoyan_mall_cart
+    <where>
+      <if test="checked != null">
+        checked = #{checked,jdbcType=BOOLEAN}
+      </if>
+      and user_id = #{userId,jdbcType=INTEGER}
+    </where>
+  </select>
 </mapper>
