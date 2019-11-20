@@ -1,7 +1,12 @@
 package com.cskaoyan.mapper;
 
+import com.cskaoyan.bean.user.FootPrint;
+import com.cskaoyan.bean.user.FootPrintExample;
+import com.cskaoyan.bean.user.Feedback;
+import com.cskaoyan.bean.user.FeedbackExample;
+import com.cskaoyan.bean.user.Collect;
+import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.bean.user.*;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

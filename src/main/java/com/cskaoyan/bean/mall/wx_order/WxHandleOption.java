@@ -43,8 +43,7 @@ public class WxHandleOption {
             case 103:
                 break;
             case 201:
-                setCancel(true);
-                setRebuy(true);
+                setRefund(true);
                 break;
             case 202:
                 break;

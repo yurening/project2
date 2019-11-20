@@ -243,26 +243,18 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public List<SystemPermission> systemPermissionsList() {
-        SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
-        List<SystemPermission> systemPermissions = systemPermissionMapper.selectByExample(systemPermissionExample);
-        List<SystemPermission> systemPermissions1 = new ArrayList<>();
-        List<SystemPermission> systemPermissions2 = new ArrayList<>();
-        List<SystemPermission> systemPermissions3 = new ArrayList<>();
-        for (SystemPermission systemPermission : systemPermissions) {
-            if (systemPermission.getLevel().equals("3")){
-                systemPermissions3.add(systemPermission);
-            }
-        }
-        for (SystemPermission systemPermission : systemPermissions) {
-            if (systemPermission.getLevel().equals("2")){
-                systemPermissions2.add(systemPermission);
-            }
-        }
-        for (SystemPermission systemPermission : systemPermissions) {
-            if (systemPermission.getLevel().equals("1")){
-                systemPermissions1.add(systemPermission);
-            }
-        }
+        SystemPermissionExample systemPermissionExample3 = new SystemPermissionExample();
+        SystemPermissionExample.Criteria criteria3 = systemPermissionExample3.createCriteria();
+        criteria3.andLevelEqualTo("3");
+        List<SystemPermission> systemPermissions3 = systemPermissionMapper.selectByExample(systemPermissionExample3);
+        SystemPermissionExample systemPermissionExample2 = new SystemPermissionExample();
+        SystemPermissionExample.Criteria criteria2 = systemPermissionExample2.createCriteria();
+        criteria2.andLevelEqualTo("2");
+        List<SystemPermission> systemPermissions2 = systemPermissionMapper.selectByExample(systemPermissionExample2);
+        SystemPermissionExample systemPermissionExample1 = new SystemPermissionExample();
+        SystemPermissionExample.Criteria criteria1 = systemPermissionExample1.createCriteria();
+        criteria1.andLevelEqualTo("1");
+        List<SystemPermission> systemPermissions1 = systemPermissionMapper.selectByExample(systemPermissionExample1);
         for (SystemPermission systemPermission : systemPermissions3) {
             for (SystemPermission permission : systemPermissions2) {
                 if (systemPermission.getpId().equals(permission.getsId())){

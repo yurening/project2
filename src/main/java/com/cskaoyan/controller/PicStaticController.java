@@ -1,5 +1,6 @@
 package com.cskaoyan.controller;
 
+import com.aliyun.oss.OSSClient;
 import com.cskaoyan.bean.goods.PicStatic;
 import com.cskaoyan.bean.goods.ResponseType;
 import com.cskaoyan.bean.goods.StaticPhoto;
@@ -23,6 +24,11 @@ public class PicStaticController {
     PicStaticService picStaticService;
     @RequestMapping("storage/create")
     public ResponseType picStatic(MultipartFile file) throws IOException {
+        //阿里云
+        String accessKeyId="LTAI4FkEFjiCLX5NWuaCreE7";
+        String accessSecret="thisSIrvhvbgp0AE0joz5ZwEe4m0Q2";
+        String bucket = "mall2";
+        String endPoint = "oss-cn-beijing.aliyuncs.com";
         //完成文件key部分的命名
         String str = UUID.randomUUID().toString();
         String[] split = str.split("-");
@@ -36,7 +42,9 @@ public class PicStaticController {
         String suffix = split1[split1.length-1];
         String fileName = stringBuffer+"."+suffix;
 
-        file.transferTo(new File("d:/pic/"+fileName));
+        OSSClient ossClient = new OSSClient(endPoint, accessKeyId, accessSecret);
+        //bucket、上传的文件名、file对象或者是file流（multipart直接getStream）
+        ossClient.putObject(bucket,fileName,file.getInputStream());
 
         StaticPhoto staticPhoto = new StaticPhoto();
         staticPhoto.setKey(fileName);

@@ -350,16 +350,25 @@ public class MallServiceImpl implements MallService {
     @Override
     public MallCategory getCategoryById(Integer id) {
         MallCategoryExample categoryExample1 = new MallCategoryExample();
-        categoryExample1.createCriteria().andIdEqualTo(id);
+        categoryExample1.createCriteria().andIdEqualTo(id).andDeletedEqualTo(false);
         List<MallCategory> categoryList1 = mallCategoryMapper.selectByExample(categoryExample1);
         if (categoryList1 == null) {
             return null;
         }
         MallCategory category = categoryList1.get(0);
         MallCategoryExample categoryExample2 = new MallCategoryExample();
-        categoryExample2.createCriteria().andPidEqualTo(category.getId());
+        categoryExample2.createCriteria().andPidEqualTo(category.getId()).andDeletedEqualTo(false);
         List<MallCategory> categoryList2 = mallCategoryMapper.selectByExample(categoryExample2);
         category.setChildren(categoryList2);
         return category;
+    }
+
+    @Override
+    public List<MallRegion> regionListByPid(Integer pid) {
+        MallRegionExample mallRegionExample = new MallRegionExample();
+        MallRegionExample.Criteria criteria = mallRegionExample.createCriteria();
+        criteria.andPidEqualTo(pid);
+        List<MallRegion> mallRegionList = mallRegionMapper.selectByExample(mallRegionExample);
+        return mallRegionList;
     }
 }
