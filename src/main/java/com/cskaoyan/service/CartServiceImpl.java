@@ -1,16 +1,23 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.goods.Goods;
+import com.cskaoyan.bean.goods.Product;
 import com.cskaoyan.bean.user.Cart;
 import com.cskaoyan.bean.user.CartExample;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.mapper.CartMapper;
+import com.cskaoyan.mapper.GoodsMapper;
 import com.cskaoyan.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class CartServiceImpl implements CartService {
+    @Autowired
+    GoodsMapper goodsMapper;
     @Autowired
     CartMapper cartMapper;
     @Autowired
@@ -48,6 +55,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = new Cart();
         cart.setChecked(b);
         cartMapper.updateByExampleSelective(cart, cartExample);
+        updateTimeByExample(cartExample);
     }
 
     @Override
@@ -59,6 +67,72 @@ public class CartServiceImpl implements CartService {
         cart.setId(id);
         cart.setNumber(number);
         cartMapper.updateByPrimaryKeySelective(cart);
+        CartExample cartExample = new CartExample();
+        cartExample.createCriteria().andIdEqualTo(id);
+        updateTimeByExample(cartExample);
         return true;
+    }
+
+    @Override
+    public void deleteCartByUserIdAndProductIdS(Integer userId, List<Integer> productIds) {
+        CartExample cartExample = new CartExample();
+        cartExample.createCriteria().andUserIdEqualTo(userId).andProductIdIn(productIds).andDeletedEqualTo(false);
+        Cart cart = new Cart();
+        cart.setDeleted(true);
+        cartMapper.updateByExampleSelective(cart, cartExample);
+        updateTimeByExample(cartExample);
+    }
+
+    @Override
+    public boolean addCart(Cart cart) {
+        Integer productId = cart.getProductId();
+        Product product = productMapper.selectByPrimaryKey(productId);
+        CartExample cartExample = new CartExample();
+        cartExample.createCriteria().andUserIdEqualTo(8).andProductIdEqualTo(productId).andDeletedEqualTo(false);
+        List<Cart> carts = cartMapper.selectByExample(cartExample);
+        if (carts.size() != 0) {
+            Cart cartExists = carts.get(0);
+            int totalNumber = cartExists.getNumber() + cart.getNumber();
+            if (totalNumber > product.getNumber()) {
+                return false;
+            }
+            cart.setId(cartExists.getId());
+            cart.setNumber((short) totalNumber);
+            cart.setChecked(true);
+            cart.setUpdateTime(new Date());
+            cartMapper.updateByPrimaryKeySelective(cart);
+            return true;
+        }
+        if (cart.getNumber() > product.getNumber()) {
+            return false;
+        }
+        Goods goods = goodsMapper.selectByPrimaryKey(cart.getGoodsId());
+        cart.setUserId(8);
+        cart.setGoodsSn(goods.getGoodsSn());
+        cart.setGoodsName(goods.getName());
+        cart.setPrice(product.getPrice());
+        cart.setSpecifications(product.getSpecifications());
+        cart.setChecked(true);
+        cart.setPicUrl(product.getUrl());
+        Date date = new Date();
+        cart.setAddTime(date);
+        cart.setUpdateTime(date);
+        cart.setDeleted(false);
+        cartMapper.insert(cart);
+        return true;
+    }
+
+    @Override
+    public Integer getGoodsCount(int userId) {
+        CartExample cartExample = new CartExample();
+        cartExample.createCriteria().andUserIdEqualTo(userId).andDeletedEqualTo(false);
+        List<Cart> carts = cartMapper.selectByExample(cartExample);
+        return carts.size();
+    }
+
+    private void updateTimeByExample(CartExample cartExample) {
+        Cart cart = new Cart();
+        cart.setUpdateTime(new Date());
+        cartMapper.updateByExampleSelective(cart , cartExample);
     }
 }
