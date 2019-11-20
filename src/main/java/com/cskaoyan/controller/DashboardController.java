@@ -6,16 +6,26 @@
  */
 package com.cskaoyan.controller;
 
+import com.cskaoyan.bean.Admin;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.service.AuthService;
+import com.cskaoyan.shiro.AuthToken;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
-@RestController
-@RequestMapping("admin/")
+@Controller
 public class DashboardController {
 
     @Autowired
@@ -34,8 +44,12 @@ public class DashboardController {
      * 	"errmsg": "成功"
      * }
      * */
-    @RequestMapping("dashboard")
+    @RequestMapping("admin/dashboard")
+    @RequiresPermissions("admin:category:read")
+    @ResponseBody
     public BaseReqVo dashboard() {
+//        Subject subject = SecurityUtils.getSubject();
+//        Admin admin = (Admin) subject.getPrincipal();
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         HashMap<String, Integer> map = new HashMap<>();
         int goodsTotal = authService.getGoodsTotal();
@@ -51,5 +65,11 @@ public class DashboardController {
         baseReqVo.setData(map);
         baseReqVo.setErrmsg("成功");
         return baseReqVo;
+    }
+
+    @RequestMapping("admin/redirect")
+    public String redirect(HttpServletRequest request, HttpServletResponse response) {
+//        return BaseReqVo.fail(507,"权限不足,请联系超级管理员");
+        return "redirect:http://localhost:9527/login";
     }
 }

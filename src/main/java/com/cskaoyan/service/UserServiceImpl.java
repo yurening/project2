@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -152,6 +153,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void updateLoginTime(Integer id) {
+        userMapper.updateLoginTime(id);
+    }
+
     public Map<String, Object> selectSearchIndex() {
         Map<String, Object> objectHashMap = new HashMap<>();
         MallKeywordExample mallKeywordExample = new MallKeywordExample();
@@ -494,19 +499,21 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public ReturnData couponSelectList(CouponRequest couponRequest) {
+    public List<Coupon> couponSelectList(CouponRequest couponRequest) {
         Cart cart = cartMapper.selectByPrimaryKey(couponRequest.getCartId());
         CouponUserExample couponUserExample = new CouponUserExample();
         couponUserExample.createCriteria().andUserIdEqualTo(cart.getGoodsId()).andStatusEqualTo((short)0);
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
         List<Coupon> coupons = new ArrayList<>();
+        double price = cart.getPrice().doubleValue();
         for (CouponUser couponUser : couponUsers) {
-            coupons.add(couponMapper.selectByPrimaryKey(couponUser.getCouponId()));
+            //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
+            Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
+            if(price>Integer.parseInt(coupon.getMin())){
+                coupons.add(coupon);
+            }
         }
-        ReturnData returnData = new ReturnData();
-        returnData.setData(coupons);
-        returnData.setCount((int)couponUserMapper.countByExample(couponUserExample));
-        return returnData;
+        return coupons;
     }
 
     @Override

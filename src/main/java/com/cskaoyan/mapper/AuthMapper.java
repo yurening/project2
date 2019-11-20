@@ -61,4 +61,6 @@ public interface AuthMapper {
 
     @Select({"select count(id) from cskaoyan_mall_order"})
     int getOrderTotal();
+
+    List<String> getPermsMethodNameByRoleId(String roleId);
 }

@@ -1,5 +1,6 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.generalize.Coupon;
 import com.cskaoyan.bean.user.FootPrint;
 import com.cskaoyan.bean.user.FootPrintExample;
 import com.cskaoyan.bean.user.Feedback;
@@ -41,6 +42,9 @@ public interface UserService {
 
     User getUserByUsername(String username);
 
+
+    void updateLoginTime(Integer id);
+
     Map<String,Object> selectSearchIndex();
 
     List<String> searchHelper(String keyword);
@@ -61,7 +65,7 @@ public interface UserService {
 
     int couponReceive(CouponRequest couponRequest);
 
-    ReturnData couponSelectList(CouponRequest couponRequest);
+    List<Coupon> couponSelectList(CouponRequest couponRequest);
 
     int couponExchange(CouponRequest couponRequest, HttpServletRequest request);
 }

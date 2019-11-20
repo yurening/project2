@@ -53,4 +53,9 @@ public class AuthServiceImpl implements AuthService {
     public int getOrderTotal() {
         return mapper.getOrderTotal();
     }
+
+    @Override
+    public List<String> getPermsMethodNameByRoleId(String roleId) {
+        return mapper.getPermsMethodNameByRoleId(roleId);
+    }
 }
