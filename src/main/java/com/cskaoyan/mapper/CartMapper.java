@@ -73,4 +73,7 @@ public interface CartMapper {
         "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(Cart record);
+
+    Integer getGoodsCountByUserId(@Param("checked")Boolean checked, @Param("userId")Integer userId);
+    Double getGoodsAmountByUserId(@Param("checked")Boolean checked, @Param("userId")Integer userId);
 }

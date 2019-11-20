@@ -4,6 +4,7 @@ import com.cskaoyan.bean.goods.CategoryResp;
 import com.cskaoyan.bean.goods.CreateGoods;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.ResponseType;
+import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.bean.wx_index.HomeIndex;
 
 import java.util.List;
@@ -52,4 +53,6 @@ public interface GoodsService {
     List<HomeIndex.HotGoodsListBean> getHotGoodsList();
 
     List<HomeIndex.FloorGoodsListBean> getFloorGoodsList();
+
+
 }
