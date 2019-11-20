@@ -47,6 +47,12 @@ public interface GoodsService {
     //微信按照关键字取商品
     ResponseType getGoodsByKeyword(String keyword,String sort,String order,Integer page,Integer size,Integer categoryId);
 
+    //微信按照是否熱賣取商品
+    ResponseType getGoodsByIsHot(boolean isHot,Integer page,Integer size,String order,String sort,Integer categoryId);
+
+    //微信按照是否熱賣取商品
+    ResponseType getGoodsByIsNew(boolean isNew,Integer page,Integer size,String order,String sort,Integer categoryId);
+
     List<HomeIndex.ChannelBean> getChannel();
 
     List<HomeIndex.HotGoodsListBean> getHotGoodsList();
