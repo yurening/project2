@@ -45,9 +45,12 @@ public class MyTest {
 
     @Test
     public void mytest2(){
-        List<String> strings = new ArrayList<>();
-        for (String string : strings) {
-            System.out.println(string);
+        SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
+        SystemPermissionExample.Criteria criteria = systemPermissionExample.createCriteria();
+        criteria.andSIdEqualTo(0);
+        List<SystemPermission> systemPermissions = systemPermissionMapper.selectByExample(systemPermissionExample);
+        for (SystemPermission systemPermission : systemPermissions) {
+            System.out.println(systemPermission);
         }
     }
 }
