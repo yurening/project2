@@ -26,12 +26,7 @@ public interface GoodsService {
     int deleteGoods(Goods goods);
 
     Long getGoodsCount();
-<<<<<<< HEAD
-
-    List<IndexBean.NewGoodsListBean> getNewGoodsList();
-=======
     List<HomeIndex.NewGoodsListBean> getNewGoodsList();
->>>>>>> a100a27900f3bf16fee2673c26f3397ca3ebcc84
 
     List<HomeIndex.ChannelBean> getChannel();
 
