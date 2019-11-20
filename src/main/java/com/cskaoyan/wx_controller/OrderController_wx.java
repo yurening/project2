@@ -3,6 +3,7 @@ package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.BaseRespVo;
+import com.cskaoyan.bean.mall.wx_order.WxFromChart;
 import com.cskaoyan.bean.mall.wx_order.WxOrder;
 import com.cskaoyan.bean.mall.wx_order.WxId;
 import com.cskaoyan.bean.mall.wx_order.WxOrderDetail;
@@ -60,6 +61,12 @@ public class OrderController_wx {
     public BaseRespVo confirmOrder(@RequestBody WxId wxId){
         orderService.confirmOrder(wxId.getOrderId());
         return BaseRespVo.ok(null);
+    }
+
+    @RequestMapping("submit")
+    public BaseRespVo submitOrder(@RequestBody WxFromChart wxFromChart,@RequestHeader("X-cskaoyanmall-Admin-Token") String token){
+        WxId wxId = orderService.submitOrder(wxFromChart,token);
+        return BaseRespVo.ok(wxId);
     }
 
 }
