@@ -44,17 +44,17 @@ public class AddressServiceImpl implements AddressService {
 
         MallRegionExample example = new MallRegionExample();
 
-        example.createCriteria().andCodeEqualTo(mallAddress.getAreaId());
+        example.createCriteria().andIdEqualTo(mallAddress.getAreaId());
         String areaName = regionMapper.selectByExample(example).get(0).getName();
         mallAddress.setAreaName(areaName);
 
         example.clear();
-        example.createCriteria().andCodeEqualTo(mallAddress.getCityId());
+        example.createCriteria().andIdEqualTo(mallAddress.getCityId());
         String cityName = regionMapper.selectByExample(example).get(0).getName();
         mallAddress.setCityName(cityName);
 
         example.clear();
-        example.createCriteria().andCodeEqualTo(mallAddress.getProvinceId());
+        example.createCriteria().andIdEqualTo(mallAddress.getProvinceId());
         String provinceName = regionMapper.selectByExample(example).get(0).getName();
         mallAddress.setProvinceName(provinceName);
 
