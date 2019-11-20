@@ -13,4 +13,8 @@ public interface OrderService {
     void cancelOrder(Integer orderId);
 
     void deleteOrder(Integer orderId);
+
+    void refundOrder(Integer orderId);
+
+    void confirmOrder(Integer orderId);
 }

@@ -175,4 +175,18 @@ public class OrderServiceImpl implements OrderService {
         mallOrderGoodsMapper.deleteByExample(mallOrderGoodsExample);
         mallOrderMapper.deleteByPrimaryKey(orderId);
     }
+
+    @Override
+    public void refundOrder(Integer orderId) {
+        MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(orderId);
+        mallOrder.setOrderStatus((short) 202);
+        mallOrderMapper.updateByPrimaryKey(mallOrder);
+    }
+
+    @Override
+    public void confirmOrder(Integer orderId) {
+        MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(orderId);
+        mallOrder.setOrderStatus((short) 401);
+        mallOrderMapper.updateByPrimaryKey(mallOrder);
+    }
 }

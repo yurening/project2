@@ -50,4 +50,16 @@ public class OrderController_wx {
         return BaseRespVo.ok(null);
     }
 
+    @RequestMapping("refund")
+    public BaseRespVo refundOrder(@RequestBody WxId wxId){
+        orderService.refundOrder(wxId.getOrderId());
+        return BaseRespVo.ok(null);
+    }
+
+    @RequestMapping("confirm")
+    public BaseRespVo confirmOrder(@RequestBody WxId wxId){
+        orderService.confirmOrder(wxId.getOrderId());
+        return BaseRespVo.ok(null);
+    }
+
 }
