@@ -337,7 +337,7 @@ public class OrderServiceImpl implements OrderService {
             good.setProductId(x.getProductId());
             good.setNumber(x.getNumber());
             good.setPrice(x.getPrice());
-            good.setSpecifications(x.getSpecifications());
+            good.setSpecifications(x.getSpecifications().toString());
             good.setPicUrl(x.getPicUrl());
             good.setComment(0);
             good.setAddTime(new Date());
