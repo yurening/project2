@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 public class UserController_wx {
 
@@ -32,11 +35,39 @@ public class UserController_wx {
         return objectBaseReqVo;
     }
 
+    @RequestMapping("wx/search/clearhistory")
+    public BaseReqVo searchClearHistory(ServletRequest servletRequest){
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
+        userService.searchClearHistory(request);
+        objectBaseReqVo.setErrno(0);
+        objectBaseReqVo.setErrmsg("成功");
+        return objectBaseReqVo;
+    }
+
     //groupon
     @RequestMapping("wx/groupon/list")
-    public BaseReqVo grouponMy(UserRequest userRequest){
+    public BaseReqVo grouponlist(UserRequest userRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         objectBaseReqVo.setData(userService.selectGroupon(userRequest));
+        objectBaseReqVo.setErrno(0);
+        objectBaseReqVo.setErrmsg("成功");
+        return objectBaseReqVo;
+    }
+
+    @RequestMapping("wx/groupon/my")
+    public BaseReqVo grouponMy(int showType,ServletRequest servletRequest){
+        BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
+        objectBaseReqVo.setData(userService.grouponMy(showType));
+        objectBaseReqVo.setErrno(0);
+        objectBaseReqVo.setErrmsg("成功");
+        return objectBaseReqVo;
+    }
+
+    @RequestMapping("wx/groupon/detail")
+    public BaseReqVo grouponDetail(int grouponId){
+        BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
+        objectBaseReqVo.setData(userService.grouponDetail(grouponId));
         objectBaseReqVo.setErrno(0);
         objectBaseReqVo.setErrmsg("成功");
         return objectBaseReqVo;
@@ -67,9 +98,12 @@ public class UserController_wx {
         if(userService.couponReceive(couponRequest)==1){
             objectBaseReqVo.setErrno(0);
             objectBaseReqVo.setErrmsg("成功");
-        }else {
+        }else if(userService.couponReceive(couponRequest)==0) {
             objectBaseReqVo.setErrno(507);
-            objectBaseReqVo.setErrmsg("领取失败");
+            objectBaseReqVo.setErrmsg("您已经领取过了");
+        }else if(userService.couponReceive(couponRequest)==2) {
+            objectBaseReqVo.setErrno(507);
+            objectBaseReqVo.setErrmsg("优惠券已领完");
         }
 
         return objectBaseReqVo;
@@ -90,9 +124,10 @@ public class UserController_wx {
     }
 
     @RequestMapping("wx/coupon/exchange")
-    public BaseReqVo couponExchange(@RequestBody CouponRequest couponRequest){
+    public BaseReqVo couponExchange(@RequestBody CouponRequest couponRequest, ServletRequest servletRequest){
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
-        int i = userService.couponExchange(couponRequest);
+        int i = userService.couponExchange(couponRequest,request);
         if(i==0){
             objectBaseReqVo.setErrno(507);
             objectBaseReqVo.setErrmsg("领取失败");
@@ -102,5 +137,7 @@ public class UserController_wx {
         objectBaseReqVo.setErrmsg("成功");
         return objectBaseReqVo;
     }
+
+
 }
 
