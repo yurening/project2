@@ -5,9 +5,7 @@ import com.cskaoyan.bean.generalize.Storage;
 import com.cskaoyan.bean.systemBean.*;
 import com.cskaoyan.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,15 +142,20 @@ public class SystemController {
     @RequestMapping("role/update")
     public BaseReqVo roleUpdate(@RequestBody Role role){
         BaseReqVo baseReqVo = new BaseReqVo();
-        Role r = systemService.roleUpdate(role);
-        if (r == null){
+        if(role.getId().equals(1)){
+            baseReqVo.setErrmsg("你不能修改超级管理员信息");
             baseReqVo.setErrno(500);
-            baseReqVo.setErrmsg("角色已存在");
-            return baseReqVo;
+        } else {
+            Role r = systemService.roleUpdate(role);
+            if (r == null) {
+                baseReqVo.setErrno(500);
+                baseReqVo.setErrmsg("角色已存在");
+                return baseReqVo;
+            }
+            baseReqVo.setErrmsg("成功");
+            baseReqVo.setErrno(0);
+            baseReqVo.setData(r);
         }
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        baseReqVo.setData(r);
         return baseReqVo;
     }
 
@@ -194,17 +197,31 @@ public class SystemController {
         return baseReqVo;
     }
 
-    @RequestMapping("role/permissions")
-    public BaseReqVo rolePermissions(Integer roleId){
+    @GetMapping("role/permissions")
+    public BaseReqVo rolePermissionsGet(Integer roleId){
         BaseReqVo baseReqVo = new BaseReqVo();
-        List<SystemPermissions> systemPermissionsList = systemService.rolePermissions();
-        List<Permission> permissionList = systemService.permissionList();
+        List<SystemPermission> systemPermissionsList = systemService.systemPermissionsList();
+        List<String> permissionList = systemService.permissionList(roleId);
         baseReqVo.setErrmsg("成功");
         baseReqVo.setErrno(0);
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("systemPermissions",systemPermissionsList);
         hashMap.put("assignedPermissions",permissionList);
         baseReqVo.setData(hashMap);
+        return baseReqVo;
+    }
+
+    @PostMapping("role/permissions")
+    public BaseReqVo rolePermissionsPost(@RequestBody Permissions permissions){
+        BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
+        if (permissions.getRoleId().equals(1)){
+            baseReqVo.setErrno(500);
+            baseReqVo.setErrmsg("你不能修改超级管理员的权限");
+        } else {
+            systemService.changePermissions(permissions);
+            baseReqVo.setErrno(0);
+            baseReqVo.setErrmsg("成功");
+        }
         return baseReqVo;
     }
 }

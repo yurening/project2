@@ -27,6 +27,7 @@ public interface GoodsService {
 
     Long getGoodsCount();
 
+<<<<<<< HEAD
     //微信获取品牌下的商品
     ResponseType getGoodsByBrandId(Integer brandId,Integer page,Integer size);
 
@@ -46,6 +47,15 @@ public interface GoodsService {
     ResponseType getGoodsByKeyword(String keyword,String sort,String order,Integer page,Integer size,Integer categoryId);
 
     List<HomeIndex.NewGoodsListBean> getNewGoodsList();
+=======
+
+
+
+
+
+    List<HomeIndex.NewGoodsListBean> getNewGoodsList();
+
+>>>>>>> 7ef4a66bf1697e9a7e92c509527c3f4fc9d127f0
 
     List<HomeIndex.ChannelBean> getChannel();
 

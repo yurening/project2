@@ -33,9 +33,11 @@ public interface SystemService {
 
     void storageDelete(Storage storage);
 
-    List<SystemPermissions> rolePermissions();
-
-    List<Permission> permissionList();
+    List<String> permissionList(Integer roleId);
 
     void insertLog(Log log);
+
+    List<SystemPermission> systemPermissionsList();
+
+    void changePermissions(Permissions permissions);
 }
