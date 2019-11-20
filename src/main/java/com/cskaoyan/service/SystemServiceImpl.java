@@ -8,6 +8,7 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,11 +28,12 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     StorageMapper storageMapper;
 
-    @Autowired
-    RolePermissionsMapper rolePermissionsMapper;
 
     @Autowired
     PermissionMapper permissionMapper;
+
+    @Autowired
+    SystemPermissionMapper systemPermissionMapper;
 
     @Override
     public HashMap<String,Object> adminList(Integer page, Integer limit, String username, String sort, String order) {
@@ -211,21 +213,80 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public List<SystemPermissions> rolePermissions() {
-        List<SystemPermissions> systemPermissionsList =
-                rolePermissionsMapper.rolePermissionsMapperList();
-        return systemPermissionsList;
-    }
-
-    @Override
-    public List<Permission> permissionList() {
+    public List<String> permissionList(Integer roleId) {
         PermissionExample permissionExample = new PermissionExample();
+        PermissionExample.Criteria criteria = permissionExample.createCriteria();
+        criteria.andRoleIdEqualTo(roleId);
+        criteria.andDeletedEqualTo(false);
         List<Permission> permissionList = permissionMapper.selectByExample(permissionExample);
-        return permissionList;
+        List<String> strings = new ArrayList<>();
+        for (Permission permission : permissionList) {
+            if (!permission.getPermission().equals("*")) {
+                strings.add(permission.getPermission());
+            } else {
+                SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
+                SystemPermissionExample.Criteria criteria1 = systemPermissionExample.createCriteria();
+                criteria1.andLevelEqualTo("3");
+                List<SystemPermission> systemPermissions = systemPermissionMapper.selectByExample(systemPermissionExample);
+                for (SystemPermission systemPermission : systemPermissions) {
+                    strings.add(systemPermission.getId());
+                }
+            }
+        }
+        return strings;
     }
 
     @Override
     public void insertLog(Log log) {
         logMapper.insert(log);
+    }
+
+    @Override
+    public List<SystemPermission> systemPermissionsList() {
+        SystemPermissionExample systemPermissionExample3 = new SystemPermissionExample();
+        SystemPermissionExample.Criteria criteria3 = systemPermissionExample3.createCriteria();
+        criteria3.andLevelEqualTo("3");
+        List<SystemPermission> systemPermissions3 = systemPermissionMapper.selectByExample(systemPermissionExample3);
+        SystemPermissionExample systemPermissionExample2 = new SystemPermissionExample();
+        SystemPermissionExample.Criteria criteria2 = systemPermissionExample2.createCriteria();
+        criteria2.andLevelEqualTo("2");
+        List<SystemPermission> systemPermissions2 = systemPermissionMapper.selectByExample(systemPermissionExample2);
+        SystemPermissionExample systemPermissionExample1 = new SystemPermissionExample();
+        SystemPermissionExample.Criteria criteria1 = systemPermissionExample1.createCriteria();
+        criteria1.andLevelEqualTo("1");
+        List<SystemPermission> systemPermissions1 = systemPermissionMapper.selectByExample(systemPermissionExample1);
+        for (SystemPermission systemPermission : systemPermissions3) {
+            for (SystemPermission permission : systemPermissions2) {
+                if (systemPermission.getpId().equals(permission.getsId())){
+                    permission.getChildren().add(systemPermission);
+                }
+            }
+        }
+        for (SystemPermission systemPermission : systemPermissions2) {
+            for (SystemPermission permission : systemPermissions1) {
+                if (systemPermission.getpId().equals(permission.getsId())) {
+                    permission.getChildren().add(systemPermission);
+                }
+            }
+        }
+        return systemPermissions1;
+    }
+
+    @Override
+    public void changePermissions(Permissions permissions) {
+        PermissionExample permissionExample = new PermissionExample();
+        PermissionExample.Criteria criteria = permissionExample.createCriteria();
+        criteria.andRoleIdEqualTo(permissions.getRoleId());
+        permissionMapper.deleteByExample(permissionExample);
+        List<String> ps = permissions.getPermissions();
+        for (String p : ps) {
+            Permission permission = new Permission();
+            permission.setRoleId(permissions.getRoleId());
+            permission.setPermission(p);
+            permission.setAddTime(new Date());
+            permission.setUpdateTime(new Date());
+            permission.setDeleted(false);
+            permissionMapper.insert(permission);
+        }
     }
 }

@@ -1,10 +1,12 @@
 package com.cskaoyan.bean.mall.order;
 
+import com.cskaoyan.bean.mall.wx_order.WxHandleOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
+@Data
 public class MallOrder {
     private Integer id;
 
@@ -38,6 +40,14 @@ public class MallOrder {
 
     private String payId;
 
+    WxHandleOption handleOption;
+
+    String expCode;
+
+    String expNo;
+
+    String OrderStatusText;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
 
@@ -45,16 +55,21 @@ public class MallOrder {
 
     private String shipChannel;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date shipTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date confirmTime;
 
     private Short comments;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date addTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     private Boolean deleted;

@@ -107,6 +107,9 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.cskaoyan.bean.goods.Comment">
+    <selectKey order="AFTER" keyColumn="id" keyProperty="id" resultType="int">
+      select LAST_INSERT_ID();
+    </selectKey>
     insert into cskaoyan_mall_comment (id, value_id, type,
       content, user_id, has_picture,
       pic_urls, star, add_time,

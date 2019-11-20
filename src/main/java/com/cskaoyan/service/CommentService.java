@@ -8,4 +8,7 @@ public interface CommentService {
                              String order, String sort,
                              Integer userId, Integer valueId);
     ResponseType deleteByLogic(Comment comment);
+    ResponseType getCommentCount(Integer valueId,Integer type);
+    ResponseType getCommentsList(Integer valueId,Integer type,Integer size,Integer page,Integer showType);
+    ResponseType addComment(Comment comment);
 }
