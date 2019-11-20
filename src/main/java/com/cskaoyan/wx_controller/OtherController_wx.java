@@ -103,4 +103,14 @@ public class OtherController_wx {
         HashMap<String,Object> footprintLists = otherService.footprintList(page,size,userId);
         return BaseRespVo.ok(footprintLists);
     }
+
+    @RequestMapping("footprint/delete")
+    public BaseReqVo footprintDelete(@RequestBody HashMap<String,Object> hashMap){
+        Integer id = (Integer) hashMap.get("id");
+        otherService.footprintDelete(id);
+        BaseReqVo baseReqVo = new BaseReqVo();
+        baseReqVo.setErrno(0);
+        baseReqVo.setErrmsg("成功");
+        return baseReqVo;
+    }
 }
