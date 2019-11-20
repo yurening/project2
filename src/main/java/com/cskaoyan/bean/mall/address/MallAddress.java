@@ -1,7 +1,9 @@
 package com.cskaoyan.bean.mall.address;
 
-import java.util.Date;
+import lombok.Data;
 
+import java.util.Date;
+@Data
 public class MallAddress {
     private Integer id;
 
@@ -10,10 +12,13 @@ public class MallAddress {
     private Integer userId;
 
     private Integer provinceId;
+    private String provinceName;
 
     private Integer cityId;
+    private String cityName;
 
     private Integer areaId;
+    private String areaName;
 
     private String address;
 

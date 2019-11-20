@@ -3,8 +3,9 @@ package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.BaseRespVo;
+import com.cskaoyan.bean.mall.wx_order.WxFromChart;
 import com.cskaoyan.bean.mall.wx_order.WxOrder;
-import com.cskaoyan.bean.mall.wx_order.WxOrderId;
+import com.cskaoyan.bean.mall.wx_order.WxId;
 import com.cskaoyan.bean.mall.wx_order.WxOrderDetail;
 import com.cskaoyan.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +40,33 @@ public class OrderController_wx {
     }
 
     @RequestMapping("cancel")
-    public BaseRespVo cancelOrder(@RequestBody WxOrderId wxOrder){
+    public BaseRespVo cancelOrder(@RequestBody WxId wxOrder){
         orderService.cancelOrder(wxOrder.getOrderId());
         return BaseRespVo.ok(null);
     }
 
     @RequestMapping("delete")
-    public BaseRespVo deleteOrder(@RequestBody WxOrderId wxOrder){
+    public BaseRespVo deleteOrder(@RequestBody WxId wxOrder){
         orderService.deleteOrder(wxOrder.getOrderId());
         return BaseRespVo.ok(null);
+    }
+
+    @RequestMapping("refund")
+    public BaseRespVo refundOrder(@RequestBody WxId wxId){
+        orderService.refundOrder(wxId.getOrderId());
+        return BaseRespVo.ok(null);
+    }
+
+    @RequestMapping("confirm")
+    public BaseRespVo confirmOrder(@RequestBody WxId wxId){
+        orderService.confirmOrder(wxId.getOrderId());
+        return BaseRespVo.ok(null);
+    }
+
+    @RequestMapping("submit")
+    public BaseRespVo submitOrder(@RequestBody WxFromChart wxFromChart,@RequestHeader("X-cskaoyanmall-Admin-Token") String token){
+        WxId wxId = orderService.submitOrder(wxFromChart,token);
+        return BaseRespVo.ok(wxId);
     }
 
 }

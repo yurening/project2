@@ -1,25 +1,30 @@
 package com.cskaoyan.service;
+import com.cskaoyan.bean.generalize.Coupon;
+import com.cskaoyan.bean.generalize.Groupon;
+import com.cskaoyan.bean.generalize.GrouponRules;
+import com.cskaoyan.bean.mall.address.MallAddress;
+import com.cskaoyan.bean.mall.coupon.MallCoupon;
+import com.cskaoyan.bean.mall.wx_order.WxHandleOption;
+import java.util.Date;
 import com.cskaoyan.bean.mall.order.MallOrderGoods;
 import com.cskaoyan.bean.mall.order.MallOrderGoodsExample;
-import com.cskaoyan.bean.mall.wx_order.WxGoods;
+import com.cskaoyan.bean.mall.wx_order.*;
 
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.mall.order.MallOrderExample;
-import com.cskaoyan.bean.mall.wx_order.WxHandleOption;
-import com.cskaoyan.bean.mall.wx_order.WxOrder;
-import com.cskaoyan.bean.mall.wx_order.WxOrderDetail;
-import com.cskaoyan.mapper.MallOrderGoodsMapper;
-import com.cskaoyan.mapper.MallOrderMapper;
+import com.cskaoyan.bean.user.Cart;
+import com.cskaoyan.bean.user.CartExample;
+import com.cskaoyan.mapper.*;
 import com.cskaoyan.needdelete.UserTokenManager;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.omg.CORBA.Object;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -28,6 +33,16 @@ public class OrderServiceImpl implements OrderService {
     MallOrderMapper mallOrderMapper;
     @Autowired
     MallOrderGoodsMapper mallOrderGoodsMapper;
+    @Autowired
+    MallAddressMapper addressMapper;
+    @Autowired
+    CartMapper cartMapper;
+    @Autowired
+    MallCouponMapper couponMapper;
+    @Autowired
+    GrouponRulesMapper grouponRulesMapper;
+    @Autowired
+    GrouponMapper grouponMapper;
 
     /**
      * 获取微信订单
@@ -175,4 +190,163 @@ public class OrderServiceImpl implements OrderService {
         mallOrderGoodsMapper.deleteByExample(mallOrderGoodsExample);
         mallOrderMapper.deleteByPrimaryKey(orderId);
     }
+
+    @Override
+    public HashMap<String, Object> countOrderStatusByUserId(Integer userId) {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        MallOrderExample mallOrderExample = new MallOrderExample();
+        MallOrderExample.Criteria criteria = mallOrderExample.createCriteria();
+        criteria.andUserIdEqualTo(userId);
+        List<MallOrder> mallOrders = mallOrderMapper.selectByExample(mallOrderExample);
+        Integer unrecv = 0;
+        Integer uncomment = 0;
+        Integer unpaid = 0;
+        Integer unship = 0;
+        for (MallOrder mallOrder : mallOrders) {
+            if (mallOrder.getOrderStatus().intValue() == 101) {
+                unpaid++;
+            } else if (mallOrder.getOrderStatus().intValue() == 201) {
+                unship++;
+            } else if (mallOrder.getOrderStatus().intValue() == 301) {
+                unrecv++;
+            } else if (mallOrder.getOrderStatus().intValue() == 401 ||
+                    mallOrder.getOrderStatus().intValue() == 402) {
+                uncomment++;
+            }
+        }
+        hashMap.put("unpaid", unpaid);
+        hashMap.put("unship", unship);
+        hashMap.put("unrecv", unrecv);
+        hashMap.put("uncomment", uncomment);
+        return hashMap;
+    }
+
+    public void refundOrder(Integer orderId) {
+        MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(orderId);
+        mallOrder.setOrderStatus((short) 202);
+        mallOrderMapper.updateByPrimaryKey(mallOrder);
+    }
+
+    @Override
+    public void confirmOrder(Integer orderId) {
+        MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(orderId);
+        mallOrder.setOrderStatus((short) 401);
+        mallOrderMapper.updateByPrimaryKey(mallOrder);
+    }
+
+    @Override
+    public WxId submitOrder(WxFromChart wxFromChart, String token) {
+        //获取请求信息
+        int addressId = wxFromChart.getAddressId();
+        int cartId = wxFromChart.getCartId();
+        int couponId = wxFromChart.getCouponId();
+        int grouponLinkId = wxFromChart.getGrouponLinkId();
+        int grouponRulesId = wxFromChart.getGrouponRulesId();
+        String message = wxFromChart.getMessage();
+
+        //获取userId
+        Integer userId = UserTokenManager.getUserId(token);
+
+        //分为立即购买和购物车购买(cartId 非0和0)
+
+        //立即购买：cartId 找到一条cart信息，
+        //购物车购买，使用userId并且选择为true找到多条cart消息。
+        List<Cart> carts = new ArrayList<>();
+        if(cartId!=0){
+            carts.add(cartMapper.selectByPrimaryKey(cartId));
+        }else {
+            CartExample cartExample = new CartExample();
+            cartExample.createCriteria().andUserIdEqualTo(userId).andCheckedEqualTo(true);
+            carts=cartMapper.selectByExample(cartExample);
+        }
+
+        //使用cart信息拼订单商品表.
+        List<MallOrderGoods> orderGoods = insertOrderGoodsByCarts(carts);
+
+        //根据订单商品表最终获得一条订单信息插入
+        MallOrder resultOrder = new MallOrder();
+        resultOrder.setMessage(message);
+        resultOrder = setOrderAddress(resultOrder,addressId);
+        resultOrder = setOrderCoupon(resultOrder,couponId);
+        resultOrder = setOrdergroupon(resultOrder,grouponRulesId);
+        resultOrder.setIntegralPrice(new BigDecimal(0));
+        resultOrder = setOrderGoodsPrice(resultOrder,orderGoods);
+
+        mallOrderMapper.insert(resultOrder);
+        int resultOrderId = mallOrderMapper.lastInsert();
+
+        //设置团购的，商品的相关订单id
+        for(MallOrderGoods x:orderGoods){
+            x.setOrderId(resultOrderId);
+            mallOrderGoodsMapper.updateByPrimaryKey(x);
+        }
+        Groupon groupon = grouponMapper.selectByPrimaryKey(grouponLinkId);
+        groupon.setOrderId(resultOrderId);
+        grouponMapper.updateByPrimaryKey(groupon);
+
+        WxId wxId = new WxId();
+        wxId.setOrderId(resultOrderId);
+        return wxId;
+    }
+
+    private MallOrder setOrderGoodsPrice(MallOrder resultOrder, List<MallOrderGoods> orderGoods) {
+        int orderPrice=0;
+        int actualPrice=0;
+        int goodsTotalPrice=0;
+        for(MallOrderGoods x:orderGoods) {
+            goodsTotalPrice += x.getPrice().intValue();
+        }
+        actualPrice = goodsTotalPrice - resultOrder.getCouponPrice().intValue() /*- resultOrder.getGrouponPrice().intValue()*/;
+        orderPrice = actualPrice;
+        resultOrder.setActualPrice(new BigDecimal(actualPrice));
+        resultOrder.setOrderPrice(new BigDecimal(orderPrice));
+        return resultOrder;
+    }
+
+    private MallOrder setOrdergroupon(MallOrder resultOrder,  int grouponRulesId) {
+        GrouponRules grouponRules = grouponRulesMapper.selectByPrimaryKey(grouponRulesId);
+        if(grouponRules!=null){
+            resultOrder.setGrouponPrice(grouponRules.getDiscount());
+        }else {
+            resultOrder.setGrouponPrice(new BigDecimal(0));
+        }
+        return resultOrder;
+    }
+
+    private MallOrder setOrderCoupon(MallOrder resultOrder, int couponId) {
+        MallCoupon coupon = couponMapper.selectByPrimaryKey(couponId);
+        resultOrder.setCouponPrice(coupon.getDiscount());
+        return resultOrder;
+    }
+
+    private MallOrder setOrderAddress(MallOrder resultOrder, int addressId) {
+        MallAddress mallAddress = addressMapper.selectByPrimaryKey(addressId);
+        resultOrder.setConsignee(mallAddress.getName());
+        resultOrder.setMobile(mallAddress.getMobile());
+        resultOrder.setAddress(mallAddress.getAddress());
+        return resultOrder;
+    }
+
+    private List<MallOrderGoods> insertOrderGoodsByCarts(List<Cart> carts) {
+        List<MallOrderGoods> mallOrderGoods = new ArrayList<>();
+        for(Cart x:carts){
+            MallOrderGoods good = new MallOrderGoods();
+            good.setGoodsId(x.getGoodsId());
+            good.setGoodsName(x.getGoodsName());
+            good.setGoodsSn(x.getGoodsSn());
+            good.setProductId(x.getProductId());
+            good.setNumber(x.getNumber());
+            good.setPrice(x.getPrice());
+            good.setSpecifications(x.getSpecifications().toString());
+            good.setPicUrl(x.getPicUrl());
+            good.setComment(0);
+            good.setAddTime(new Date());
+            good.setUpdateTime(new Date());
+            good.setDeleted(false);
+            mallOrderGoodsMapper.insert(good);
+            mallOrderGoods.add(good);
+        }
+        return mallOrderGoods;
+    }
+
 }
