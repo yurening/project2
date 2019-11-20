@@ -1,5 +1,9 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.user.FootPrint;
+import com.cskaoyan.bean.user.FootPrintExample;
+import com.cskaoyan.bean.user.Feedback;
+import com.cskaoyan.bean.user.FeedbackExample;
 import com.cskaoyan.bean.user.Collect;
 import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.bean.user.*;
@@ -23,7 +27,7 @@ public interface UserService {
     //footprint
     long countFootprintByExample(FootPrintExample example);
 
-    List<FootPrint> selectFootprintByExample(FootPrintRequest footPrintRequest,FootPrintExample example);
+    List<FootPrint> selectFootprintByExample(FootPrintRequest footPrintRequest, FootPrintExample example);
 
     //history
     long countHistoryByExample(HistoryExample example);
@@ -31,7 +35,7 @@ public interface UserService {
 
     //feedback
     long countFeedbackByExample(FeedbackExample example);
-    List<Feedback> selectFeedbackByExample(FeedBackRequest feedBackRequest,FeedbackExample example);
+    List<Feedback> selectFeedbackByExample(FeedBackRequest feedBackRequest, FeedbackExample example);
 
     User getUserByUsername(String username);
 

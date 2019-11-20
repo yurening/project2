@@ -1,5 +1,9 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.user.FootPrint;
+import com.cskaoyan.bean.user.FootPrintExample;
+import com.cskaoyan.bean.user.Feedback;
+import com.cskaoyan.bean.user.FeedbackExample;
 import com.cskaoyan.bean.user.Collect;
 import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.bean.generalize.*;
@@ -88,7 +92,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<FootPrint> selectFootprintByExample(FootPrintRequest footPrintRequest,FootPrintExample example) {
+    public List<FootPrint> selectFootprintByExample(FootPrintRequest footPrintRequest, FootPrintExample example) {
         PageHelper.startPage(footPrintRequest.getPage(),footPrintRequest.getLimit());
         List<FootPrint> footPrints = userMapper.selectFootprintByExample(example);
         return footPrints;

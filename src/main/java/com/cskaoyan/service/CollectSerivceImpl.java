@@ -2,6 +2,7 @@ package com.cskaoyan.service;
 
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.GoodsExample;
+import com.cskaoyan.bean.goods.GoodsForCollect;
 import com.cskaoyan.bean.user.Collect;
 import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.mapper.CollectMapper;
@@ -34,7 +35,7 @@ public class CollectSerivceImpl implements CollectService{
         PageHelper.startPage(page,size);
         List<Collect> collects = collectMapper.selectByExample(collectExample);
         int totalPages = (Math.toIntExact(total) / size) + 1;
-        List<Integer> goodsIds = new ArrayList<>();
+        /*List<Integer> goodsIds = new ArrayList<>();
         for (Collect collect : collects) {
             goodsIds.add(collect.getValueId());
         }
@@ -42,8 +43,20 @@ public class CollectSerivceImpl implements CollectService{
         GoodsExample.Criteria goodsExampleCriteria = goodsExample.createCriteria();
         goodsExampleCriteria.andIdIn(goodsIds);
         List<Goods> goodsList = goodsMapper.selectByExample(goodsExample);
+        List<GoodsForCollect> goodsForCollectList = new ArrayList<>();
+        for (Goods goods : goodsList) {
+            GoodsForCollect goodsForCollect = new GoodsForCollect();
+            goodsForCollect.setBrief(goods.getBrief());
+            goodsForCollect.setName(goods.getName());
+            goodsForCollect.setPicUrl(goods.getPicUrl());
+            goodsForCollect.setRetailPrice(goods.getRetailPrice().intValue());
+            goodsForCollect.setValueId(goods.getId());
+            goodsForCollect.setType(0);
+        }
+        */
+        List<GoodsForCollect> goodsForCollectList = collectMapper.selectGoodsForCollect(type, userId);
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("collectList",goodsList);
+        hashMap.put("collectList",goodsForCollectList);
         hashMap.put("totalPages",totalPages);
         return hashMap;
     }
