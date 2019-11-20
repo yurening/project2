@@ -1,8 +1,7 @@
 package com.cskaoyan.service;
 
-import com.cskaoyan.bean.generalize.Coupon;
-import com.cskaoyan.bean.generalize.Groupon;
-import com.cskaoyan.bean.generalize.GrouponRules;
+import com.cskaoyan.bean.user.Collect;
+import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.bean.user.*;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public interface UserService {
     //collect
     long countCollectByExample(CollectExample example);
 
-    List<Collect> selectCollectByExample(CollectRequest collectRequest,CollectExample example);
+    List<Collect> selectCollectByExample(CollectRequest collectRequest, CollectExample example);
 
     //footprint
     long countFootprintByExample(FootPrintExample example);

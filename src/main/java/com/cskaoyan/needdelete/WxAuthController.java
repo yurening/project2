@@ -45,7 +45,7 @@ public class WxAuthController {
 		return BaseRespVo.ok(result);
 	}
 
-	@GetMapping("user/index")
+/*	@GetMapping("user/index")
 	public Object list(HttpServletRequest request) {
 		//前端写了一个token放在请求头中
 		//*************************
@@ -65,5 +65,5 @@ public class WxAuthController {
 		//***********************************
 
 		return BaseRespVo.ok(data);
-	}
+	}*/
 }

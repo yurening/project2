@@ -14,12 +14,12 @@ import com.cskaoyan.mapper.MallOrderMapper;
 import com.cskaoyan.needdelete.UserTokenManager;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.omg.CORBA.Object;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -174,5 +174,35 @@ public class OrderServiceImpl implements OrderService {
         mallOrderGoodsExample.createCriteria().andOrderIdEqualTo(orderId);
         mallOrderGoodsMapper.deleteByExample(mallOrderGoodsExample);
         mallOrderMapper.deleteByPrimaryKey(orderId);
+    }
+
+    @Override
+    public HashMap<String, Object> countOrderStatusByUserId(Integer userId) {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        MallOrderExample mallOrderExample = new MallOrderExample();
+        MallOrderExample.Criteria criteria = mallOrderExample.createCriteria();
+        criteria.andUserIdEqualTo(userId);
+        List<MallOrder> mallOrders = mallOrderMapper.selectByExample(mallOrderExample);
+        Integer unrecv = 0;
+        Integer uncomment = 0;
+        Integer unpaid = 0;
+        Integer unship = 0;
+        for (MallOrder mallOrder : mallOrders) {
+            if (mallOrder.getOrderStatus().intValue() == 101){
+                unpaid++;
+            } else if (mallOrder.getOrderStatus().intValue() == 201){
+                unship++;
+            } else if (mallOrder.getOrderStatus().intValue() == 301){
+                unrecv++;
+            } else if (mallOrder.getOrderStatus().intValue() == 401 ||
+                        mallOrder.getOrderStatus().intValue() == 402){
+                uncomment++;
+            }
+        }
+        hashMap.put("unpaid",unpaid);
+        hashMap.put("unship",unship);
+        hashMap.put("unrecv",unrecv);
+        hashMap.put("uncomment",uncomment);
+        return hashMap;
     }
 }

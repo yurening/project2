@@ -1,21 +1,16 @@
 package com.cskaoyan.controller;
 
+import com.cskaoyan.bean.user.Collect;
+import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.bean.user.*;
-import com.cskaoyan.mapper.UserMapper;
 import com.cskaoyan.service.UserService;
-import com.cskaoyan.utils.TransferDateUtils;
-import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 public class UserController {

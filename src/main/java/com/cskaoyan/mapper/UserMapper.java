@@ -1,7 +1,8 @@
 package com.cskaoyan.mapper;
 
+import com.cskaoyan.bean.user.Collect;
+import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.bean.user.*;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
