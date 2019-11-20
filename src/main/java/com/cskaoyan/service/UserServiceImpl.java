@@ -1,5 +1,7 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.user.Collect;
+import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.bean.generalize.*;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.GoodsExample;
