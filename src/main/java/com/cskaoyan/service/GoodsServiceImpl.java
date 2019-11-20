@@ -3,6 +3,8 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.GrouponRules;
 import com.cskaoyan.bean.generalize.GrouponRulesExample;
 import com.cskaoyan.bean.goods.*;
+import com.cskaoyan.bean.user.SearchHistory;
+import com.cskaoyan.bean.user.SearchHistoryExample;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.bean.wx_index.HomeIndex;
 import com.cskaoyan.mapper.*;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 
@@ -34,6 +37,8 @@ public class GoodsServiceImpl implements GoodsService {
     IssueMapper issueMapper;
     @Autowired
     CommentMapper commentMapper;
+    @Autowired
+    SearchHistoryMapper searchHistoryMapper;
 
     @Override
     public ResponseType getAllGoods(Integer page,Integer limit,
@@ -47,9 +52,6 @@ public class GoodsServiceImpl implements GoodsService {
         }
         if (!StringUtils.isEmpty(name)){
             criteria.andNameLike("%"+name+"%");
-
-            //插入歷史記錄表
-
         }
         //获取条目数
         long goodsSize = goodsMapper.countByExample(goodsExample);
@@ -507,6 +509,25 @@ public class GoodsServiceImpl implements GoodsService {
         if (categoryId!=0){
             criteria.andCategoryIdEqualTo(categoryId);
         }
+        //插入歷史記錄表
+        SearchHistory searchHistory = new SearchHistory();
+        searchHistory.setUserId(1);//用戶寫死了
+        searchHistory.setKeyword(trim);
+        searchHistory.setFrom("wx");
+        searchHistory.setDeleted(false);
+        //判斷是否是空
+        SearchHistoryExample searchHistoryExample = new SearchHistoryExample();
+        searchHistoryExample.createCriteria().andUserIdEqualTo(1).andKeywordEqualTo(trim);
+        List<SearchHistory> searchHistories = searchHistoryMapper.selectByExample(searchHistoryExample);
+        if (searchHistories.size()==0){
+            searchHistory.setAddTime(new Date());
+            searchHistoryMapper.insert(searchHistory);
+        }else{
+            SearchHistory searchHistory1 = searchHistories.get(0);
+            searchHistory1.setUpdateTime(new Date());
+            searchHistoryMapper.updateByPrimaryKey(searchHistory1);
+        }
+
         List<Category> list = new ArrayList<>();
         List<String> nameList = new ArrayList<>();
         for (Goods good : goods) {

@@ -19,7 +19,7 @@ public interface SearchHistoryMapper {
 
     @Insert({
         "insert into cskaoyan_mall_search_history (id, user_id, ",
-        "keyword, from, add_time, ",
+        "keyword, `from`, add_time, ",
         "update_time, deleted)",
         "values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, ",
         "#{keyword,jdbcType=VARCHAR}, #{from,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}, ",
@@ -33,7 +33,7 @@ public interface SearchHistoryMapper {
 
     @Select({
         "select",
-        "id, user_id, keyword, from, add_time, update_time, deleted",
+        "id, user_id, keyword, `from`, add_time, update_time, deleted",
         "from cskaoyan_mall_search_history",
         "where id = #{id,jdbcType=INTEGER}"
     })
@@ -50,7 +50,7 @@ public interface SearchHistoryMapper {
         "update cskaoyan_mall_search_history",
         "set user_id = #{userId,jdbcType=INTEGER},",
           "keyword = #{keyword,jdbcType=VARCHAR},",
-          "from = #{from,jdbcType=VARCHAR},",
+          "`from` = #{from,jdbcType=VARCHAR},",
           "add_time = #{addTime,jdbcType=TIMESTAMP},",
           "update_time = #{updateTime,jdbcType=TIMESTAMP},",
           "deleted = #{deleted,jdbcType=BIT}",

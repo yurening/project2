@@ -69,14 +69,13 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, user_id, keyword, from, add_time, update_time, deleted
+    id, user_id, keyword, `from`, add_time, update_time, deleted
   </sql>
   <select id="selectByExample" parameterType="com.cskaoyan.bean.user.SearchHistoryExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
-    'true' as QUERYID,
     <include refid="Base_Column_List" />
     from cskaoyan_mall_search_history
     <if test="_parameter != null">
@@ -86,12 +85,30 @@
       order by ${orderByClause}
     </if>
   </select>
+  <!--<select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cskaoyan_mall_search_history
+    where id = #{id,jdbcType=INTEGER}
+  </select>-->
+  <!--<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cskaoyan_mall_search_history
+    where id = #{id,jdbcType=INTEGER}
+  </delete>-->
   <delete id="deleteByExample" parameterType="com.cskaoyan.bean.user.SearchHistoryExample">
     delete from cskaoyan_mall_search_history
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
+  <!--<insert id="insert" parameterType="com.cskaoyan.bean.user.SearchHistory">
+    insert into cskaoyan_mall_search_history (id, user_id, keyword,
+      `from`, add_time, update_time,
+      deleted)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{keyword,jdbcType=VARCHAR},
+      #{from,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+      #{deleted,jdbcType=BIT})
+  </insert>-->
   <insert id="insertSelective" parameterType="com.cskaoyan.bean.user.SearchHistory">
     insert into cskaoyan_mall_search_history
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -105,7 +122,7 @@
         keyword,
       </if>
       <if test="from != null">
-        from,
+        `from`,
       </if>
       <if test="addTime != null">
         add_time,
@@ -160,7 +177,7 @@
         keyword = #{record.keyword,jdbcType=VARCHAR},
       </if>
       <if test="record.from != null">
-        from = #{record.from,jdbcType=VARCHAR},
+        `from` = #{record.from,jdbcType=VARCHAR},
       </if>
       <if test="record.addTime != null">
         add_time = #{record.addTime,jdbcType=TIMESTAMP},
@@ -181,7 +198,7 @@
     set id = #{record.id,jdbcType=INTEGER},
       user_id = #{record.userId,jdbcType=INTEGER},
       keyword = #{record.keyword,jdbcType=VARCHAR},
-      from = #{record.from,jdbcType=VARCHAR},
+      `from` = #{record.from,jdbcType=VARCHAR},
       add_time = #{record.addTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       deleted = #{record.deleted,jdbcType=BIT}
@@ -199,7 +216,7 @@
         keyword = #{keyword,jdbcType=VARCHAR},
       </if>
       <if test="from != null">
-        from = #{from,jdbcType=VARCHAR},
+        `from` = #{from,jdbcType=VARCHAR},
       </if>
       <if test="addTime != null">
         add_time = #{addTime,jdbcType=TIMESTAMP},
@@ -213,4 +230,14 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <!--<update id="updateByPrimaryKey" parameterType="com.cskaoyan.bean.user.SearchHistory">
+    update cskaoyan_mall_search_history
+    set user_id = #{userId,jdbcType=INTEGER},
+      keyword = #{keyword,jdbcType=VARCHAR},
+      `from` = #{from,jdbcType=VARCHAR},
+      add_time = #{addTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>-->
 </mapper>
