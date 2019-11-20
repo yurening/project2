@@ -1,8 +1,12 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.generalize.Coupon;
+import com.cskaoyan.bean.generalize.Groupon;
+import com.cskaoyan.bean.generalize.GrouponRules;
 import com.cskaoyan.bean.user.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     //user
@@ -31,4 +35,21 @@ public interface UserService {
     List<Feedback> selectFeedbackByExample(FeedBackRequest feedBackRequest,FeedbackExample example);
 
     User getUserByUsername(String username);
+
+    Map<String,Object> selectSearchIndex();
+
+    List<String> searchHelper(String keyword);
+
+    Map selectGroupon(UserRequest userRequest);
+
+    //coupon
+    Map selectCoupon(UserRequest userRequest);
+
+    ReturnData couponMyList(CouponRequest couponRequest);
+
+    int couponReceive(CouponRequest couponRequest);
+
+    ReturnData couponSelectList(CouponRequest couponRequest);
+
+    int couponExchange(CouponRequest couponRequest);
 }

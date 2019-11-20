@@ -2,10 +2,11 @@ package com.cskaoyan.mapper;
 
 import com.cskaoyan.bean.generalize.Topic;
 import com.cskaoyan.bean.generalize.TopicExample;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
+@Mapper
 public interface TopicMapper {
     long countByExample(TopicExample example);
 

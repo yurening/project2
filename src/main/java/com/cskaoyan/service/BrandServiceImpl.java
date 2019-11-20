@@ -32,4 +32,18 @@ public class BrandServiceImpl implements BrandService {
         responseType.setData(map);
         return responseType;
     }
+
+    @Override
+    public ResponseType getBrandById(Integer id) {
+        Brand brand = brandMapper.selectByPrimaryKey(id);
+        Map map = new HashMap();
+        map.put("brand",brand);
+        ResponseType responseType = new ResponseType();
+        responseType.setData(map);
+        responseType.setErrmsg("成功");
+        responseType.setErrno(0);
+        return responseType;
+    }
+
+
 }
