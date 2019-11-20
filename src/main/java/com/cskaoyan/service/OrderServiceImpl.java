@@ -188,21 +188,34 @@ public class OrderServiceImpl implements OrderService {
         Integer unpaid = 0;
         Integer unship = 0;
         for (MallOrder mallOrder : mallOrders) {
-            if (mallOrder.getOrderStatus().intValue() == 101){
+            if (mallOrder.getOrderStatus().intValue() == 101) {
                 unpaid++;
-            } else if (mallOrder.getOrderStatus().intValue() == 201){
+            } else if (mallOrder.getOrderStatus().intValue() == 201) {
                 unship++;
-            } else if (mallOrder.getOrderStatus().intValue() == 301){
+            } else if (mallOrder.getOrderStatus().intValue() == 301) {
                 unrecv++;
             } else if (mallOrder.getOrderStatus().intValue() == 401 ||
-                        mallOrder.getOrderStatus().intValue() == 402){
+                    mallOrder.getOrderStatus().intValue() == 402) {
                 uncomment++;
             }
         }
-        hashMap.put("unpaid",unpaid);
-        hashMap.put("unship",unship);
-        hashMap.put("unrecv",unrecv);
-        hashMap.put("uncomment",uncomment);
+        hashMap.put("unpaid", unpaid);
+        hashMap.put("unship", unship);
+        hashMap.put("unrecv", unrecv);
+        hashMap.put("uncomment", uncomment);
         return hashMap;
+    }
+
+    public void refundOrder(Integer orderId) {
+        MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(orderId);
+        mallOrder.setOrderStatus((short) 202);
+        mallOrderMapper.updateByPrimaryKey(mallOrder);
+    }
+
+    @Override
+    public void confirmOrder(Integer orderId) {
+        MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(orderId);
+        mallOrder.setOrderStatus((short) 401);
+        mallOrderMapper.updateByPrimaryKey(mallOrder);
     }
 }

@@ -17,4 +17,8 @@ public interface OrderService {
     void deleteOrder(Integer orderId);
 
     HashMap<String, Object> countOrderStatusByUserId(Integer userId);
+
+    void refundOrder(Integer orderId);
+
+    void confirmOrder(Integer orderId);
 }
