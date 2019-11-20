@@ -28,4 +28,5 @@ public class CommentController {
         ResponseType responseType = commentService.deleteByLogic(comment);
         return responseType;
     }
+
 }

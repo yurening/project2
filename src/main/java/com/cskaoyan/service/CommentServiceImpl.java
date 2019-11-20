@@ -1,19 +1,24 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.goods.*;
+import com.cskaoyan.bean.user.User;
+import com.cskaoyan.bean.user.UserExample;
 import com.cskaoyan.mapper.CommentMapper;
+import com.cskaoyan.mapper.UserMapper;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
+import java.text.DateFormat;
+import java.util.*;
 
 @Service
 public class CommentServiceImpl implements CommentService{
     @Autowired
     CommentMapper commentMapper;
+    @Autowired
+    UserMapper userMapper;
     @Override
     public ResponseType getAllComments(Integer page, Integer limit, String order, String sort, Integer userId, Integer valueId) {
         CommentExample commentExample = new CommentExample();
@@ -58,5 +63,61 @@ public class CommentServiceImpl implements CommentService{
         return responseType;
     }
 
+    @Override
+    public ResponseType getCommentCount(Integer valueId, Integer type) {
+        CommentExample commentExample = new CommentExample();
+        CommentExample.Criteria criteria = commentExample.createCriteria().andTypeEqualTo(type).andValueIdEqualTo(valueId);
+        List<Comment> comments = commentMapper.selectByExample(commentExample);
+        int totalSize = comments.size();
+        criteria.andHasPictureEqualTo(true);
+        long picSize = commentMapper.countByExample(commentExample);
+        Map map = new HashMap<>();
+        map.put("hasPicCount",picSize);
+        map.put("allCount",totalSize);
+
+        ResponseType responseType = new ResponseType();
+        responseType.setErrmsg("成功");
+        responseType.setErrno(0);
+        responseType.setData(map);
+        return responseType;
+    }
+
+    @Override
+    public ResponseType getCommentsList(Integer valueId, Integer type, Integer size, Integer page, Integer showType) {
+        PageHelper.startPage(page,size);
+        CommentExample commentExample = new CommentExample();
+        CommentExample.Criteria criteria = commentExample.createCriteria().andTypeEqualTo(type).andValueIdEqualTo(valueId);
+        List<Comment> comments = commentMapper.selectByExample(commentExample);
+        List list = new ArrayList();
+        for (Comment comment : comments) {
+            Integer userId = comment.getUserId();
+            UserExample userExample = new UserExample();
+            userExample.createCriteria().andIdEqualTo(userId);
+            List<User> users = userMapper.selectUserByExample(userExample);
+            User user = users.get(0);
+            Map map = new HashMap();
+            map.put("nickname",user.getNickname());
+            map.put("avatarUrl",user.getAvatar());
+            String[] picUrls = comment.getPicUrls();
+            String content = comment.getContent();
+            Map addList = new HashMap();
+            addList.put("userInfo",map);
+            addList.put("addTime",comment.getAddTime());
+            addList.put("picList",picUrls);
+            addList.put("content",content);
+
+            list.add(addList);
+        }
+        Map returnMap = new HashMap();
+        returnMap.put("data",list);
+        returnMap.put("count",comments.size());
+        returnMap.put("currentPage",page);
+
+        ResponseType responseType = new ResponseType();
+        responseType.setErrmsg("成功");
+        responseType.setErrno(0);
+        responseType.setData(returnMap);
+        return responseType;
+    }
 
 }

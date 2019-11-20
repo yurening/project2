@@ -26,12 +26,26 @@ public interface GoodsService {
     int deleteGoods(Goods goods);
 
     Long getGoodsCount();
-<<<<<<< HEAD
 
-    List<IndexBean.NewGoodsListBean> getNewGoodsList();
-=======
+    //微信获取品牌下的商品
+    ResponseType getGoodsByBrandId(Integer brandId,Integer page,Integer size);
+
+    //微信获取商品详情
+    ResponseType getGoodsAndAllById(Integer id);
+
+    //微信获取分类
+    ResponseType getCategoryByParent(Integer id);
+
+    //微信获取品类下的商品
+    ResponseType getGoodsByCategory(Integer id);
+
+    //微信获取相关商品
+    ResponseType getRelativeGoods(Integer id);
+
+    //微信按照关键字取商品
+    ResponseType getGoodsByKeyword(String keyword,String sort,String order,Integer page,Integer size,Integer categoryId);
+
     List<HomeIndex.NewGoodsListBean> getNewGoodsList();
->>>>>>> a100a27900f3bf16fee2673c26f3397ca3ebcc84
 
     List<HomeIndex.ChannelBean> getChannel();
 
