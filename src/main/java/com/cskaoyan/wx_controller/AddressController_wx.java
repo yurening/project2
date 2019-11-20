@@ -37,7 +37,11 @@ public class AddressController_wx {
     public BaseRespVo saveAddress(@RequestBody MallAddress mallAddress,@RequestHeader("X-cskaoyanmall-Admin-Token") String token){
         Integer userId = UserTokenManager.getUserId(token);
         mallAddress.setUserId(userId);
-        addressService.saveAddress(mallAddress);
+        if(mallAddress.getId()==0){
+            addressService.saveNewAddress(mallAddress);
+        }else {
+            addressService.saveAddress(mallAddress);
+        }
         return BaseRespVo.ok(mallAddress.getId());
     }
 

@@ -67,6 +67,11 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    public void saveNewAddress(MallAddress mallAddress) {
+        addressMapper.insert(mallAddress);
+    }
+
+    @Override
     public void deleteAddress(Integer id) {
         addressMapper.deleteByPrimaryKey(id);
     }

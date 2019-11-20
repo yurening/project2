@@ -13,4 +13,6 @@ public interface AddressService {
     void saveAddress(MallAddress mallAddress);
 
     void deleteAddress(Integer id);
+
+    void saveNewAddress(MallAddress mallAddress);
 }
