@@ -164,7 +164,7 @@ public class CartServiceImpl implements CartService {
         }
 
         // 判断是否拼团并得出商品总价和拼团优惠金额
-        BigDecimal goodsTotalPrice = getGoodsTotalPrice(8, cartId, grouponRulesId);
+        BigDecimal goodsTotalPrice = getGoodsTotalPrice(cartId, grouponRulesId);
         BigDecimal grouponPrice = new BigDecimal("0");
         if (grouponRulesId != 0) {
             grouponPrice = grouponRulesMapper.selectByPrimaryKey(grouponRulesId).getDiscount();
