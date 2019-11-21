@@ -3,12 +3,13 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.GrouponRules;
 import com.cskaoyan.bean.generalize.GrouponRulesExample;
 import com.cskaoyan.bean.goods.*;
-import com.cskaoyan.bean.user.SearchHistory;
-import com.cskaoyan.bean.user.SearchHistoryExample;
+import com.cskaoyan.bean.user.*;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.bean.wx_index.HomeIndex;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,8 @@ public class GoodsServiceImpl implements GoodsService {
     CommentMapper commentMapper;
     @Autowired
     SearchHistoryMapper searchHistoryMapper;
+    @Autowired
+    CollectMapper collectMapper;
 
     @Override
     public ResponseType getAllGoods(Integer page,Integer limit,
@@ -364,6 +367,12 @@ public class GoodsServiceImpl implements GoodsService {
         GrouponRulesExample grouponRulesExample = new GrouponRulesExample();
         grouponRulesExample.createCriteria().andGoodsIdEqualTo(id);
         List<GrouponRules> grouponRules = grouponRulesMapper.selectByExample(grouponRulesExample);
+        boolean isGroupon;
+        if (grouponRules.size()==0){
+            isGroupon=false;
+        }else{
+            isGroupon=true;
+        }
         //获取常见问题
         IssueExample issueExample = new IssueExample();
         List<Issue> issues = issueMapper.selectByExample(issueExample);
@@ -397,19 +406,31 @@ public class GoodsServiceImpl implements GoodsService {
         List<Product> products = productMapper.selectByExample(productExample);
         //goods
         Goods good = goodsMapper.selectByPrimaryKey(id);
-
+        //用户是否已经收藏：获取用户id后去对应收藏表去查找
+        Integer userId = 1;
+        CollectExample collectExample = new CollectExample();
+        collectExample.createCriteria().andUserIdEqualTo(userId).andValueIdEqualTo(id);
+        List<Collect> collects = collectMapper.selectByExample(collectExample);
+        int collectSize = collects.size();
+        boolean isCollect;
+        if (collectSize==0){
+            isCollect=false;
+        }else{
+            isCollect=true;
+        }
 
         Map returnMap = new HashMap();
         returnMap.put("specificationList",returnList);
         returnMap.put("groupon",grouponRules);
         returnMap.put("issue",issues);
-        returnMap.put("userHasCollect",0);
+        returnMap.put("userHasCollect",isCollect);
         returnMap.put("shareImage","");
         returnMap.put("comment",comment);
         returnMap.put("attribute",attributes);
         returnMap.put("brand",brand);
         returnMap.put("productList",products);
         returnMap.put("info",good);
+        returnMap.put("isGroupon",isGroupon);
         //拼返回的类
         ResponseType responseType = new ResponseType();
         responseType.setData(returnMap);
@@ -510,6 +531,10 @@ public class GoodsServiceImpl implements GoodsService {
             criteria.andCategoryIdEqualTo(categoryId);
         }
         //插入歷史記錄表
+        /*Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        Integer id = principal.getId();*/
+
         SearchHistory searchHistory = new SearchHistory();
         searchHistory.setUserId(1);//用戶寫死了
         searchHistory.setKeyword(trim);
