@@ -19,11 +19,14 @@ import com.cskaoyan.teacherCode.UserTokenManager;
 import com.cskaoyan.utils.TransferDateUtils;
 import com.cskaoyan.utils.TransferUtils_wx;
 import com.github.pagehelper.PageHelper;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -119,6 +122,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<FootPrint> selectFootprintByExample(FootPrintRequest footPrintRequest, FootPrintExample example) {
         PageHelper.startPage(footPrintRequest.getPage(),footPrintRequest.getLimit());
+        example.setOrderByClause("add_time desc");
         List<FootPrint> footPrints = userMapper.selectFootprintByExample(example);
         return footPrints;
     }
@@ -187,9 +191,12 @@ public class UserServiceImpl implements UserService{
     public int searchClearHistory(HttpServletRequest request) {
         //删除search_history表中，所有userID = 该用户id
         //通过sessionManager获得id
-        Integer userId = UserTokenManager.getUserId(request.getHeader("X-Litemall-Token"));
+
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
+
         SearchHistoryExample searchHistoryExample = new SearchHistoryExample();
-        searchHistoryExample.createCriteria().andUserIdEqualTo(userId);
+        searchHistoryExample.createCriteria().andUserIdEqualTo(userLogin.getId());
         searchHistoryMapper.deleteByExample(searchHistoryExample);
 
         return 0;
@@ -437,18 +444,122 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Map selectCoupon(UserRequest userRequest) {
+    public List<Coupon> selectCoupon(UserRequest userRequest) {
         PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
+        //新用户时长 7天
+        //判断是否是新用户，新用户显示新用户劵，不是新用户不显示
+        //获得时间差
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andIdEqualTo(1);
+        List<User> users = userMapper.selectUserByExample(userExample);
+        User user = users.get(0);
+        long time = (new Date()).getTime() - (user.getAddTime()).getTime();
         List<Coupon> coupons = couponMapper.selectByExample(new CouponExample());
-        long l = couponMapper.countByExample(new CouponExample());
-        HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
-        objectObjectHashMap.put("data",coupons);
-        objectObjectHashMap.put("count",l);
-        return objectObjectHashMap;
+        List<Coupon> couponsReturn = new ArrayList<>();
+        //不是新用户
+        if(time>(60*1000*24*7)){
+            //根据time_type判断优惠券是基于领取时间的有效天数还是 一段时间内有效，同时新用户不用显示
+            for (Coupon coupon : coupons) {
+                //新人劵直接跳过
+                if("新人劵".equals(coupon.getTag())){
+                    continue;
+                }
+                //是基于领取时间的有效天数，可以直接显示  time_type = 0
+                if(coupon.getTimeType()==0){
+                    couponsReturn.add(coupon);
+                }
+                //在一段时间内有效，要判断是否在范围内  time_type = 1
+                if(coupon.getTimeType()==1){
+                    Date endTime = coupon.getEndTime();
+                    //使用compareTo方法，a.compareTo(b)>0 a>b
+                    //endTime和现在的时间进行比较,当endTime>date，还未
+                    Date date = new Date();
+                    if(endTime.compareTo(date)>0){
+                        couponsReturn.add(coupon);
+                    }
+                }
+            }
+        }else {
+            //根据time_type判断优惠券是基于领取时间的有效天数还是 一段时间内有效，同时新用户不用显示
+            for (Coupon coupon : coupons) {
+                //是基于领取时间的有效天数，可以直接显示  time_type = 0
+                if(coupon.getTimeType()==0){
+                    couponsReturn.add(coupon);
+                }
+                //在一段时间内有效，要判断是否在范围内  time_type = 1
+                if(coupon.getTimeType()==1){
+                    Date endTime = coupon.getEndTime();
+                    //使用compareTo方法，a.compareTo(b)>0 a>b
+                    //endTime和现在的时间进行比较,当endTime>date，还未
+                    Date date = new Date();
+                    if(endTime.compareTo(date)==1){
+                        couponsReturn.add(coupon);
+                    }
+                }
+            }
+        }
+        Coupon[] arrayCoupons = new Coupon[couponsReturn.size()];
+        int size = 0;
+        for (Coupon coupon : couponsReturn) {
+            arrayCoupons[size] = coupon;
+            size++;
+        }
+        //使用冒泡排序，将coupons按照从大到小的顺序排序
+        for(int i = 0;i<arrayCoupons.length-1;i++){
+            for (int j=0;j<arrayCoupons.length-i-1;j++){
+                BigDecimal bigDecimal = new BigDecimal(arrayCoupons[j].getDiscount());
+                BigDecimal bigDecimal1 = new BigDecimal(arrayCoupons[j+1].getDiscount());
+                System.out.println("a:"+bigDecimal);
+                System.out.println("b:"+bigDecimal1);
+                if(bigDecimal.compareTo(bigDecimal1)==-1){
+                    Coupon coupon = new Coupon();
+                    coupon = arrayCoupons[j];
+                    arrayCoupons[j] = arrayCoupons[j+1];
+                    arrayCoupons[j+1] = coupon;
+                }
+            }
+        }
+        List<Coupon> couponList = new ArrayList<>();
+        for (Coupon arrayCoupon : arrayCoupons) {
+            couponList.add(arrayCoupon);
+        }
+        return couponList;
     }
 
     @Override
     public ReturnData couponMyList(CouponRequest couponRequest) {
+        //从未使用的优惠券中判断是否存在已过期的优惠券，如果有，将status设为2
+        //取出该用户未使用的优惠券
+        CouponUserExample couponUserExample1 = new CouponUserExample();
+        couponUserExample1.createCriteria().andUserIdEqualTo(1).andStatusEqualTo((short)0);
+        List<CouponUser> couponUsers1 = couponUserMapper.selectByExample(couponUserExample1);
+        for (CouponUser couponUser : couponUsers1) {
+            Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
+            //优惠券是基于领取时间的有效天数的，优惠券创建时间add_time到现在的时间和优惠券的days进行比较，
+            //优惠券创建时间add_time到现在的时间比优惠券的days大，则将status设为2
+            if(coupon.getTimeType()==0){
+                Date addTime = couponUser.getAddTime();
+                Date date = new Date();
+                //毫秒
+                long realDay = date.getTime() - addTime.getTime();
+                //取出days
+                String days = coupon.getDays();
+                if(realDay>(Integer.parseInt(days)*24*60*1000)){
+                    couponUser.setStatus((short)2);
+                    couponUserMapper.updateByPrimaryKey(couponUser);
+                }
+            }
+            //在一段时间内有效，当前时间大于有效期截止时间end_time
+            else if(coupon.getTimeType()==1){
+                Date date = new Date();
+                if(date.compareTo(couponUser.getEndTime())==1){
+                    //将status在数据库中进行设置
+                    couponUser.setStatus((short)2);
+                    couponUserMapper.updateByPrimaryKey(couponUser);
+                }
+            }
+        }
+
         PageHelper.startPage(couponRequest.getPage(),couponRequest.getSize());
         CouponUserExample couponUserExample = new CouponUserExample();
         couponUserExample.createCriteria().andUserIdEqualTo(1).andStatusEqualTo(couponRequest.getStatus());
@@ -475,6 +586,7 @@ public class UserServiceImpl implements UserService{
         //判断优惠券是否已领完，领完时不能再领
         //从coupon中取出total，当total为0时，可以无限领取，当不为零时，已领取的优惠券张数要小于total
         Coupon coupon1 = couponMapper.selectByPrimaryKey(couponRequest.getCouponId());
+        System.out.println(couponRequest.getCouponId());
         String total = coupon1.getTotal();
         //根据coupon_id,通过统计coupon_user中已领优惠券张数，当张数等于total总数时，不能在领取
         if(Integer.parseInt(total)!=0){
@@ -483,6 +595,13 @@ public class UserServiceImpl implements UserService{
             long l1 = couponUserMapper.countByExample(couponUserExample1);
             if(Integer.parseInt(total)<=l1){
                 return 2;
+            }
+        }
+        //判断有效时间限制类型，如果是一段时间，则需要判断是否过期
+        if(coupon1.getTimeType()==1){
+            Date date = new Date();
+            if(date.compareTo(coupon1.getEndTime())==1){
+                return 3;
             }
         }
         CouponUser couponUser = new CouponUser();
@@ -500,6 +619,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<Coupon> couponSelectList(CouponRequest couponRequest) {
+        //获取用户id
         Cart cart = cartMapper.selectByPrimaryKey(couponRequest.getCartId());
         CouponUserExample couponUserExample = new CouponUserExample();
         couponUserExample.createCriteria().andUserIdEqualTo(cart.getGoodsId()).andStatusEqualTo((short)0);
@@ -513,7 +633,7 @@ public class UserServiceImpl implements UserService{
                 coupons.add(coupon);
             }
         }
-        return coupons;
+       return coupons;
     }
 
     @Override
@@ -525,16 +645,10 @@ public class UserServiceImpl implements UserService{
         if (coupons.isEmpty()){
             return 0;
         }
-        CouponUser couponUser = new CouponUser();
-        couponUser.setUserId(1);
-        couponUser.setCouponId(coupons.get(0).getId());
-        couponUser.setStatus((short)0);
-        couponUser.setStartTime(coupons.get(0).getStartTime());
-        couponUser.setEndTime(coupons.get(0).getEndTime());
-        couponUser.setAddTime(new Date());
-        couponUser.setUpdateTime(new Date());
-        couponUserMapper.insert(couponUser);
-        return 1;
+        CouponRequest couponRequest1 = new CouponRequest();
+        couponRequest1.setCouponId(coupons.get(0).getId());
+        int i = couponReceive(couponRequest1);
+        return i;
     }
 
 

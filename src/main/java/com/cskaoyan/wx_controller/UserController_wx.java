@@ -1,14 +1,21 @@
 package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
+
+import com.cskaoyan.bean.generalize.Coupon;
+
+import com.cskaoyan.bean.mall.BaseRespVo;
+
 import com.cskaoyan.bean.mall.region.MallRegion;
 import com.cskaoyan.bean.user.CouponRequest;
+import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.user.UserRequest;
-import com.cskaoyan.needdelete.BaseRespVo;
-import com.cskaoyan.needdelete.UserTokenManager;
+
 import com.cskaoyan.service.MallService;
 import com.cskaoyan.service.OrderService;
 import com.cskaoyan.service.UserService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -93,7 +101,12 @@ public class UserController_wx {
     @RequestMapping("wx/coupon/list")
     public BaseReqVo couponList(UserRequest userRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
-        objectBaseReqVo.setData(userService.selectCoupon(userRequest));
+        List<Coupon> coupons = userService.selectCoupon(userRequest);
+        int size = coupons.size();
+        Map<String, Object> objectObjectHashMap = new HashMap<>();
+        objectObjectHashMap.put("data",coupons);
+        objectObjectHashMap.put("count",size);
+        objectBaseReqVo.setData(objectObjectHashMap);
         objectBaseReqVo.setErrno(0);
         objectBaseReqVo.setErrmsg("成功");
         return objectBaseReqVo;
@@ -120,6 +133,9 @@ public class UserController_wx {
         }else if(userService.couponReceive(couponRequest)==2) {
             objectBaseReqVo.setErrno(507);
             objectBaseReqVo.setErrmsg("优惠券已领完");
+        }else if(userService.couponReceive(couponRequest)==3) {
+            objectBaseReqVo.setErrno(507);
+            objectBaseReqVo.setErrmsg("优惠券已过期");
         }
 
         return objectBaseReqVo;
@@ -144,13 +160,20 @@ public class UserController_wx {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         int i = userService.couponExchange(couponRequest,request);
-        if(i==0){
+        if(i==1){
+            objectBaseReqVo.setErrno(0);
+            objectBaseReqVo.setErrmsg("成功");
+        }else if(i==0) {
             objectBaseReqVo.setErrno(507);
-            objectBaseReqVo.setErrmsg("领取失败");
-            return objectBaseReqVo;
+            objectBaseReqVo.setErrmsg("您已经领取过了");
+        }else if(i==2) {
+            objectBaseReqVo.setErrno(507);
+            objectBaseReqVo.setErrmsg("优惠券已领完");
+        }else if(i==3) {
+            objectBaseReqVo.setErrno(507);
+            objectBaseReqVo.setErrmsg("优惠券已过期");
         }
-        objectBaseReqVo.setErrno(0);
-        objectBaseReqVo.setErrmsg("成功");
+
         return objectBaseReqVo;
     }
 
@@ -169,17 +192,9 @@ public class UserController_wx {
 
     @GetMapping("wx/user/index")
     public Object list(HttpServletRequest request) {
-        //前端写了一个token放在请求头中
-        //*************************
-        //获得请求头
-        String tokenKey = request.getHeader("5cn9hnzh0lgki9n69bxjegsafqzocpq2");
-        Integer userId = UserTokenManager.getUserId(tokenKey);
-
-        //通过请求头获得userId，进而可以获得一切关于user的信息
-        //**************************
-        if (userId == null) {
-            return BaseRespVo.fail();
-        }
+        Subject subject = SecurityUtils.getSubject();
+        User user = (User) subject.getPrincipal();
+        Integer userId = user.getId();
         HashMap<String,Object> orderStatusByUserId = orderService.countOrderStatusByUserId(userId);
         HashMap<String,Object> data = new HashMap<>();
         //***********************************
@@ -189,5 +204,9 @@ public class UserController_wx {
         return BaseRespVo.ok(data);
     }
 
+    private Integer getUserID(){
+        User principal =(User) SecurityUtils.getSubject().getPrincipal();
+        return principal.getId();
+    }
 }
 

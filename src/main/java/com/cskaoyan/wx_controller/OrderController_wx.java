@@ -47,6 +47,7 @@ public class OrderController_wx {
     @RequestMapping("cancel")
     public BaseRespVo cancelOrder(@RequestBody WxId wxOrder){
         orderService.cancelOrder(wxOrder.getOrderId());
+        orderService.addNumber(wxOrder.getOrderId());
         return BaseRespVo.ok(null);
     }
 

@@ -432,8 +432,10 @@ public class GoodsServiceImpl implements GoodsService {
         returnMap.put("brand",brand);
         returnMap.put("productList",products);
         returnMap.put("info",good);
+        returnMap.put("isGroupon", false);
         returnMap.put("isGroupon",isGroupon);
         //拼返回的类
+        returnMap.put("isGroupon",isGroupon);
         ResponseType responseType = new ResponseType();
         responseType.setData(returnMap);
         responseType.setErrmsg("成功");
@@ -775,4 +777,5 @@ public class GoodsServiceImpl implements GoodsService {
         }
         return floorGoodsList;
     }
+
 }

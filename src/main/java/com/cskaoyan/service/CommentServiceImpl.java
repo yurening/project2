@@ -133,8 +133,8 @@ public class CommentServiceImpl implements CommentService{
     public void commentOrderGoods(Comment comment) {
         MallOrderGoods mallOrderGoods = orderGoodsMapper.selectByPrimaryKey(comment.getOrderGoodsId());
         comment.setValueId(mallOrderGoods.getGoodsId());
-        /*comment.setUserId(getUserID());*/
-        comment.setUserId(1);
+        comment.setUserId(getUserID());
+        /*comment.setUserId(1);*/
         comment.setType((byte) 3);
         Date addTime = new Date();
         comment.setAddTime(addTime);
