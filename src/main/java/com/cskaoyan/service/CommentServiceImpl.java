@@ -7,6 +7,7 @@ import com.cskaoyan.bean.user.UserExample;
 import com.cskaoyan.mapper.CommentMapper;
 import com.cskaoyan.mapper.MallOrderGoodsMapper;
 import com.cskaoyan.mapper.UserMapper;
+import com.cskaoyan.utils.TransferDateUtils;
 import com.github.pagehelper.PageHelper;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,13 +103,15 @@ public class CommentServiceImpl implements CommentService{
             List<User> users = userMapper.selectUserByExample(userExample);
             User user = users.get(0);
             Map map = new HashMap();
-            map.put("nickname",user.getNickname());
+            map.put("nickName",user.getNickname());
             map.put("avatarUrl",user.getAvatar());
             String[] picUrls = comment.getPicUrls();
             String content = comment.getContent();
+            Date date = comment.getAddTime();
+            String s = TransferDateUtils.date2String(date);
             Map addList = new HashMap();
             addList.put("userInfo",map);
-            addList.put("addTime",comment.getAddTime());
+            addList.put("addTime",s);
             addList.put("picList",picUrls);
             addList.put("content",content);
 
@@ -148,4 +151,25 @@ public class CommentServiceImpl implements CommentService{
         User principal =(User) SecurityUtils.getSubject().getPrincipal();
         return principal.getId();
     }
+
+    public ResponseType addComment(Comment comment) {
+        //先給定死
+        comment.setUserId(1);
+        //添加時間
+        comment.setAddTime(new Date());
+        int insert = commentMapper.insert(comment);
+        //已經獲得最後插入的那個id
+        Integer userId = comment.getUserId();
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andIdEqualTo(userId);
+        List<User> users = userMapper.selectUserByExample(userExample);
+        User user = users.get(0);
+        String username = user.getUsername();
+        ResponseType responseType = new ResponseType();
+        responseType.setData(comment);
+        responseType.setErrmsg("成功");
+        responseType.setErrno(0);
+        return responseType;
+    }
+
 }

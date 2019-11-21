@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -42,10 +40,38 @@ public class CartController_wx {
     public BaseReqVo updateNumber(@RequestBody Cart cart) {
         BaseReqVo baseReqVo = new BaseReqVo();
         if (!cartService.updateNumberById(cart.getId(), cart.getNumber())) {
-            baseReqVo.setErrno(501);
-            baseReqVo.setErrmsg("库存不足!");
+            baseReqVo.setErrno(508);
+            baseReqVo.setErrmsg("库存不足");
         } else {
             baseReqVo.setErrmsg("成功");
+        }
+        return baseReqVo;
+    }
+
+    @RequestMapping("delete")
+    public BaseReqVo deleteCart(@RequestBody Map<String, List<Integer>> map) {
+        List<Integer> productIds = map.get("productIds");
+        cartService.deleteCartByUserIdAndProductIdS(8, productIds);
+        return cartIndex();
+    }
+
+    @RequestMapping("goodscount")
+    public BaseReqVo getGoodsCount() {
+        BaseReqVo<Integer> baseReqVo = new BaseReqVo<>();
+        baseReqVo.setErrmsg("成功");
+        baseReqVo.setData(cartService.getGoodsCount(8));
+        return baseReqVo;
+    }
+
+    @RequestMapping("add")
+    public BaseReqVo addCart(@RequestBody Cart cart) {
+        BaseReqVo<Integer> baseReqVo = new BaseReqVo<>();
+        if(!cartService.addCart(cart)) {
+            baseReqVo.setErrno(508);
+            baseReqVo.setErrmsg("库存不足");
+        } else {
+            baseReqVo.setErrmsg("成功");
+            baseReqVo.setData(cartService.getGoodsCount(8));
         }
         return baseReqVo;
     }

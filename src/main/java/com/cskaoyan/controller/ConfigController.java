@@ -10,6 +10,9 @@ import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.config.SystemBean;
 import com.cskaoyan.service.AuthService;
 import com.cskaoyan.service.ConfigService;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

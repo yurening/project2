@@ -43,4 +43,6 @@ public interface UserMapper {
     List<Feedback> selectFeedbackByExample(FeedbackExample example);
 
     User getUserByUsername(String username);
+
+    void updateLoginTime(Integer id);
 }

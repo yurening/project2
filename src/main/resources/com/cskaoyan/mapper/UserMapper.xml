@@ -405,6 +405,9 @@
         </if>
     </select>
     <select id="getUserByUsername" resultMap="UserBaseResultMap">
-        select username,password from cskaoyan_mall_user where username = #{username}
+        select id,username,password,gender,birthday,last_login_time,last_login_ip,user_level,nickname,mobile,avatar,weixin_openid,status,add_time,update_time from cskaoyan_mall_user where username = #{username} and deleted = 0
     </select>
+    <update id="updateLoginTime">
+        update cskaoyan_mall_user set last_login_time = now() where id = #{id}
+    </update>
 </mapper>

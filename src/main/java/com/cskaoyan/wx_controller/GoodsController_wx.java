@@ -38,17 +38,26 @@ public class GoodsController_wx {
 
     @RequestMapping("goods/list")
     public ResponseType goodsList(Integer brandId,Integer page,Integer size,Integer categoryId,
-                                  String keyword,String sort,String desc){
+                                  String keyword,String sort,String order,boolean isHot,boolean isNew){
         if (brandId != null) {
             ResponseType goodsByBrandId = goodsService.getGoodsByBrandId(brandId, page, size);
             return goodsByBrandId;
         }
-        if (categoryId != null){
+        if (categoryId != null && keyword == null && isHot==false && isNew==false){
             ResponseType goodsByCategory = goodsService.getGoodsByCategory(categoryId);
             return goodsByCategory;
         }
         if(keyword != null){
-
+            ResponseType goodsByKeyword = goodsService.getGoodsByKeyword(keyword, sort, order, page, size, categoryId);
+            return goodsByKeyword;
+        }
+        if(isHot==true){
+            ResponseType goodsByIsHot = goodsService.getGoodsByIsHot(isHot, page, size, order, sort,categoryId);
+            return goodsByIsHot;
+        }
+        if(isNew==true){
+            ResponseType goodsByIsHot = goodsService.getGoodsByIsNew(isNew, page, size, order, sort,categoryId);
+            return goodsByIsHot;
         }
         return null;
     }

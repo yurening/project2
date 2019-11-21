@@ -21,6 +21,8 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+
     @RequestMapping("admin/user/list")
     public BaseReqVo list(UserRequest userRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();

@@ -24,6 +24,10 @@
     <result column="deleted" jdbcType="BIT" property="deleted" />
     <result column="role_ids" jdbcType="VARCHAR" property="role_ids" />
   </resultMap>
+    <select id="getPermsMethodNameByRoleId" resultType="java.lang.String">
+      select api from cskaoyan_mall_permission cmp left join cskaoyan_mall_system_permissions cmsp
+      on cmp.permission = cmsp.id where role_id = #{roleId}
+  </select>
     <!--<sql id="Example_Where_Clause">
       <where>
         <foreach collection="oredCriteria" item="criteria" separator="or">

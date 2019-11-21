@@ -12,10 +12,9 @@ import java.util.Map;
  * Date 2019/7/8 Time 20:55
  */
 @RestController
-@RequestMapping("/wx")
 public class WxAuthController {
 
-	@RequestMapping("/auth/login")
+
 	@ResponseBody
 	public Object login(@RequestBody String body, HttpServletRequest request) {
 		String username = "aaalwqlk";

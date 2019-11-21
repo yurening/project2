@@ -3,13 +3,17 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.GrouponRules;
 import com.cskaoyan.bean.generalize.GrouponRulesExample;
 import com.cskaoyan.bean.goods.*;
+import com.cskaoyan.bean.user.SearchHistory;
+import com.cskaoyan.bean.user.SearchHistoryExample;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.bean.wx_index.HomeIndex;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 
@@ -33,6 +37,8 @@ public class GoodsServiceImpl implements GoodsService {
     IssueMapper issueMapper;
     @Autowired
     CommentMapper commentMapper;
+    @Autowired
+    SearchHistoryMapper searchHistoryMapper;
 
     @Override
     public ResponseType getAllGoods(Integer page,Integer limit,
@@ -201,6 +207,7 @@ public class GoodsServiceImpl implements GoodsService {
         return createGoods;
     }
 
+    @Transactional
     @Override
     public int updateGoods(CreateGoods createGoods) {
         Goods goods = createGoods.getGoods();
@@ -234,9 +241,10 @@ public class GoodsServiceImpl implements GoodsService {
             attributeMapper.insertSelective(attribute);
         }
         for (Product product : products) {
+            product.setId(null);
             product.setGoodsId(goodsId);
             product.setUpdateTime(new Date());
-            productMapper.insertSelective(product);
+            productMapper.insert(product);
         }
         for (Specification specification : specifications) {
             specification.setGoodsId(goodsId);
@@ -501,22 +509,129 @@ public class GoodsServiceImpl implements GoodsService {
         if (categoryId!=0){
             criteria.andCategoryIdEqualTo(categoryId);
         }
+        //插入歷史記錄表
+        SearchHistory searchHistory = new SearchHistory();
+        searchHistory.setUserId(1);//用戶寫死了
+        searchHistory.setKeyword(trim);
+        searchHistory.setFrom("wx");
+        searchHistory.setDeleted(false);
+        //判斷是否是空
+        SearchHistoryExample searchHistoryExample = new SearchHistoryExample();
+        searchHistoryExample.createCriteria().andUserIdEqualTo(1).andKeywordEqualTo(trim);
+        List<SearchHistory> searchHistories = searchHistoryMapper.selectByExample(searchHistoryExample);
+        if (searchHistories.size()==0){
+            searchHistory.setAddTime(new Date());
+            searchHistoryMapper.insert(searchHistory);
+        }else{
+            SearchHistory searchHistory1 = searchHistories.get(0);
+            searchHistory1.setUpdateTime(new Date());
+            searchHistoryMapper.updateByPrimaryKey(searchHistory1);
+        }
+
         List<Category> list = new ArrayList<>();
+        List<String> nameList = new ArrayList<>();
         for (Goods good : goods) {
             Integer categoryId1 = good.getCategoryId();
             CategoryExample categoryExample = new CategoryExample();
             categoryExample.createCriteria().andIdEqualTo(categoryId1);
             List<Category> categories = categoryMapper.selectByExample(categoryExample);
             Category category = categories.get(0);
-            list.add(category);
+            String name = category.getName();
+            if(!nameList.contains(name)){
+                nameList.add(name);
+                list.add(category);
+            }
         }
         int count = goods.size();
+
+        Map map = new HashMap();
+        map.put("goodsList",goods);
+        map.put("count",count);
+        map.put("filterCategoryList",list);
         /*List<Goods> goods = goodsMapper.selectByExample(goodsExample);*/
         ResponseType responseType = new ResponseType();
         responseType.setErrno(0);
         responseType.setErrmsg("成功");
-        responseType.setData(list);
-        return null;
+        responseType.setData(map);
+        return responseType;
+    }
+
+    @Override
+    public ResponseType getGoodsByIsHot(boolean isHot, Integer page, Integer size, String order, String sort,Integer categoryId) {
+        PageHelper.startPage(page,size);
+        String cluse = sort+" "+order;
+        GoodsExample goodsExample = new GoodsExample();
+        goodsExample.setOrderByClause(cluse);
+        GoodsExample.Criteria criteria = goodsExample.createCriteria().andIsHotEqualTo(true);
+        List<Goods> goods = goodsMapper.selectByExample(goodsExample);
+        if (categoryId!=0){
+            criteria.andCategoryIdEqualTo(categoryId);
+        }
+        List<Category> list = new ArrayList<>();
+        List<String> nameList = new ArrayList<>();
+        for (Goods good : goods) {
+            Integer categoryId1 = good.getCategoryId();
+            CategoryExample categoryExample = new CategoryExample();
+            categoryExample.createCriteria().andIdEqualTo(categoryId1);
+            List<Category> categories = categoryMapper.selectByExample(categoryExample);
+            Category category = categories.get(0);
+            String name = category.getName();
+            if(!nameList.contains(name)){
+                nameList.add(name);
+                list.add(category);
+            }
+        }
+        int count = goods.size();
+
+        Map map = new HashMap();
+        map.put("goodsList",goods);
+        map.put("count",count);
+        map.put("filterCategoryList",list);
+        /*List<Goods> goods = goodsMapper.selectByExample(goodsExample);*/
+        ResponseType responseType = new ResponseType();
+        responseType.setErrno(0);
+        responseType.setErrmsg("成功");
+        responseType.setData(map);
+        return responseType;
+    }
+
+    @Override
+    public ResponseType getGoodsByIsNew(boolean isNew, Integer page, Integer size, String order, String sort, Integer categoryId) {
+        PageHelper.startPage(page,size);
+        String cluse = sort+" "+order;
+        GoodsExample goodsExample = new GoodsExample();
+        goodsExample.setOrderByClause(cluse);
+        GoodsExample.Criteria criteria = goodsExample.createCriteria().andIsNewEqualTo(true);
+        List<Goods> goods = goodsMapper.selectByExample(goodsExample);
+        if (categoryId!=0){
+            criteria.andCategoryIdEqualTo(categoryId);
+        }
+        List<Category> list = new ArrayList<>();
+        List<String> nameList = new ArrayList<>();
+        for (Goods good : goods) {
+            Integer categoryId1 = good.getCategoryId();
+            CategoryExample categoryExample = new CategoryExample();
+            categoryExample.createCriteria().andIdEqualTo(categoryId1);
+            List<Category> categories = categoryMapper.selectByExample(categoryExample);
+            Category category = categories.get(0);
+            String name = category.getName();
+            if(!nameList.contains(name)){
+                nameList.add(name);
+                list.add(category);
+            }
+        }
+        int count = goods.size();
+
+        Map map = new HashMap();
+        map.put("goodsList",goods);
+        map.put("count",count);
+        map.put("filterCategoryList",list);
+        /*List<Goods> goods = goodsMapper.selectByExample(goodsExample);*/
+        ResponseType responseType = new ResponseType();
+        responseType.setErrno(0);
+        responseType.setErrmsg("成功");
+        responseType.setData(map);
+        return responseType;
     }
 
 
