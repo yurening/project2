@@ -14,10 +14,9 @@ import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.mapper.*;
 import org.apache.shiro.SecurityUtils;
-<<<<<<< HEAD
+
 import org.apache.shiro.subject.Subject;
-=======
->>>>>>> c7687ef0ccc6b1a00e1de9769843b893bb4f09cd
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -252,13 +251,12 @@ public class CartServiceImpl implements CartService {
         return map;
     }
 
-<<<<<<< HEAD
+
     public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
-=======
-    private BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         Integer userId = user.getId();
->>>>>>> c7687ef0ccc6b1a00e1de9769843b893bb4f09cd
+
         BigDecimal goodsTotalPrice;
         if (cartId == 0) {
             CartExample cartExample = new CartExample();

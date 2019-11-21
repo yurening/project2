@@ -621,8 +621,18 @@ public class UserServiceImpl implements UserService{
         couponUser.setCouponId(couponRequest.getCouponId());
         couponUser.setStatus((short)0);
         Coupon coupon = couponMapper.selectByPrimaryKey(couponRequest.getCouponId());
-        couponUser.setStartTime(coupon.getStartTime());
-        couponUser.setEndTime(coupon.getEndTime());
+        if(coupon1.getTimeType()==1){
+            couponUser.setStartTime(coupon.getStartTime());
+            couponUser.setEndTime(coupon.getEndTime());
+
+        }else {
+            couponUser.setStartTime(new Date());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DATE,Integer.parseInt(coupon.getDays()));
+            couponUser.setEndTime(calendar.getTime());
+        }
+
         couponUser.setAddTime(new Date());
         couponUser.setUpdateTime(new Date());
         couponUserMapper.insert(couponUser);
@@ -636,12 +646,10 @@ public class UserServiceImpl implements UserService{
         User userLogin = (User) subject.getPrincipal();
         CartServiceImpl cartService = new CartServiceImpl();
         BigDecimal goodsTotalPrice = cartService.getGoodsTotalPrice(couponRequest.getCartId(), couponRequest.getGrouponRulesId());
-        Cart cart = cartMapper.selectByPrimaryKey(couponRequest.getCartId());
         CouponUserExample couponUserExample = new CouponUserExample();
         couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short)0);
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
         List<Coupon> coupons = new ArrayList<>();
-        double price = cart.getPrice().doubleValue();
         for (CouponUser couponUser : couponUsers) {
             //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
             Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
