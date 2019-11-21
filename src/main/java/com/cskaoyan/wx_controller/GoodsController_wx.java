@@ -64,11 +64,6 @@ public class GoodsController_wx {
 
     @RequestMapping("goods/detail")
     public ResponseType goodsDetail(Integer id){
-        Subject subject = SecurityUtils.getSubject();
-        User principal = (User) subject.getPrincipal();
-        Integer id1 = principal.getId();
-        System.out.println(id1);
-        ResponseType responseType = goodsService.addFootPrint(id);
         ResponseType goodsAndAllById = goodsService.getGoodsAndAllById(id);
         return goodsAndAllById;
     }

@@ -409,7 +409,9 @@ public class GoodsServiceImpl implements GoodsService {
         //goods
         Goods good = goodsMapper.selectByPrimaryKey(id);
         //用户是否已经收藏：获取用户id后去对应收藏表去查找
-        Integer userId = 1;
+        Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        Integer userId = principal.getId();
         CollectExample collectExample = new CollectExample();
         collectExample.createCriteria().andUserIdEqualTo(userId).andValueIdEqualTo(id);
         List<Collect> collects = collectMapper.selectByExample(collectExample);
@@ -540,7 +542,10 @@ public class GoodsServiceImpl implements GoodsService {
         Integer id = principal.getId();*/
 
         SearchHistory searchHistory = new SearchHistory();
-        searchHistory.setUserId(1);//用戶寫死了
+        Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        Integer id = principal.getId();
+        searchHistory.setUserId(id);//用戶寫死了
         searchHistory.setKeyword(trim);
         searchHistory.setFrom("wx");
         searchHistory.setDeleted(false);
