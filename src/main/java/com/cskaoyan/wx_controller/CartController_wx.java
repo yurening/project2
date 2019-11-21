@@ -2,6 +2,7 @@ package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.user.Cart;
+import com.cskaoyan.bean.user.CartExample;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class CartController_wx {
     public BaseReqVo updateChecked(@RequestBody Map<String, Object> map) {
         List<Integer> productIds = (List<Integer>) map.get("productIds");
         int isChecked = (int) map.get("isChecked");
-        cartService.updateChecked(8, productIds.get(0), isChecked);
+        cartService.updateChecked(8, productIds, isChecked);
         return cartIndex();
     }
 
@@ -73,6 +74,24 @@ public class CartController_wx {
             baseReqVo.setErrmsg("成功");
             baseReqVo.setData(cartService.getGoodsCount(8));
         }
+        return baseReqVo;
+    }
+
+    @RequestMapping("fastadd")
+    public BaseReqVo fastAddCart(@RequestBody Cart cart) {
+        BaseReqVo<Integer> baseReqVo = new BaseReqVo<>();
+        Integer id = cartService.fastAddCart(cart, true);
+        baseReqVo.setData(id);
+        baseReqVo.setErrmsg("成功");
+        return baseReqVo;
+    }
+
+    @RequestMapping("checkout")
+    public BaseReqVo checkout(Integer cartId, Integer addressId, Integer couponId, Integer grouponRulesId) {
+        BaseReqVo<Map<String, Object>> baseReqVo = new BaseReqVo<>();
+        Map<String, Object> result = cartService.checkout(cartId, addressId, couponId, grouponRulesId);
+        baseReqVo.setErrmsg("成功");
+        baseReqVo.setData(result);
         return baseReqVo;
     }
 }

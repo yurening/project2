@@ -1,7 +1,7 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.mall.BaseListInfo;
-import com.cskaoyan.bean.mall.order.MallOrder;
+import com.cskaoyan.bean.mall.order.MallOrderGoods;
 import com.cskaoyan.bean.mall.wx_order.WxFromChart;
 import com.cskaoyan.bean.mall.wx_order.WxId;
 import com.cskaoyan.bean.mall.wx_order.WxOrder;
@@ -25,4 +25,8 @@ public interface OrderService {
     void confirmOrder(Integer orderId);
 
     WxId submitOrder(WxFromChart wxFromChart, String token);
+
+    MallOrderGoods getCommentGoods(Integer orderId, Integer goodsId);
+
+    void addNumber(Integer orderId);
 }

@@ -1,11 +1,10 @@
 package com.cskaoyan.wx_controller;
 
 
-import com.cskaoyan.bean.BaseReqVo;
+
+import com.cskaoyan.bean.mall.BaseRespVo;
 import com.cskaoyan.bean.user.Collect;
 import com.cskaoyan.bean.user.User;
-import com.cskaoyan.needdelete.BaseRespVo;
-import com.cskaoyan.needdelete.UserTokenManager;
 import com.cskaoyan.service.CollectService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -43,5 +42,9 @@ public class CollectController_wx {
         Integer userId = user.getId();
         HashMap<String,Object> hashMap = collectService.addOrDelete(collect,userId);
         return BaseRespVo.ok(hashMap);
+    }
+    private Integer getUserID(){
+        User principal =(User) SecurityUtils.getSubject().getPrincipal();
+        return principal.getId();
     }
 }

@@ -1,12 +1,12 @@
 package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
+import com.cskaoyan.bean.mall.BaseRespVo;
 import com.cskaoyan.bean.mall.region.MallRegion;
 import com.cskaoyan.bean.user.CouponRequest;
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.user.UserRequest;
-import com.cskaoyan.needdelete.BaseRespVo;
-import com.cskaoyan.needdelete.UserTokenManager;
+
 import com.cskaoyan.service.MallService;
 import com.cskaoyan.service.OrderService;
 import com.cskaoyan.service.UserService;
@@ -184,5 +184,9 @@ public class UserController_wx {
         return BaseRespVo.ok(data);
     }
 
+    private Integer getUserID(){
+        User principal =(User) SecurityUtils.getSubject().getPrincipal();
+        return principal.getId();
+    }
 }
 

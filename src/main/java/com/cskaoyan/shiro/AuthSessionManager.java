@@ -19,7 +19,7 @@ public class AuthSessionManager extends DefaultWebSessionManager {
     protected Serializable getSessionId(ServletRequest servletRequest, ServletResponse servletResponse) {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String adminHeader = request.getHeader("X-Litemall-Admin-Token");
-        String WxHeader = request.getHeader("X-Litemall-Token");
+        String WxHeader = request.getHeader("X-cskaoyanmall-Admin-Token");
         if (adminHeader != null && !"".equals(adminHeader)) {
             return adminHeader;
         }else if (WxHeader != null && !"".equals(WxHeader)) {
