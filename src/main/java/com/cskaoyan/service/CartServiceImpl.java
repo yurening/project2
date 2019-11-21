@@ -231,9 +231,10 @@ public class CartServiceImpl implements CartService {
             if (couponId <= 0) {
                 coupon = coupons.get(0);
             } else {
-                coupon = couponMapper.selectByPrimaryKey(couponId)
-            couponId = coupon.getId();
-            couponPrice = new BigDecimal(coupon.getDiscount());
+                coupon = couponMapper.selectByPrimaryKey(couponId);
+                couponId = coupon.getId();
+                couponPrice = new BigDecimal(coupon.getDiscount());
+            }
         }
 
         // 获取用户地址信息
@@ -306,22 +307,22 @@ public class CartServiceImpl implements CartService {
     }
 
 
-    public List<Coupon> couponSelectList(BigDecimal goodsTotalPrice) {
-        //获取用户id
-        Subject subject = SecurityUtils.getSubject();
-        User userLogin = (User) subject.getPrincipal();
-        CouponUserExample couponUserExample = new CouponUserExample();
-        couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short)0);
-        List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
-        List<Coupon> coupons = new ArrayList<>();
-        for (CouponUser couponUser : couponUsers) {
-            //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
-            Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
-            //当优惠券未使用时可以显示出来以供使用
-            if((goodsTotalPrice.doubleValue()>=Double.parseDouble(coupon.getMin()))&&(coupon.getStatus()==0)){
-                coupons.add(coupon);
+    public List<Coupon> couponSelectList(BigDecimal goodsTotalPrice){
+            //获取用户id
+            Subject subject = SecurityUtils.getSubject();
+            User userLogin = (User) subject.getPrincipal();
+            CouponUserExample couponUserExample = new CouponUserExample();
+            couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short) 0);
+            List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
+            List<Coupon> coupons = new ArrayList<>();
+            for (CouponUser couponUser : couponUsers) {
+                //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
+                Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
+                //当优惠券未使用时可以显示出来以供使用
+                if ((goodsTotalPrice.doubleValue() >= Double.parseDouble(coupon.getMin())) && (coupon.getStatus() == 0)) {
+                    coupons.add(coupon);
+                }
             }
+            return coupons;
         }
-        return coupons;
-    }
 }
