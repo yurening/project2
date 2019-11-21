@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService{
     @Autowired
     SearchHistoryMapper searchHistoryMapper;
 
+
     @Override
     public long countUserByExample(UserExample example) {
         return userMapper.countUserByExample(example);
@@ -633,6 +634,8 @@ public class UserServiceImpl implements UserService{
         //获取用户id
         Subject subject = SecurityUtils.getSubject();
         User userLogin = (User) subject.getPrincipal();
+        CartServiceImpl cartService = new CartServiceImpl();
+        BigDecimal goodsTotalPrice = cartService.getGoodsTotalPrice(couponRequest.getCartId(), couponRequest.getGrouponRulesId());
         Cart cart = cartMapper.selectByPrimaryKey(couponRequest.getCartId());
         CouponUserExample couponUserExample = new CouponUserExample();
         couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short)0);
@@ -642,7 +645,8 @@ public class UserServiceImpl implements UserService{
         for (CouponUser couponUser : couponUsers) {
             //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
             Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
-            if(price>Integer.parseInt(coupon.getMin())){
+            //当优惠券未使用时可以显示出来以供使用
+            if((goodsTotalPrice.intValue()>=Integer.parseInt(coupon.getMin()))&&(coupon.getStatus()==0)){
                 coupons.add(coupon);
             }
         }

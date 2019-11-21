@@ -10,8 +10,11 @@ import com.cskaoyan.bean.mall.address.MallAddressExample;
 import com.cskaoyan.bean.user.Cart;
 import com.cskaoyan.bean.user.CartExample;
 import com.cskaoyan.bean.user.CouponRequest;
+import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.mapper.*;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -35,34 +38,43 @@ public class CartServiceImpl implements CartService {
     MallAddressMapper addressMapper;
 
     @Override
-    public CartIndex.CartTotalBean getCartTotal(Integer userId) {
+    public CartIndex.CartTotalBean getCartTotal() {
+        //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         CartIndex.CartTotalBean cartTotalBean = new CartIndex.CartTotalBean();
-        Integer count = cartMapper.getGoodsCountByUserId(null, userId);
+        Integer count = cartMapper.getGoodsCountByUserId(null, userLogin.getId());
         cartTotalBean.setGoodsCount(count == null ? 0 : count);
-        Integer countChecked = cartMapper.getGoodsCountByUserId(true, userId);
+        Integer countChecked = cartMapper.getGoodsCountByUserId(true, userLogin.getId());
         cartTotalBean.setCheckedGoodsCount(countChecked == null ? 0 : countChecked);
-        Double amount = cartMapper.getGoodsAmountByUserId(null, userId);
+        Double amount = cartMapper.getGoodsAmountByUserId(null, userLogin.getId());
         cartTotalBean.setGoodsAmount(amount == null ? 0 : amount);
-        Double amountChecked = cartMapper.getGoodsAmountByUserId(true, userId);
+        Double amountChecked = cartMapper.getGoodsAmountByUserId(true, userLogin.getId());
         cartTotalBean.setCheckedGoodsAmount(amountChecked == null ? 0 : amountChecked);
         return cartTotalBean;
     }
 
     @Override
-    public List<Cart> getCartListByUserId(Integer userId) {
+    public List<Cart> getCartListByUserId() {
+        //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         CartExample cartExample = new CartExample();
-        cartExample.createCriteria().andUserIdEqualTo(userId).andDeletedEqualTo(false);
+        cartExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andDeletedEqualTo(false);
         return cartMapper.selectByExample(cartExample);
     }
 
     @Override
-    public void updateChecked(int userId, List<Integer> productIds, int isChecked) {
+    public void updateChecked( List<Integer> productIds, int isChecked) {
+        //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         CartExample cartExample = new CartExample();
         boolean b = false;
         if (isChecked == 1) {
             b = true;
         }
-        cartExample.createCriteria().andProductIdIn(productIds).andUserIdEqualTo(userId).andDeletedEqualTo(false);
+        cartExample.createCriteria().andProductIdIn(productIds).andUserIdEqualTo(userLogin.getId()).andDeletedEqualTo(false);
         Cart cart = new Cart();
         cart.setChecked(b);
         cartMapper.updateByExampleSelective(cart, cartExample);
@@ -85,9 +97,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void deleteCartByUserIdAndProductIdS(Integer userId, List<Integer> productIds) {
+    public void deleteCartByUserIdAndProductIdS( List<Integer> productIds) {
+        //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         CartExample cartExample = new CartExample();
-        cartExample.createCriteria().andUserIdEqualTo(userId).andProductIdIn(productIds).andDeletedEqualTo(false);
+        cartExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andProductIdIn(productIds).andDeletedEqualTo(false);
         Cart cart = new Cart();
         cart.setDeleted(true);
         cartMapper.updateByExampleSelective(cart, cartExample);
@@ -122,9 +137,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Integer getGoodsCount(int userId) {
+    public Integer getGoodsCount() {
+        //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         CartExample cartExample = new CartExample();
-        cartExample.createCriteria().andUserIdEqualTo(userId).andDeletedEqualTo(false);
+        cartExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andDeletedEqualTo(false);
         return Math.toIntExact(cartMapper.countByExample(cartExample));
     }
 
@@ -223,7 +241,7 @@ public class CartServiceImpl implements CartService {
         return map;
     }
 
-    private BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+    public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
         BigDecimal goodsTotalPrice;
         if (cartId == 0) {
             CartExample cartExample = new CartExample();
