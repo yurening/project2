@@ -16,7 +16,13 @@ import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.mapper.*;
 import org.apache.shiro.SecurityUtils;
+
+
 import org.apache.shiro.subject.Subject;
+
+
+import org.apache.shiro.subject.Subject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -213,9 +219,19 @@ public class CartServiceImpl implements CartService {
         int availableCouponLength = coupons.size();
 
         // 获取优惠券金额
+//        BigDecimal couponPrice = new BigDecimal("0");
+//        if (availableCouponLength != 0) {
+//            Coupon coupon = coupons.get(0);
+//            couponId = coupon.getId();
+//            couponPrice = new BigDecimal(coupon.getDiscount());
+//        }
         BigDecimal couponPrice = new BigDecimal("0");
         if (availableCouponLength != 0) {
-            Coupon coupon = coupons.get(0);
+            Coupon coupon = null;
+            if (couponId <= 0) {
+                coupon = coupons.get(0);
+            } else {
+                coupon = couponMapper.selectByPrimaryKey(couponId)
             couponId = coupon.getId();
             couponPrice = new BigDecimal(coupon.getDiscount());
         }
@@ -257,7 +273,10 @@ public class CartServiceImpl implements CartService {
         return map;
     }
 
-     BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+
+
+    public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         Integer userId = user.getId();
         BigDecimal goodsTotalPrice;
