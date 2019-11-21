@@ -50,16 +50,16 @@ public interface AuthMapper {
 
     List<String> getPermsNameByRoleId(String roleId);
 
-    @Select({"select count(id) from cskaoyan_mall_goods"})
+    @Select({"select count(id) from cskaoyan_mall_goods where deleted = 0"})
     int getGoodsTotal();
 
-    @Select({"select count(id) from cskaoyan_mall_user"})
+    @Select({"select count(id) from cskaoyan_mall_user where deleted = 0"})
     int getUserTotal();
 
-    @Select({"select count(id) from cskaoyan_mall_goods_product"})
+    @Select({"select count(id) from cskaoyan_mall_goods_product where deleted = 0"})
     int getProductTotal();
 
-    @Select({"select count(id) from cskaoyan_mall_order"})
+    @Select({"select count(id) from cskaoyan_mall_order where deleted = 0"})
     int getOrderTotal();
 
     List<String> getPermsMethodNameByRoleId(String roleId);

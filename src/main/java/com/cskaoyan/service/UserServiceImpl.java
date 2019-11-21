@@ -1,5 +1,6 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.Wx_register;
 import com.cskaoyan.bean.user.FootPrint;
 import com.cskaoyan.bean.user.FootPrintExample;
 import com.cskaoyan.bean.user.Feedback;
@@ -16,14 +17,12 @@ import com.cskaoyan.bean.user.*;
 import com.cskaoyan.bean.user.groupon.GrouponDetail;
 import com.cskaoyan.mapper.*;
 import com.cskaoyan.teacherCode.UserTokenManager;
-import com.cskaoyan.utils.TransferDateUtils;
 import com.cskaoyan.utils.TransferUtils_wx;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -537,5 +536,20 @@ public class UserServiceImpl implements UserService{
         return 1;
     }
 
+    @Override
+    public Boolean registerInsertUser(Wx_register wxRegister,String randomAvatar) {
+        userMapper.registerInsertUser(wxRegister,randomAvatar);
+        return true;
+    }
 
+    @Override
+    public User getUserByMobile(String mobile) {
+        return  userMapper.getUserByMobile(mobile);
+    }
+
+    @Override
+    public boolean resetPasswordBymolibe(String password, String mobile) {
+        userMapper.resetPasswordBymolibe(password,mobile);
+        return true;
+    }
 }

@@ -3,12 +3,14 @@ package com.cskaoyan.wx_controller;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.mall.region.MallRegion;
 import com.cskaoyan.bean.user.CouponRequest;
+import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.user.UserRequest;
 import com.cskaoyan.needdelete.BaseRespVo;
 import com.cskaoyan.needdelete.UserTokenManager;
 import com.cskaoyan.service.MallService;
 import com.cskaoyan.service.OrderService;
 import com.cskaoyan.service.UserService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +37,7 @@ public class UserController_wx {
 
     @RequestMapping("wx/search/index")
     public BaseReqVo searchIndex(){
+        User principal = (User) SecurityUtils.getSubject().getPrincipal();
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         objectBaseReqVo.setData(userService.selectSearchIndex());
         objectBaseReqVo.setErrno(0);

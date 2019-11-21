@@ -16,7 +16,6 @@ import java.util.Set;
 
 public class AuthRealmAuthorticator extends ModularRealmAuthorizer {
 
-
     @Override
     public boolean isPermitted(PrincipalCollection principals, String permission) {
         this.assertRealmsConfigured();

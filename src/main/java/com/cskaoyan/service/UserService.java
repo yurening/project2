@@ -1,5 +1,6 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.Wx_register;
 import com.cskaoyan.bean.generalize.Coupon;
 import com.cskaoyan.bean.user.FootPrint;
 import com.cskaoyan.bean.user.FootPrintExample;
@@ -68,4 +69,10 @@ public interface UserService {
     List<Coupon> couponSelectList(CouponRequest couponRequest);
 
     int couponExchange(CouponRequest couponRequest, HttpServletRequest request);
+
+    Boolean registerInsertUser(Wx_register wxRegister,String randomAvatar);
+
+    User getUserByMobile(String mobile);
+
+    boolean resetPasswordBymolibe(String password, String mobile);
 }

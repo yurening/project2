@@ -7,24 +7,31 @@
 package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
+import com.cskaoyan.bean.Wx_register;
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.service.UserService;
 import com.cskaoyan.shiro.AuthToken;
+import com.cskaoyan.utils.AuthUtils;
+import com.cskaoyan.utils.RandomUtils;
+import com.cskaoyan.utils.SmsUtils;
 import com.cskaoyan.utils.TransferDateUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.crypto.hash.Hash;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("wx/auth")
@@ -32,6 +39,10 @@ public class AuthController_wx {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+            @Qualifier("mymap")
+    Map<String, Object> mymap;
 
 
     /**@request
@@ -54,8 +65,8 @@ public class AuthController_wx {
      * }
      * */
     @RequestMapping("login")
-    public BaseReqVo login(@RequestBody User user, HttpServletRequest request) {
-        AuthToken authenticationToken = new AuthToken(user.getUsername(), user.getPassword(),"wx");
+    public BaseReqVo login(@RequestBody User user) throws Exception {
+        AuthToken authenticationToken = new AuthToken(user.getUsername(), AuthUtils.encrypt(user.getPassword()),"wx");
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(authenticationToken);
@@ -71,7 +82,7 @@ public class AuthController_wx {
         Serializable sessionId = subject.getSession().getId();
         LocalDateTime date = LocalDateTime.now();
         date.plusDays(1);
-        userService.updateLoginTime(user.getId());
+        userService.updateLoginTime(userLogin.getId());
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("userInfo",userInfoMap);
@@ -104,9 +115,28 @@ public class AuthController_wx {
      *
      * */
     @RequestMapping("register")
-    public BaseReqVo register() {
-        return null;
+    public BaseReqVo register(@RequestBody Wx_register wxRegister) throws Exception {
+        String phoneCode = (String) mymap.get("code");
+        String code = wxRegister.getCode();
+        String username = wxRegister.getUsername();
+        String password = wxRegister.getPassword();
+        String mobile = wxRegister.getMobile();
+        if (!code.equals(phoneCode)) {
+            return BaseReqVo.fail(508,"验证码输入有误");
+        }else if (userService.getUserByUsername(wxRegister.getUsername()) != null) {
+            return BaseReqVo.fail(508,"该账号已存在");
+        }else if (userService.getUserByMobile(mobile) != null ) {
+            return BaseReqVo.fail(508,"该手机已注册");
+        }
+        wxRegister.setPassword(AuthUtils.encrypt(password));
+        String randomAvatar = RandomUtils.getRandomAvater();
+        Boolean state = userService.registerInsertUser(wxRegister,randomAvatar);
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        return login(user);
     }
+
     /**忘记密码
      * @request
      * {
@@ -119,8 +149,17 @@ public class AuthController_wx {
      *
      * */
     @RequestMapping("reset")
-    public BaseReqVo reset() {
-        return null;
+    public BaseReqVo reset(@RequestBody Wx_register wxRegister) {
+        String phoneCode = (String) mymap.get("code");
+        String code = wxRegister.getCode();
+        String mobile = wxRegister.getMobile();
+        if (userService.getUserByMobile(mobile) == null) {
+            return BaseReqVo.fail(508,"该手机暂未注册！");
+        } else if (!code.equals(phoneCode)) {
+            return BaseReqVo.fail(508,"验证码输入有误");
+        }
+        userService.resetPasswordBymolibe(wxRegister.getPassword(),mobile);
+        return BaseReqVo.ok(null);
     }
 
     /**
@@ -128,11 +167,15 @@ public class AuthController_wx {
      * @request
      * {"mobile":"13112515393"}
      * @response
-     * {"errno":701,"errmsg":"小程序后台验证码服务不支持"}
+     * {"errno":0,data:"","errmsg":"小程序后台验证码服务不支持"}
      * */
     @RequestMapping("regCaptcha")
-    public BaseReqVo regCaptcha() {
-        return null;
+    public BaseReqVo regCaptcha(@RequestBody Map<String,String> map,HttpServletRequest request) {
+        String s = map.get("mobile");
+        String code = SmsUtils.regCaptchaTool(s);
+        mymap.put("code",code);
+        Session session = SecurityUtils.getSubject().getSession();
+        return BaseReqVo.ok(session.getId());
     }
 
     /**
@@ -153,6 +196,11 @@ public class AuthController_wx {
      * */
     @RequestMapping("login_by_weixin")
     public BaseReqVo login_by_weixin() {
-        return null;
+        return BaseReqVo.ok("123");
+    }
+
+    @RequestMapping("bindPhone")
+    public BaseReqVo bindPhone() {
+        return BaseReqVo.ok("123");
     }
 }
