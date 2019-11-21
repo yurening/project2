@@ -3,6 +3,7 @@ package com.cskaoyan.controller;
 import com.cskaoyan.bean.goods.Comment;
 import com.cskaoyan.bean.goods.ResponseType;
 import com.cskaoyan.service.CommentService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CommentController {
     @Autowired
     CommentService commentService;
+
     @RequestMapping("comment/list")
+    @RequiresPermissions(value={"admin:comment:list"})
     public ResponseType showComments(Integer page,Integer limit,
                                   String order,String sort,
                                   Integer userId,Integer valueId){
@@ -24,6 +27,7 @@ public class CommentController {
     }
 
     @RequestMapping("comment/delete")
+    @RequiresPermissions(value={"admin:comment:delete"})
     public ResponseType deleteComments(@RequestBody Comment comment){
         ResponseType responseType = commentService.deleteByLogic(comment);
         return responseType;

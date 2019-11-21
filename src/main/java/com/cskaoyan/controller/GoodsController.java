@@ -3,6 +3,8 @@ package com.cskaoyan.controller;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.goods.*;
 import com.cskaoyan.service.GoodsService;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +27,7 @@ public class GoodsController {
     GoodsService goodsService;
 
     @RequestMapping("goods/list")
+    @RequiresPermissions(value={"admin:goods:list"})
     public ResponseType showGoods(Integer page,Integer limit,
                           String order,String sort,
                           String goodsSn,String name){
@@ -33,6 +36,7 @@ public class GoodsController {
     }
 
     @RequestMapping("goods/catAndBrand")
+    @RequiresPermissions(value={"admin:goods:read","admin:goods:update","admin:goods:create","admin:goods:list"},logical = Logical.OR)
     public ResponseType catAndBrand(){
         //获取分类及其子类
         List<CategoryResp> categoryList = goodsService.getCategory();
@@ -50,6 +54,7 @@ public class GoodsController {
     }
 
     @RequestMapping("goods/create")
+    @RequiresPermissions(value={"admin:goods:create"})
     public ResponseType createGoods(@RequestBody CreateGoods createGoods){
         ResponseType goods = goodsService.createGoods(createGoods);
         /*ResponseType responseType = new ResponseType();
@@ -59,6 +64,7 @@ public class GoodsController {
     }
 
     @RequestMapping("goods/detail")
+    @RequiresPermissions(value={"admin:goods:read"})
     public ResponseType goodsDetail(/*@RequestBody */Integer id){
         CreateGoods goodsDetail = goodsService.getGoodsDetail(id);
         ResponseType responseType = new ResponseType();
@@ -69,6 +75,7 @@ public class GoodsController {
     }
 
     @RequestMapping("goods/update")
+    @RequiresPermissions(value={"admin:goods:update"})
     public ResponseType updateGoods(@RequestBody CreateGoods createGoods){
         int i = goodsService.updateGoods(createGoods);
         ResponseType responseType = new ResponseType();
@@ -78,6 +85,7 @@ public class GoodsController {
     }
 
     @RequestMapping("goods/delete")
+    @RequiresPermissions(value={"admin:goods:delete"})
     public ResponseType deleteLogic(@RequestBody Goods goods){
         goodsService.deleteGoods(goods);
         ResponseType responseType = new ResponseType();

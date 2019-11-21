@@ -1,11 +1,11 @@
 package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
-<<<<<<< HEAD
+
 import com.cskaoyan.bean.generalize.Coupon;
-=======
+
 import com.cskaoyan.bean.mall.BaseRespVo;
->>>>>>> bdf1d95cf59c8032a31b03d006bc012e398781df
+
 import com.cskaoyan.bean.mall.region.MallRegion;
 import com.cskaoyan.bean.user.CouponRequest;
 import com.cskaoyan.bean.user.User;
