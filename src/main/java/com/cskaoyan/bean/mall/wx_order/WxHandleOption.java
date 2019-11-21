@@ -41,6 +41,7 @@ public class WxHandleOption {
                 setDelete(true);
                 break;
             case 103:
+                setDelete(true);
                 break;
             case 201:
                 setRefund(true);

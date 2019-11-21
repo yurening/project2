@@ -1,10 +1,11 @@
 package com.cskaoyan.service;
-import com.cskaoyan.bean.generalize.Coupon;
 import com.cskaoyan.bean.generalize.Groupon;
 import com.cskaoyan.bean.generalize.GrouponRules;
 import com.cskaoyan.bean.goods.Product;
 import com.cskaoyan.bean.mall.address.MallAddress;
 import com.cskaoyan.bean.mall.coupon.MallCoupon;
+import com.cskaoyan.bean.mall.system.MallSystem;
+import com.cskaoyan.bean.mall.system.MallSystemExample;
 import com.cskaoyan.bean.mall.wx_order.WxHandleOption;
 import java.util.Date;
 import com.cskaoyan.bean.mall.order.MallOrderGoods;
@@ -48,6 +49,8 @@ public class OrderServiceImpl implements OrderService {
     GrouponMapper grouponMapper;
     @Autowired
     ProductMapper productMapper;
+    @Autowired
+    MallSystemMapper systemMapper;
 
     /**
      * 获取微信订单
@@ -105,15 +108,39 @@ public class OrderServiceImpl implements OrderService {
             String orderStatusText = getWxOrderStatusText((short) i);
             List<WxOrder> newOrders = new ArrayList<>();
             for(WxOrder x:wxOrders){
+                //i==101即未付款时候，检查是否超时，超时则系统取消
+                if(i==101){
+                    int orderId = x.getId();
+                    MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(orderId);
+                    //取出现在时间和订单修改时间对比。如果相差大于设定时间，则改为系统取消
+                    Date nowDate = new Date();
+                    Date updateTime = mallOrder.getUpdateTime();
+                    MallSystemExample mallSystemExample = new MallSystemExample();
+                    mallSystemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_order_unpaid");
+                    List<MallSystem> mallSystems = systemMapper.selectByExample(mallSystemExample);
+                    String keyValue = mallSystems.get(0).getKeyValue();
+                    int i1 = Integer.parseInt(keyValue) * 60 * 1000;
+                    if(i1 < (nowDate.getTime() - updateTime.getTime())){
+                        mallOrder.setOrderStatus((short) 103);
+                        x.setOrderStatusText("系统取消");
+                        addNumber(mallOrder.getId());
+                        mallOrder.setUpdateTime(nowDate);
+                        mallOrderMapper.updateByPrimaryKey(mallOrder);
+                        x.setHandleOption(new WxHandleOption((short) 103));
+                    }
+                }
                 String orderStatusText1 = x.getOrderStatusText();
                 if(orderStatusText1.equals(orderStatusText)){
                     newOrders.add(x);
                 }
             }
+
+
             return newOrders;
         }
         return wxOrders;
     }
+
 
     private List<WxGoods> getWxGoodsByOrderId(Integer id) {
         MallOrderGoodsExample mallOrderGoodsExample = new MallOrderGoodsExample();
@@ -190,6 +217,7 @@ public class OrderServiceImpl implements OrderService {
         mallOrder.setOrderStatus((short) 102);
         mallOrder.setOrderStatusText("用户取消");
         mallOrder.setHandleOption(new WxHandleOption((short) 102));
+        addNumber(orderId);
         mallOrderMapper.updateByPrimaryKey(mallOrder);
     }
 

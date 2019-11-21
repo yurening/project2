@@ -54,8 +54,9 @@ public class AuthController_wx {
      * }
      * */
     @RequestMapping("login")
-    public BaseReqVo login(@RequestBody User user, HttpServletRequest request) {
+    public BaseReqVo login(@RequestBody User user,HttpServletRequest request) {
         AuthToken authenticationToken = new AuthToken(user.getUsername(), user.getPassword(),"wx");
+        //AuthToken authenticationToken = new AuthToken(username, password,"wx");
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(authenticationToken);
@@ -71,7 +72,8 @@ public class AuthController_wx {
         Serializable sessionId = subject.getSession().getId();
         LocalDateTime date = LocalDateTime.now();
         date.plusDays(1);
-        userService.updateLoginTime(user.getId());
+        //userService.updateLoginTime(user.getId());
+        userService.updateLoginTime(userLogin.getId());
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("userInfo",userInfoMap);

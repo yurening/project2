@@ -13,6 +13,7 @@ import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.mall.order.MallOrderDetails;
 import com.cskaoyan.bean.mall.region.MallRegion;
 import com.cskaoyan.service.MallService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MallController {
     @Autowired
     MallService mallService;
+
 
     @RequestMapping("admin/region/list")
     public BaseRespVo getRegionList(){
@@ -33,6 +35,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:brand:list")
     @RequestMapping("admin/brand/list")
     public BaseRespVo getBrandList(Integer page, Integer limit, String sort, String order, String name, Integer id){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -44,6 +47,7 @@ public class MallController {
     }
 
 
+    @RequiresPermissions("admin:brand:update")
     @RequestMapping("admin/brand/create")
     public BaseRespVo creatBrand(@RequestBody MallBrand mallBrand){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -54,6 +58,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:brand:update")
     @RequestMapping("admin/brand/update")
     public BaseRespVo updateBrand(@RequestBody MallBrand mallBrand){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -64,6 +69,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:brand:delete")
     @RequestMapping("admin/brand/delete")
     public BaseRespVo deleteBrand(@RequestBody MallBrand mallBrand){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -73,6 +79,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:order:list")
     @RequestMapping("admin/order/list")
     public BaseRespVo getOrderList(Integer page, Integer limit, String sort, String order, String orderSn, Integer userId, Short[] orderStatusArray){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -83,6 +90,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:order:read")
     @RequestMapping("admin/order/detail")
     public BaseRespVo getOrderDetail(Integer id){
         MallOrderDetails mallOrderDetails = mallService.checkOrderDetails(id);
@@ -93,6 +101,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:category:list")
     @RequestMapping("admin/category/list")
     public BaseRespVo getCategoryList(){
         List<MallCategory> allCategory = mallService.getAllCategory();
@@ -102,6 +111,8 @@ public class MallController {
         baseRespVo.setErrno(0);
         return baseRespVo;
     }
+
+
 
     @RequestMapping("admin/category/l1")
     public BaseRespVo getL1CategoryList(){
@@ -113,16 +124,24 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:category:create")
     @RequestMapping("admin/category/create")
     public BaseRespVo createCategory(@RequestBody MallCategory mallCategory){
-        MallCategory newCategory = mallService.insertCategory(mallCategory);
         BaseRespVo baseRespVo = new BaseRespVo();
-        baseRespVo.setData(newCategory);
-        baseRespVo.setErrmsg("成功");
-        baseRespVo.setErrno(0);
+        if(mallCategory.getLevel().equals("L2")&&mallCategory.getPid()==0){
+            baseRespVo.setData(null);
+            baseRespVo.setErrmsg("二级目录必须要有一级目录");
+            baseRespVo.setErrno(507);
+        }else{
+            MallCategory newCategory = mallService.insertCategory(mallCategory);
+            baseRespVo.setData(newCategory);
+            baseRespVo.setErrmsg("成功");
+            baseRespVo.setErrno(0);
+        }
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:category:delete")
     @RequestMapping("admin/category/delete")
     public BaseRespVo deleteCategory(@RequestBody MallCategory mallCategory){
         mallService.deleteCategory(mallCategory);
@@ -132,15 +151,23 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:category:update")
     @RequestMapping("admin/category/update")
     public BaseRespVo updateCategory(@RequestBody MallCategory mallCategory){
-        mallService.updateCategory(mallCategory);
         BaseRespVo baseRespVo = new BaseRespVo();
-        baseRespVo.setErrmsg("成功");
-        baseRespVo.setErrno(0);
+        if(mallCategory.getLevel().equals("L2")&&mallCategory.getPid()==0){
+            baseRespVo.setData(null);
+            baseRespVo.setErrmsg("二级目录必须要有一级目录");
+            baseRespVo.setErrno(507);
+        }else {
+            mallService.updateCategory(mallCategory);
+            baseRespVo.setErrmsg("成功");
+            baseRespVo.setErrno(0);
+        }
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:issue:list")
     @RequestMapping("admin/issue/list")
     public BaseRespVo getIssueList(Integer page, Integer limit, String sort, String order, String question){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -152,6 +179,7 @@ public class MallController {
     }
 
 
+    @RequiresPermissions("admin:issue:create")
     @RequestMapping("admin/issue/create")
     public BaseRespVo createIssue(@RequestBody MallIssue mallIssue){
         MallIssue newIssue = mallService.insertIssue(mallIssue);
@@ -162,6 +190,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:issue:delete")
     @RequestMapping("admin/issue/delete")
     public BaseRespVo deleteIssue(@RequestBody MallIssue mallIssue){
         mallService.deleteIssue(mallIssue);
@@ -171,6 +200,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:issue:update")
     @RequestMapping("admin/issue/update")
     public BaseRespVo updateIssue(@RequestBody MallIssue mallIssue){
         MallIssue newIssue = mallService.updateIssue(mallIssue);
@@ -181,6 +211,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:keyword:list")
     @RequestMapping("admin/keyword/list")
     public BaseRespVo getKeywordList(Integer page, Integer limit, String sort, String order, String keyword, String url){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -191,6 +222,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:keyword:create")
     @RequestMapping("admin/keyword/create")
     public BaseRespVo createKeyword(@RequestBody MallKeyword mallKeyword){
         MallKeyword newKeyword = mallService.insertKeyword(mallKeyword);
@@ -201,6 +233,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:keyword:delete")
     @RequestMapping("admin/keyword/delete")
     public BaseRespVo deleteKeyword(@RequestBody MallKeyword mallKeyword){
         mallService.deleteKeyword(mallKeyword);
@@ -210,6 +243,7 @@ public class MallController {
         return baseRespVo;
     }
 
+    @RequiresPermissions("admin:keyword:update")
     @RequestMapping("admin/keyword/update")
     public BaseRespVo updateKeyword(@RequestBody MallKeyword mallKeyword){
         MallKeyword newKeyword = mallService.updateKeyword(mallKeyword);
