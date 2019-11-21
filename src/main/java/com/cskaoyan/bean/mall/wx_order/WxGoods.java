@@ -1,5 +1,8 @@
 package com.cskaoyan.bean.mall.wx_order;
 
+import lombok.Data;
+
+@Data
 public class WxGoods {
     /**
      * number : 1
@@ -12,6 +15,7 @@ public class WxGoods {
     private String picUrl;
     private int id;
     private String goodsName;
+    private Integer comment;
 
     public int getNumber() {
         return number;

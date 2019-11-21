@@ -10,5 +10,8 @@ public interface CommentService {
     ResponseType deleteByLogic(Comment comment);
     ResponseType getCommentCount(Integer valueId,Integer type);
     ResponseType getCommentsList(Integer valueId,Integer type,Integer size,Integer page,Integer showType);
+
+    void commentOrderGoods(Comment comment);
     ResponseType addComment(Comment comment);
+
 }

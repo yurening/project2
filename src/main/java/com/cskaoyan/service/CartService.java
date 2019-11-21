@@ -13,4 +13,11 @@ public interface CartService {
     void updateChecked(int userId, int productId, int isChecked);
 
     boolean updateNumberById(Integer id, Short number);
+
+
+    void deleteCartByUserIdAndProductIdS(Integer userId, List<Integer> productIds);
+
+    boolean addCart(Cart cart);
+
+    Integer getGoodsCount(int userId);
 }

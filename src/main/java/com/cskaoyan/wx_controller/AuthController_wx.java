@@ -60,7 +60,7 @@ public class AuthController_wx {
         try {
             subject.login(authenticationToken);
         } catch (AuthenticationException e) {
-            return BaseReqVo.fail(402,"账号或密码输入有误,请确认后重新输入");
+            return BaseReqVo.fail(508,"账号或密码错误");
             //e.printStackTrace();
         }
         User userLogin = (User) subject.getPrincipal();
