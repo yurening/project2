@@ -5,8 +5,8 @@ import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.goods.ResponseType;
 import com.cskaoyan.bean.goods.StaticPhoto;
 import com.cskaoyan.bean.mall.BaseRespVo;
-import com.cskaoyan.bean.user.Feedback;
 import com.cskaoyan.bean.user.User;
+import com.cskaoyan.bean.wx.FeedBack;
 import com.cskaoyan.service.OtherService;
 import com.cskaoyan.service.PicStaticService;
 import org.apache.shiro.SecurityUtils;
@@ -73,11 +73,11 @@ public class OtherController_wx {
     }
 
     @RequestMapping("feedback/submit")
-    public Object regionList(@RequestBody Feedback feedback, HttpServletRequest request){
+    public Object regionList(@RequestBody FeedBack feedBack, HttpServletRequest request){
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipal();
         Integer userId = user.getId();
-        otherService.feedbackSubmit(feedback,userId);
+        otherService.feedBackSubmit(feedBack,userId);
         return BaseRespVo.ok(null);
     }
 

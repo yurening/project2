@@ -68,5 +68,5 @@ public interface UserService {
 
     List<Coupon> couponSelectList(CouponRequest couponRequest);
 
-    int couponExchange(CouponRequest couponRequest, HttpServletRequest request);
+    int couponExchange(CouponRequest couponRequest);
 }

@@ -156,10 +156,9 @@ public class UserController_wx {
     }
 
     @RequestMapping("wx/coupon/exchange")
-    public BaseReqVo couponExchange(@RequestBody CouponRequest couponRequest, ServletRequest servletRequest){
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+    public BaseReqVo couponExchange(@RequestBody CouponRequest couponRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
-        int i = userService.couponExchange(couponRequest,request);
+        int i = userService.couponExchange(couponRequest);
         if(i==1){
             objectBaseReqVo.setErrno(0);
             objectBaseReqVo.setErrmsg("成功");

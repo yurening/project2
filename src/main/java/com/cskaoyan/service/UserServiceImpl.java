@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService{
     @Autowired
     SearchHistoryMapper searchHistoryMapper;
 
+
     @Override
     public long countUserByExample(UserExample example) {
         return userMapper.countUserByExample(example);
@@ -162,12 +163,15 @@ public class UserServiceImpl implements UserService{
     }
 
     public Map<String, Object> selectSearchIndex() {
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         Map<String, Object> objectHashMap = new HashMap<>();
         MallKeywordExample mallKeywordExample = new MallKeywordExample();
         HistoryExample historyExample = new HistoryExample();
+        historyExample.createCriteria().andUserIdEqualTo(userLogin.getId());
         List<History> histories = userMapper.selectHistoryByExample(historyExample);
         List<MallKeyword> mallKeywords = mallKeywordMapper.selectByExample(mallKeywordExample);
-        mallKeywordExample.createCriteria().andSortOrderEqualTo(1);
+        mallKeywordExample.createCriteria().andSortOrderEqualTo(userLogin.getId());
         List<MallKeyword> mallKeywords1 = mallKeywordMapper.selectByExample(mallKeywordExample);
         objectHashMap.put("defaultKeyword",mallKeywords1.get(0));
         objectHashMap.put("hotKeywordList",mallKeywords);
@@ -225,16 +229,18 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public GouponMy.DataBeanX grouponMy(int showType) {
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         GouponMy.DataBeanX dataBeanX = new GouponMy.DataBeanX();
         List<Groupon> groupons = null;
         if(showType==0){
             GrouponExample grouponExample = new GrouponExample();
-            grouponExample.createCriteria().andCreatorUserIdEqualTo(1);
+            grouponExample.createCriteria().andCreatorUserIdEqualTo(userLogin.getId());
             groupons = grouponMapper.selectByExample(grouponExample);
         }
         if(showType==1){
             GrouponExample grouponExample = new GrouponExample();
-            grouponExample.createCriteria().andUserIdEqualTo(1);
+            grouponExample.createCriteria().andUserIdEqualTo(userLogin.getId());
             groupons = grouponMapper.selectByExample(grouponExample);
         }
         ArrayList<GouponMy.DataBeanX.DataBean> data = new ArrayList<>();
@@ -445,19 +451,21 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<Coupon> selectCoupon(UserRequest userRequest) {
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
         //新用户时长 7天
         //判断是否是新用户，新用户显示新用户劵，不是新用户不显示
         //获得时间差
         UserExample userExample = new UserExample();
-        userExample.createCriteria().andIdEqualTo(1);
+        userExample.createCriteria().andIdEqualTo(userLogin.getId());
         List<User> users = userMapper.selectUserByExample(userExample);
         User user = users.get(0);
         long time = (new Date()).getTime() - (user.getAddTime()).getTime();
         List<Coupon> coupons = couponMapper.selectByExample(new CouponExample());
         List<Coupon> couponsReturn = new ArrayList<>();
         //不是新用户
-        if(time>(60*1000*24*7)){
+        if(time>(60*60*1000*24*7)){
             //根据time_type判断优惠券是基于领取时间的有效天数还是 一段时间内有效，同时新用户不用显示
             for (Coupon coupon : coupons) {
                 //新人劵直接跳过
@@ -528,10 +536,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public ReturnData couponMyList(CouponRequest couponRequest) {
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         //从未使用的优惠券中判断是否存在已过期的优惠券，如果有，将status设为2
         //取出该用户未使用的优惠券
         CouponUserExample couponUserExample1 = new CouponUserExample();
-        couponUserExample1.createCriteria().andUserIdEqualTo(1).andStatusEqualTo((short)0);
+        couponUserExample1.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short)0);
         List<CouponUser> couponUsers1 = couponUserMapper.selectByExample(couponUserExample1);
         for (CouponUser couponUser : couponUsers1) {
             Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
@@ -544,7 +554,7 @@ public class UserServiceImpl implements UserService{
                 long realDay = date.getTime() - addTime.getTime();
                 //取出days
                 String days = coupon.getDays();
-                if(realDay>(Integer.parseInt(days)*24*60*1000)){
+                if(realDay>(Integer.parseInt(days)*24*60*60*1000)){
                     couponUser.setStatus((short)2);
                     couponUserMapper.updateByPrimaryKey(couponUser);
                 }
@@ -562,7 +572,7 @@ public class UserServiceImpl implements UserService{
 
         PageHelper.startPage(couponRequest.getPage(),couponRequest.getSize());
         CouponUserExample couponUserExample = new CouponUserExample();
-        couponUserExample.createCriteria().andUserIdEqualTo(1).andStatusEqualTo(couponRequest.getStatus());
+        couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo(couponRequest.getStatus());
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
         List<Coupon> coupons = new ArrayList<>();
         for (CouponUser couponUser : couponUsers) {
@@ -577,8 +587,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public int couponReceive(CouponRequest couponRequest) {
         //在coupon_user表中，根据是否有coupon_id=该优惠券id，判断是否已经领取
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         CouponUserExample couponUserExample = new CouponUserExample();
-        couponUserExample.createCriteria().andUserIdEqualTo(1).andCouponIdEqualTo(couponRequest.getCouponId());
+        couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andCouponIdEqualTo(couponRequest.getCouponId());
         long l = couponUserMapper.countByExample(couponUserExample);
         if(l>0){
             return 0;
@@ -605,7 +617,7 @@ public class UserServiceImpl implements UserService{
             }
         }
         CouponUser couponUser = new CouponUser();
-        couponUser.setUserId(1);
+        couponUser.setUserId(userLogin.getId());
         couponUser.setCouponId(couponRequest.getCouponId());
         couponUser.setStatus((short)0);
         Coupon coupon = couponMapper.selectByPrimaryKey(couponRequest.getCouponId());
@@ -620,16 +632,21 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<Coupon> couponSelectList(CouponRequest couponRequest) {
         //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
+        CartServiceImpl cartService = new CartServiceImpl();
+        BigDecimal goodsTotalPrice = cartService.getGoodsTotalPrice(couponRequest.getCartId(), couponRequest.getGrouponRulesId());
         Cart cart = cartMapper.selectByPrimaryKey(couponRequest.getCartId());
         CouponUserExample couponUserExample = new CouponUserExample();
-        couponUserExample.createCriteria().andUserIdEqualTo(cart.getGoodsId()).andStatusEqualTo((short)0);
+        couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short)0);
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
         List<Coupon> coupons = new ArrayList<>();
         double price = cart.getPrice().doubleValue();
         for (CouponUser couponUser : couponUsers) {
             //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
             Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
-            if(price>Integer.parseInt(coupon.getMin())){
+            //当优惠券未使用时可以显示出来以供使用
+            if((goodsTotalPrice.intValue()>=Integer.parseInt(coupon.getMin()))&&(coupon.getStatus()==0)){
                 coupons.add(coupon);
             }
         }
@@ -637,8 +654,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int couponExchange(CouponRequest couponRequest, HttpServletRequest request) {
-        Integer userId = UserTokenManager.getUserId(request.getHeader("X-Litemall-Token"));
+    public int couponExchange(CouponRequest couponRequest) {
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         CouponExample couponExample = new CouponExample();
          couponExample.createCriteria().andCodeEqualTo(couponRequest.getCode());
         List<Coupon> coupons = couponMapper.selectByExample(couponExample);

@@ -20,8 +20,11 @@ public class ExceptionHandle {
 
     //    @ResponseBody
     @ExceptionHandler(UnauthorizedException.class)
-    public String handleShiroException(Exception ex) {
-        return "redirect:/error/403";
+    public BaseReqVo handleShiroException(Exception ex) {
+        BaseReqVo baseReqVo = new BaseReqVo();
+        baseReqVo.setErrno(506);
+        baseReqVo.setErrmsg("无操作权限");
+        return baseReqVo;
     }
 
     //    @ResponseBody
