@@ -231,8 +231,7 @@ public class CartServiceImpl implements CartService {
             if (couponId <= 0) {
                 coupon = coupons.get(0);
             } else {
-                coupon = couponMapper.selectByPrimaryKey(couponId);
-            }
+                coupon = couponMapper.selectByPrimaryKey(couponId)
             couponId = coupon.getId();
             couponPrice = new BigDecimal(coupon.getDiscount());
         }
