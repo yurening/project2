@@ -1,6 +1,8 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.generalize.Coupon;
+import com.cskaoyan.bean.generalize.CouponUser;
+import com.cskaoyan.bean.generalize.CouponUserExample;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.Product;
 import com.cskaoyan.bean.goods.System;
@@ -14,6 +16,10 @@ import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.mapper.*;
 import org.apache.shiro.SecurityUtils;
+
+
+import org.apache.shiro.subject.Subject;
+
 
 import org.apache.shiro.subject.Subject;
 
@@ -35,9 +41,11 @@ public class CartServiceImpl implements CartService {
     @Autowired
     SystemMapper systemMapper;
     @Autowired
-    UserService userService;
-    @Autowired
     MallAddressMapper addressMapper;
+    @Autowired
+    CouponMapper couponMapper;
+    @Autowired
+    CouponUserMapper couponUserMapper;
 
     @Override
     public CartIndex.CartTotalBean getCartTotal() {
@@ -113,10 +121,13 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public boolean addCart(Cart cart) {
+        //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         Integer productId = cart.getProductId();
         Product product = productMapper.selectByPrimaryKey(productId);
         CartExample cartExample = new CartExample();
-        cartExample.createCriteria().andUserIdEqualTo(8).andProductIdEqualTo(productId).andDeletedEqualTo(false);
+        cartExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andProductIdEqualTo(productId).andDeletedEqualTo(false);
         List<Cart> carts = cartMapper.selectByExample(cartExample);
         if (carts.size() != 0) {
             Cart cartExists = carts.get(0);
@@ -150,10 +161,13 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Integer fastAddCart(Cart cart, Boolean deleted) {
+        //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
         Integer productId = cart.getProductId();
         Product product = productMapper.selectByPrimaryKey(productId);
         Goods goods = goodsMapper.selectByPrimaryKey(cart.getGoodsId());
-        cart.setUserId(8);
+        cart.setUserId(userLogin.getId());
         cart.setGoodsSn(goods.getGoodsSn());
         cart.setGoodsName(goods.getName());
         cart.setPrice(product.getPrice());
@@ -196,14 +210,12 @@ public class CartServiceImpl implements CartService {
 
         // 判断是否需要运费
         BigDecimal freightPrice = new BigDecimal("0");
-        if (goodsTotalPrice.compareTo(minFreight) > 0) {
+        if (goodsTotalPrice.compareTo(minFreight) < 0) {
             freightPrice = freightValue;
         }
 
         // 获取可以使用的优惠券列表
-        CouponRequest couponRequest = new CouponRequest();
-        couponRequest.setCartId(cartId);
-        List<Coupon> coupons = userService.couponSelectList(couponRequest);
+        List<Coupon> coupons = couponSelectList(goodsTotalPrice);
         int availableCouponLength = coupons.size();
 
         // 获取优惠券金额
@@ -252,11 +264,11 @@ public class CartServiceImpl implements CartService {
     }
 
 
+
     public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
 
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         Integer userId = user.getId();
-
         BigDecimal goodsTotalPrice;
         if (cartId == 0) {
             CartExample cartExample = new CartExample();
@@ -281,5 +293,25 @@ public class CartServiceImpl implements CartService {
         Cart cart = new Cart();
         cart.setUpdateTime(new Date());
         cartMapper.updateByExampleSelective(cart , cartExample);
+    }
+
+
+    public List<Coupon> couponSelectList(BigDecimal goodsTotalPrice) {
+        //获取用户id
+        Subject subject = SecurityUtils.getSubject();
+        User userLogin = (User) subject.getPrincipal();
+        CouponUserExample couponUserExample = new CouponUserExample();
+        couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short)0);
+        List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
+        List<Coupon> coupons = new ArrayList<>();
+        for (CouponUser couponUser : couponUsers) {
+            //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
+            Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
+            //当优惠券未使用时可以显示出来以供使用
+            if((goodsTotalPrice.doubleValue()>=Double.parseDouble(coupon.getMin()))&&(coupon.getStatus()==0)){
+                coupons.add(coupon);
+            }
+        }
+        return coupons;
     }
 }

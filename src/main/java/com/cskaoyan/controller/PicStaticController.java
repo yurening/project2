@@ -28,7 +28,10 @@ public class PicStaticController {
     @RequiresPermissions(value = {"admin:storage:create","admin:groupon:create","admin:ad:create",
     "admin:topic:create","admin:coupon:create","admin:admin:create","admin:role:create",
     "admin:brand:create","admin:keyword:create","admin:category:create","admin:issue:create",
-    "admin:goods:create"},logical = Logical.OR)
+    "admin:goods:create","admin:storage:update","admin:groupon:update","admin:ad:update",
+    "admin:topic:update","admin:coupon:update","admin:admin:update","admin:role:update",
+    "admin:brand:update","admin:keyword:update","admin:category:update","admin:issue:update",
+    "admin:goods:update"},logical = Logical.OR)
     public ResponseType picStatic(MultipartFile file) throws IOException {
         //阿里云
         String accessKeyId="LTAI4FkEFjiCLX5NWuaCreE7";

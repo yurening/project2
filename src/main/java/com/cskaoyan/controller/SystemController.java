@@ -4,11 +4,15 @@ import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.generalize.Storage;
 import com.cskaoyan.bean.systemBean.*;
 import com.cskaoyan.service.SystemService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +110,14 @@ public class SystemController {
     @RequestMapping("admin/delete")
     @RequiresPermissions(value = {"admin:admin:delete"})
     public BaseReqVo adminDelete(@RequestBody Admin admin){
+        Subject subject = SecurityUtils.getSubject();
+        com.cskaoyan.bean.Admin admin1 = (com.cskaoyan.bean.Admin) subject.getPrincipal();
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
+        if (admin.getId().equals(admin1.getId())){
+            baseReqVo.setErrno(500);
+            baseReqVo.setErrmsg("你不能删除自己");
+            return baseReqVo;
+        }
         systemService.adminDelete(admin);
         baseReqVo.setErrno(0);
         baseReqVo.setErrmsg("成功");
@@ -234,7 +245,7 @@ public class SystemController {
 
     @PostMapping("role/permissions")
     @RequiresPermissions(value = {"admin:role:permission:update"})
-    public BaseReqVo rolePermissionsPost(@RequestBody Permissions permissions){
+    public BaseReqVo rolePermissionsPost(@RequestBody Permissions permissions, HttpServletResponse response){
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         if (permissions.getRoleId().equals(1)){
             baseReqVo.setErrno(500);
@@ -242,7 +253,7 @@ public class SystemController {
         } else {
             systemService.changePermissions(permissions);
             baseReqVo.setErrno(0);
-            baseReqVo.setErrmsg("成功");
+            baseReqVo.setErrmsg("成功，即将刷新");
         }
         return baseReqVo;
     }

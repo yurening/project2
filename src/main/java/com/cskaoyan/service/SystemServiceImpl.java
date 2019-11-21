@@ -37,7 +37,6 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public HashMap<String,Object> adminList(Integer page, Integer limit, String username, String sort, String order) {
-        PageHelper.startPage(page,limit);
         AdminExample adminExample = new AdminExample();
         AdminExample.Criteria criteria = adminExample.createCriteria();
         criteria.andDeletedNotEqualTo(true);
@@ -46,6 +45,7 @@ public class SystemServiceImpl implements SystemService {
         }
         long l = adminMapper.countByExample(adminExample);
         adminExample.setOrderByClause(sort + " " + order);
+        PageHelper.startPage(page,limit);
         List<Admin> adminList = adminMapper.selectByExample(adminExample);
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("total",Math.toIntExact(l));
@@ -103,7 +103,6 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public HashMap<String, Object> logList(Integer page, Integer limit, String name, String sort, String order) {
-        PageHelper.startPage(page,limit);
         LogExample logExample = new LogExample();
         LogExample.Criteria criteria = logExample.createCriteria();
         criteria.andDeletedEqualTo(false);
@@ -112,6 +111,7 @@ public class SystemServiceImpl implements SystemService {
         }
         long l = logMapper.countByExample(logExample);
         logExample.setOrderByClause(sort + " " + order);
+        PageHelper.startPage(page,limit);
         List<Log> logs = logMapper.selectByExample(logExample);
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("total",Math.toIntExact(l));
@@ -121,7 +121,6 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public HashMap<String, Object> roleList(Integer page, Integer limit, String name, String sort, String order) {
-        PageHelper.startPage(page,limit);
         RoleExample roleExample = new RoleExample();
         RoleExample.Criteria criteria = roleExample.createCriteria();
         criteria.andDeletedEqualTo(false);
@@ -130,6 +129,7 @@ public class SystemServiceImpl implements SystemService {
         }
         long l = roleMapper.countByExample(roleExample);
         roleExample.setOrderByClause(sort + " " + order);
+        PageHelper.startPage(page,limit);
         List<Role> roleList = roleMapper.selectByExample(roleExample);
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("total",Math.toIntExact(l));
@@ -179,7 +179,6 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public HashMap<String, Object> storageList(Integer page,Integer limit,String sort,String order,String key,String name) {
-        PageHelper.startPage(page,limit);
         StorageExample storageExample = new StorageExample();
         StorageExample.Criteria criteria = storageExample.createCriteria();
         criteria.andDeletedEqualTo(false);
@@ -191,6 +190,7 @@ public class SystemServiceImpl implements SystemService {
         }
         long l = storageMapper.countByExample(storageExample);
         storageExample.setOrderByClause(sort + " " + order);
+        PageHelper.startPage(page,limit);
         List<Storage> storages = storageMapper.selectByExample(storageExample);
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("total",Math.toIntExact(l));
