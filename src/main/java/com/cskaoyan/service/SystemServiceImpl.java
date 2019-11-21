@@ -103,7 +103,6 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public HashMap<String, Object> logList(Integer page, Integer limit, String name, String sort, String order) {
-        PageHelper.startPage(page,limit);
         LogExample logExample = new LogExample();
         LogExample.Criteria criteria = logExample.createCriteria();
         criteria.andDeletedEqualTo(false);
@@ -112,6 +111,7 @@ public class SystemServiceImpl implements SystemService {
         }
         long l = logMapper.countByExample(logExample);
         logExample.setOrderByClause(sort + " " + order);
+        PageHelper.startPage(page,limit);
         List<Log> logs = logMapper.selectByExample(logExample);
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("total",Math.toIntExact(l));
