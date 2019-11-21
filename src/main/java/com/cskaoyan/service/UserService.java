@@ -59,7 +59,8 @@ public interface UserService {
     GrouponDetail.DataBean grouponDetail(int grouponId);
 
     //coupon
-    Map selectCoupon(UserRequest userRequest);
+
+    List<Coupon> selectCoupon(UserRequest userRequest);
 
     ReturnData couponMyList(CouponRequest couponRequest);
 

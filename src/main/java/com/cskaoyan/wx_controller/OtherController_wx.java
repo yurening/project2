@@ -6,11 +6,11 @@ import com.cskaoyan.bean.goods.ResponseType;
 import com.cskaoyan.bean.goods.StaticPhoto;
 import com.cskaoyan.bean.mall.BaseRespVo;
 import com.cskaoyan.bean.user.Feedback;
-
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.service.OtherService;
 import com.cskaoyan.service.PicStaticService;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,34 +74,18 @@ public class OtherController_wx {
 
     @RequestMapping("feedback/submit")
     public Object regionList(@RequestBody Feedback feedback, HttpServletRequest request){
-        //前端写了一个token放在请求头中
-        //*************************
-        //获得请求头
-        String tokenKey = request.getHeader("5cn9hnzh0lgki9n69bxjegsafqzocpq2");
-        Integer userId = getUserID();
-
-        //通过请求头获得userId，进而可以获得一切关于user的信息
-        //**************************
-        if (userId == null) {
-            return BaseRespVo.fail();
-        }
+        Subject subject = SecurityUtils.getSubject();
+        User user = (User) subject.getPrincipal();
+        Integer userId = user.getId();
         otherService.feedbackSubmit(feedback,userId);
         return BaseRespVo.ok(null);
     }
 
     @RequestMapping("footprint/list")
     public Object footprintList(Integer page,Integer size,HttpServletRequest request){
-        //前端写了一个token放在请求头中
-        //*************************
-        //获得请求头
-        String tokenKey = request.getHeader("5cn9hnzh0lgki9n69bxjegsafqzocpq2");
-        Integer userId = getUserID();
-
-        //通过请求头获得userId，进而可以获得一切关于user的信息
-        //**************************
-        if (userId == null) {
-            return BaseRespVo.fail();
-        }
+        Subject subject = SecurityUtils.getSubject();
+        User user = (User) subject.getPrincipal();
+        Integer userId = user.getId();
         HashMap<String,Object> footprintLists = otherService.footprintList(page,size,userId);
         return BaseRespVo.ok(footprintLists);
     }

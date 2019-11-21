@@ -1,20 +1,19 @@
 package com.cskaoyan.aspect;
 
-import com.cskaoyan.bean.systemBean.Admin;
+import com.cskaoyan.bean.Admin;
 import com.cskaoyan.bean.systemBean.Log;
 import com.cskaoyan.service.SystemService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.Date;
 
 @Component
@@ -39,22 +38,19 @@ public class LogAspect {
     @Before("logPointCut()")
     public void mybefore(JoinPoint joinPoint){
         log = new Log();
+        Subject subject = SecurityUtils.getSubject();
+        Admin admin = (Admin) subject.getPrincipal();
         request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-        if (request.getRequestURI().contains("auth/info")){
-            admin = request.getParameter("token");
-        }
-        if (request.getRequestURI().contains("auth/login")){
-
-        }
         String ip= request.getRemoteAddr();
         log.setIp(ip);
-        //String admin = (String) request.getSession().getAttribute("admin");
         log.setStatus(true);
         log.setAddTime(new Date());
         log.setUpdateTime(new Date());
         log.setDeleted(false);
         if (admin != null) {
-            log.setAdmin(admin);
+            log.setAdmin(admin.getUsername());
+        } else {
+            log.setAdmin("匿名用户");
         }
         String requestURI = request.getRequestURI();
         if (requestURI.contains("login")){
@@ -108,9 +104,6 @@ public class LogAspect {
         } else if(requestURI.contains("config/wx")){
             log.setAction("小程序配置");
             log.setType(1);
-        } else {
-            log.setAction("登录");
-            log.setType(1);
         }
     }
 
@@ -126,16 +119,25 @@ public class LogAspect {
 
     @AfterReturning("logPointCut()")
     public void myafterReturning(){
-        if (request.getRequestURI() != null) {
-            if (request.getRequestURI().contains("auth/info")) {
-                admin = request.getParameter("token");
-            }
-        }
-        if (request.getRequestURI() != null) {
-            if (!request.getRequestURI().contains("list")) {
+        String requestURI = request.getRequestURI();
+        if (requestURI != null) {
+            if (requestURI.contains("admin")) {
+                if (requestURI.contains("login")){
+                    Subject subject = SecurityUtils.getSubject();
+                    Admin admin = (Admin) subject.getPrincipal();
+                    log.setAdmin(admin.getUsername());
+                }
                 if (log.getAdmin() != null) {
-                    if (!request.getMethod().equals("OPTIONS")) {
-                        if (!request.getRequestURI().contains("options")) {
+                    if (!request.getMethod().toLowerCase().equals("OPTIONS")) {
+                        if (requestURI.contains("options")
+                        ||  requestURI.contains("login")
+                        ||  requestURI.contains("logout")
+                        ||  requestURI.contains("create")
+                        ||  requestURI.contains("update")
+                        ||  requestURI.contains("delete")
+                        ||  requestURI.contains("read")
+                        ||  requestURI.contains("config")
+                        ||  requestURI.contains("role/permissions")) {
                             systemService.insertLog(log);
                         }
                     }
@@ -149,7 +151,7 @@ public class LogAspect {
         log.setStatus(false);
         String requestURI = request.getRequestURI();
         if (requestURI != null) {
-            if (requestURI.contains("login")) {
+            if (requestURI.contains("auth/login")) {
                 log.setComment("帐号或密码错误");
                 log.setResult("登录失败");
             } else if (requestURI.contains("create")) {
@@ -161,13 +163,26 @@ public class LogAspect {
             } else if (requestURI.contains("delete")) {
                 log.setResult("删除失败");
                 log.setComment("未知异常");
+            } else {
+                log.setResult("未知失败");
+                log.setComment("未知异常");
             }
         }
-        if (request.getRequestURI()!= null) {
-            if (!request.getRequestURI().contains("list")) {
-                if (!request.getRequestURI().contains("options")) {
-                    if (log.getAdmin() != null) {
-                        systemService.insertLog(log);
+        if (requestURI != null) {
+            if (requestURI.contains("admin")) {
+                if (log.getAdmin() != null) {
+                    if (!request.getMethod().toLowerCase().equals("OPTIONS")) {
+                        if (requestURI.contains("options")
+                        ||  requestURI.contains("login")
+                        ||  requestURI.contains("logout")
+                        ||  requestURI.contains("create")
+                        ||  requestURI.contains("update")
+                        ||  requestURI.contains("delete")
+                        ||  requestURI.contains("read")
+                        ||  requestURI.contains("config")
+                        ||  requestURI.contains("role/permissions")) {
+                            systemService.insertLog(log);
+                        }
                     }
                 }
             }
