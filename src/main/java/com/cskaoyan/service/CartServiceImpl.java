@@ -213,9 +213,20 @@ public class CartServiceImpl implements CartService {
         int availableCouponLength = coupons.size();
 
         // 获取优惠券金额
+//        BigDecimal couponPrice = new BigDecimal("0");
+//        if (availableCouponLength != 0) {
+//            Coupon coupon = coupons.get(0);
+//            couponId = coupon.getId();
+//            couponPrice = new BigDecimal(coupon.getDiscount());
+//        }
         BigDecimal couponPrice = new BigDecimal("0");
         if (availableCouponLength != 0) {
-            Coupon coupon = coupons.get(0);
+            Coupon coupon = null;
+            if (couponId <= 0) {
+                coupon = coupons.get(0);
+            } else {
+                coupon = couponMapper.selectByPrimaryKey(couponId);
+            }
             couponId = coupon.getId();
             couponPrice = new BigDecimal(coupon.getDiscount());
         }
