@@ -6,6 +6,7 @@
  */
 package com.cskaoyan.exception;
 
+import com.cskaoyan.bean.BaseReqVo;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
@@ -28,4 +29,5 @@ public class ExceptionHandle {
     public String AuthorizationException(Exception ex) {
         return "redirect:/error/401";
     }
+
 }
