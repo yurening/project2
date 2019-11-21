@@ -22,5 +22,5 @@ public class ErrorController {
         baseReqVo.setErrmsg("你并没有权限");
         return baseReqVo;
     }
-    
+
 }

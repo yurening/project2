@@ -75,7 +75,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void updateChecked( List<Integer> productIds, int isChecked) {
+    public void updateChecked(List<Integer> productIds, int isChecked) {
         //获取用户id
         Subject subject = SecurityUtils.getSubject();
         User userLogin = (User) subject.getPrincipal();
@@ -107,7 +107,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void deleteCartByUserIdAndProductIdS( List<Integer> productIds) {
+    public void deleteCartByUserIdAndProductIdS(List<Integer> productIds) {
         //获取用户id
         Subject subject = SecurityUtils.getSubject();
         User userLogin = (User) subject.getPrincipal();
@@ -194,7 +194,7 @@ public class CartServiceImpl implements CartService {
         BigDecimal freightValue = new BigDecimal("0");
         for (System system : systems) {
             if ("cskaoyan_mall_express_freight_min".equals(system.getKeyName())) {
-                 minFreight = new BigDecimal(system.getKeyValue());
+                minFreight = new BigDecimal(system.getKeyValue());
             }
             if ("cskaoyan_mall_express_freight_value".equals(system.getKeyName())) {
                 freightValue = new BigDecimal(system.getKeyValue());
@@ -253,61 +253,59 @@ public class CartServiceImpl implements CartService {
             carts = cartMapper.selectByExample(cartExample);
         }
 
-        // 算出订单最终实付价格
-        BigDecimal finalPrice = goodsTotalPrice.add(freightPrice).subtract(couponPrice);
+            // 算出订单最终实付价格
+            BigDecimal finalPrice = goodsTotalPrice.add(freightPrice).subtract(couponPrice);
 
-        // 构造返回数据
-        Map<String, Object> map = new HashMap<>();
-        map.put("actualPrice", finalPrice);
-        map.put("addressId", addressId);
-        map.put("availableCouponLength", availableCouponLength);
-        map.put("checkedAddress", address);
-        map.put("checkedGoodsList", carts);
-        map.put("couponId", couponId);
-        map.put("couponPrice", couponPrice);
-        map.put("freightPrice", freightPrice);
-        map.put("goodsTotalPrice", goodsTotalPrice);
-        map.put("grouponPrice", grouponPrice);
-        map.put("grouponRulesId", grouponRulesId);
-        map.put("orderTotalPrice", finalPrice);
-
+            // 构造返回数据
+            Map<String, Object> map = new HashMap<>();
+            map.put("actualPrice", finalPrice);
+            map.put("addressId", addressId);
+            map.put("availableCouponLength", availableCouponLength);
+            map.put("checkedAddress", address);
+            map.put("checkedGoodsList", carts);
+            map.put("couponId", couponId);
+            map.put("couponPrice", couponPrice);
+            map.put("freightPrice", freightPrice);
+            map.put("goodsTotalPrice", goodsTotalPrice);
+            map.put("grouponPrice", grouponPrice);
+            map.put("grouponRulesId", grouponRulesId);
+            map.put("orderTotalPrice", finalPrice);
         return map;
     }
 
+        public BigDecimal getGoodsTotalPrice ( int cartId, int grouponRulesId){
 
-
-    public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
-
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        Integer userId = user.getId();
-        BigDecimal goodsTotalPrice;
-        if (cartId == 0) {
-            CartExample cartExample = new CartExample();
-            cartExample.createCriteria().andDeletedEqualTo(false).andCheckedEqualTo(true).andUserIdEqualTo(userId);
-            List<Cart> carts = cartMapper.selectByExample(cartExample);
-            goodsTotalPrice = new BigDecimal("0");
-            for (Cart cart : carts) {
-                goodsTotalPrice =  goodsTotalPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
+            User user = (User) SecurityUtils.getSubject().getPrincipal();
+            Integer userId = user.getId();
+            BigDecimal goodsTotalPrice;
+            if (cartId == 0) {
+                CartExample cartExample = new CartExample();
+                cartExample.createCriteria().andDeletedEqualTo(false).andCheckedEqualTo(true).andUserIdEqualTo(userId);
+                List<Cart> carts = cartMapper.selectByExample(cartExample);
+                goodsTotalPrice = new BigDecimal("0");
+                for (Cart cart : carts) {
+                    goodsTotalPrice = goodsTotalPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
+                }
+            } else {
+                Cart cart = cartMapper.selectByPrimaryKey(cartId);
+                BigDecimal number = new BigDecimal(cart.getNumber());
+                goodsTotalPrice = cart.getPrice().multiply(number);
+                if (grouponRulesId != 0) {
+                    goodsTotalPrice = goodsTotalPrice.subtract(grouponRulesMapper.selectByPrimaryKey(grouponRulesId).getDiscount().multiply(number));
+                }
             }
-        } else {
-            Cart cart = cartMapper.selectByPrimaryKey(cartId);
-            BigDecimal number = new BigDecimal(cart.getNumber());
-            goodsTotalPrice = cart.getPrice().multiply(number);
-            if (grouponRulesId != 0) {
-                goodsTotalPrice = goodsTotalPrice.subtract(grouponRulesMapper.selectByPrimaryKey(grouponRulesId).getDiscount().multiply(number));
-            }
+            return goodsTotalPrice;
         }
-        return goodsTotalPrice;
-    }
 
-    private void updateTimeByExample(CartExample cartExample) {
-        Cart cart = new Cart();
-        cart.setUpdateTime(new Date());
-        cartMapper.updateByExampleSelective(cart , cartExample);
-    }
+        private void updateTimeByExample (CartExample cartExample){
+            Cart cart = new Cart();
+            cart.setUpdateTime(new Date());
+            cartMapper.updateByExampleSelective(cart, cartExample);
+        }
 
 
-    public List<Coupon> couponSelectList(BigDecimal goodsTotalPrice){
+
+        public List<Coupon> couponSelectList (BigDecimal goodsTotalPrice){
             //获取用户id
             Subject subject = SecurityUtils.getSubject();
             User userLogin = (User) subject.getPrincipal();
@@ -326,3 +324,5 @@ public class CartServiceImpl implements CartService {
             return coupons;
         }
 }
+
+
