@@ -1,11 +1,11 @@
 package com.cskaoyan.service;
 
-import com.cskaoyan.bean.user.Feedback;
+import com.cskaoyan.bean.wx.FeedBack;
 
 import java.util.HashMap;
 
 public interface OtherService {
-    void feedbackSubmit(Feedback feedback, Integer userId);
+    void feedBackSubmit(FeedBack feedBack, Integer userId);
 
     HashMap<String, Object> footprintList(Integer page, Integer size, Integer userId);
 
