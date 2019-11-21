@@ -5,6 +5,7 @@ import com.cskaoyan.bean.goods.PicStatic;
 import com.cskaoyan.bean.goods.ResponseType;
 import com.cskaoyan.bean.goods.StaticPhoto;
 import com.cskaoyan.service.PicStaticService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ public class PicStaticController {
     @Autowired
     PicStaticService picStaticService;
     @RequestMapping("storage/create")
+    @RequiresPermissions(value={"admin:storage:create"})
     public ResponseType picStatic(MultipartFile file) throws IOException {
         //阿里云
         String accessKeyId="LTAI4FkEFjiCLX5NWuaCreE7";
