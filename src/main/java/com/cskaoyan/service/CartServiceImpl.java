@@ -10,8 +10,10 @@ import com.cskaoyan.bean.mall.address.MallAddressExample;
 import com.cskaoyan.bean.user.Cart;
 import com.cskaoyan.bean.user.CartExample;
 import com.cskaoyan.bean.user.CouponRequest;
+import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.mapper.*;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -150,6 +152,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Map<String, Object> checkout(Integer cartId, Integer addressId, Integer couponId, Integer grouponRulesId) {
+        // 获取用户id
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        Integer userId = user.getId();
+
         // 获取运费满减最低消费、规定运费金额
         List<System> systems = systemMapper.selectByExample(new SystemExample());
         BigDecimal minFreight = new BigDecimal("0");
@@ -191,16 +197,20 @@ public class CartServiceImpl implements CartService {
         }
 
         // 获取用户地址信息
+        if (addressId == 0) {
+            addressId = addressMapper.selectByExample(new MallAddressExample()).get(0).getId();
+        }
         MallAddress address = addressMapper.selectByPrimaryKey(addressId);
 
         // 获取下单的商品信息
-        CartExample cartExample = new CartExample();
-        cartExample.createCriteria().andUserIdEqualTo(8).andCheckedEqualTo(true).andDeletedEqualTo(false);
         List<Cart> carts = new ArrayList<>();
         if (cartId != 0) {
             carts.add(cartMapper.selectByPrimaryKey(cartId));
+        } else {
+            CartExample cartExample = new CartExample();
+            cartExample.createCriteria().andUserIdEqualTo(userId).andCheckedEqualTo(true).andDeletedEqualTo(false);
+            carts = cartMapper.selectByExample(cartExample);
         }
-        carts = cartMapper.selectByExample(cartExample);
 
         // 算出订单最终实付价格
         BigDecimal finalPrice = goodsTotalPrice.add(freightPrice).subtract(couponPrice);
@@ -224,10 +234,12 @@ public class CartServiceImpl implements CartService {
     }
 
     private BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        Integer userId = user.getId();
         BigDecimal goodsTotalPrice;
         if (cartId == 0) {
             CartExample cartExample = new CartExample();
-            cartExample.createCriteria().andDeletedEqualTo(false).andCheckedEqualTo(true).andUserIdEqualTo(8);
+            cartExample.createCriteria().andDeletedEqualTo(false).andCheckedEqualTo(true).andUserIdEqualTo(userId);
             List<Cart> carts = cartMapper.selectByExample(cartExample);
             goodsTotalPrice = new BigDecimal("0");
             for (Cart cart : carts) {
