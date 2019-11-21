@@ -2,8 +2,10 @@ package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.goods.Brand;
 import com.cskaoyan.bean.goods.ResponseType;
+import com.cskaoyan.bean.user.User;
 import com.cskaoyan.mapper.BrandMapper;
 import com.cskaoyan.service.GoodsService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +66,8 @@ public class GoodsController_wx {
 
     @RequestMapping("goods/detail")
     public ResponseType goodsDetail(Integer id){
+        User principal = (User) SecurityUtils.getSubject().getPrincipal();
+        System.out.println(principal.getId());
         ResponseType goodsAndAllById = goodsService.getGoodsAndAllById(id);
         return goodsAndAllById;
     }
