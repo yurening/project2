@@ -645,7 +645,7 @@ public class UserServiceImpl implements UserService{
         Subject subject = SecurityUtils.getSubject();
         User userLogin = (User) subject.getPrincipal();
         CartServiceImpl cartService = new CartServiceImpl();
-        BigDecimal goodsTotalPrice = cartService.getGoodsTotalPrice(couponRequest.getCartId(), couponRequest.getGrouponRulesId());
+        BigDecimal goodsTotalPrice = getGoodsTotalPrice(couponRequest.getCartId(), couponRequest.getGrouponRulesId());
         CouponUserExample couponUserExample = new CouponUserExample();
         couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short)0);
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
@@ -654,13 +654,36 @@ public class UserServiceImpl implements UserService{
             //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
             Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
             //当优惠券未使用时可以显示出来以供使用
-            if((goodsTotalPrice.intValue()>=Integer.parseInt(coupon.getMin()))&&(coupon.getStatus()==0)){
+            if((goodsTotalPrice.doubleValue()>=Double.parseDouble(coupon.getMin()))&&(coupon.getStatus()==0)){
                 coupons.add(coupon);
             }
         }
        return coupons;
     }
 
+    public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        Integer userId = user.getId();
+        BigDecimal goodsTotalPrice;
+        if (cartId == 0) {
+            CartExample cartExample = new CartExample();
+            cartExample.createCriteria().andDeletedEqualTo(false).andCheckedEqualTo(true).andUserIdEqualTo(userId);
+            List<Cart> carts = cartMapper.selectByExample(cartExample);
+            goodsTotalPrice = new BigDecimal("0");
+            for (Cart cart : carts) {
+                goodsTotalPrice =  goodsTotalPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
+            }
+        } else {
+            Cart cart = cartMapper.selectByPrimaryKey(cartId);
+            BigDecimal number = new BigDecimal(cart.getNumber());
+            goodsTotalPrice = cart.getPrice().multiply(number);
+            if (grouponRulesId != 0) {
+                goodsTotalPrice = goodsTotalPrice.subtract(grouponRulesMapper.selectByPrimaryKey(grouponRulesId).getDiscount().multiply(number));
+            }
+        }
+        return goodsTotalPrice;
+    }
     @Override
     public int couponExchange(CouponRequest couponRequest) {
         Subject subject = SecurityUtils.getSubject();
