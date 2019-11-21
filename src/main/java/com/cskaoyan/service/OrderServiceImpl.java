@@ -120,6 +120,7 @@ public class OrderServiceImpl implements OrderService {
             wxGoods1.setNumber(x.getNumber());
             wxGoods1.setPicUrl(x.getPicUrl());
             wxGoods1.setId(x.getId());
+            wxGoods1.setComment(x.getComment());
             wxGoods1.setGoodsName(x.getGoodsName());
             wxGoods.add(wxGoods1);
         }
@@ -159,7 +160,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public WxOrderDetail getOrderDetail(Integer orderId) {
         WxOrderDetail wxOrderDetail = new WxOrderDetail();
-        wxOrderDetail.setOrderGoods(getWxGoodsByOrderId(orderId));
+
+        MallOrderGoodsExample mallOrderGoodsExample = new MallOrderGoodsExample();
+        mallOrderGoodsExample.createCriteria().andOrderIdEqualTo(orderId);
+        List<MallOrderGoods> mallOrderGoods = mallOrderGoodsMapper.selectByExample(mallOrderGoodsExample);
+        wxOrderDetail.setOrderGoods(mallOrderGoods);
 
 
         MallOrder x = mallOrderMapper.selectByPrimaryKey(orderId);
@@ -167,6 +172,7 @@ public class OrderServiceImpl implements OrderService {
         Short orderStatus = x.getOrderStatus();
         x.setOrderStatusText(getWxOrderStatusText(orderStatus));
         x.setHandleOption(new WxHandleOption(orderStatus));
+
 
         wxOrderDetail.setOrderInfo(x);
 
@@ -256,7 +262,7 @@ public class OrderServiceImpl implements OrderService {
             carts.add(cartMapper.selectByPrimaryKey(cartId));
         }else {
             CartExample cartExample = new CartExample();
-            cartExample.createCriteria().andUserIdEqualTo(userId).andCheckedEqualTo(true);
+            cartExample.createCriteria().andUserIdEqualTo(userId).andCheckedEqualTo(true).andDeletedEqualTo(true);
             carts=cartMapper.selectByExample(cartExample);
         }
 
@@ -349,4 +355,14 @@ public class OrderServiceImpl implements OrderService {
         return mallOrderGoods;
     }
 
+    @Override
+    public MallOrderGoods getCommentGoods(Integer orderId, Integer goodsId) {
+        MallOrderGoodsExample example = new MallOrderGoodsExample();
+        example.createCriteria().andOrderIdEqualTo(orderId).andGoodsIdEqualTo(goodsId);
+        List<MallOrderGoods> mallOrderGoods = mallOrderGoodsMapper.selectByExample(example);
+        if(mallOrderGoods.get(0)!=null){
+            return mallOrderGoods.get(0);
+        }
+        return null;
+    }
 }

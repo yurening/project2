@@ -1,13 +1,15 @@
 package com.cskaoyan.bean.goods;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.util.Date;
-
+@Data
 public class Comment {
     private Integer id;
 
     private Integer valueId;
+    private Integer orderGoodsId;
 
     private Byte type;
 

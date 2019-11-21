@@ -1,12 +1,15 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.goods.*;
+import com.cskaoyan.bean.mall.order.MallOrderGoods;
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.user.UserExample;
 import com.cskaoyan.mapper.CommentMapper;
+import com.cskaoyan.mapper.MallOrderGoodsMapper;
 import com.cskaoyan.mapper.UserMapper;
 import com.cskaoyan.utils.TransferDateUtils;
 import com.github.pagehelper.PageHelper;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -20,6 +23,9 @@ public class CommentServiceImpl implements CommentService{
     CommentMapper commentMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    MallOrderGoodsMapper orderGoodsMapper;
+
     @Override
     public ResponseType getAllComments(Integer page, Integer limit, String order, String sort, Integer userId, Integer valueId) {
         CommentExample commentExample = new CommentExample();
@@ -124,6 +130,28 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
+    public void commentOrderGoods(Comment comment) {
+        MallOrderGoods mallOrderGoods = orderGoodsMapper.selectByPrimaryKey(comment.getOrderGoodsId());
+        comment.setValueId(mallOrderGoods.getGoodsId());
+        /*comment.setUserId(getUserID());*/
+        comment.setUserId(1);
+        comment.setType((byte) 3);
+        Date addTime = new Date();
+        comment.setAddTime(addTime);
+        comment.setUpdateTime(addTime);
+        commentMapper.insert(comment);
+        Integer lastInsert = commentMapper.lastInser();
+
+        mallOrderGoods.setUpdateTime(addTime);
+        mallOrderGoods.setComment(lastInsert);
+        orderGoodsMapper.updateByPrimaryKey(mallOrderGoods);
+    }
+
+    private Integer getUserID(){
+        User principal =(User) SecurityUtils.getSubject().getPrincipal();
+        return principal.getId();
+    }
+
     public ResponseType addComment(Comment comment) {
         //先給定死
         comment.setUserId(1);
