@@ -4,11 +4,13 @@ import com.aliyun.oss.OSSClient;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.goods.ResponseType;
 import com.cskaoyan.bean.goods.StaticPhoto;
+import com.cskaoyan.bean.mall.BaseRespVo;
 import com.cskaoyan.bean.user.Feedback;
-import com.cskaoyan.needdelete.BaseRespVo;
-import com.cskaoyan.needdelete.UserTokenManager;
+
+import com.cskaoyan.bean.user.User;
 import com.cskaoyan.service.OtherService;
 import com.cskaoyan.service.PicStaticService;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,7 +78,7 @@ public class OtherController_wx {
         //*************************
         //获得请求头
         String tokenKey = request.getHeader("5cn9hnzh0lgki9n69bxjegsafqzocpq2");
-        Integer userId = UserTokenManager.getUserId(tokenKey);
+        Integer userId = getUserID();
 
         //通过请求头获得userId，进而可以获得一切关于user的信息
         //**************************
@@ -93,7 +95,7 @@ public class OtherController_wx {
         //*************************
         //获得请求头
         String tokenKey = request.getHeader("5cn9hnzh0lgki9n69bxjegsafqzocpq2");
-        Integer userId = UserTokenManager.getUserId(tokenKey);
+        Integer userId = getUserID();
 
         //通过请求头获得userId，进而可以获得一切关于user的信息
         //**************************
@@ -112,5 +114,10 @@ public class OtherController_wx {
         baseReqVo.setErrno(0);
         baseReqVo.setErrmsg("成功");
         return baseReqVo;
+    }
+
+    private Integer getUserID(){
+        User principal =(User) SecurityUtils.getSubject().getPrincipal();
+        return principal.getId();
     }
 }

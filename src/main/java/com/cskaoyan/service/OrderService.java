@@ -28,4 +28,6 @@ public interface OrderService {
     WxId submitOrder(WxFromChart wxFromChart, String token);
 
     MallOrderGoods getCommentGoods(Integer orderId, Integer goodsId);
+
+    void addNumber(Integer orderId);
 }
