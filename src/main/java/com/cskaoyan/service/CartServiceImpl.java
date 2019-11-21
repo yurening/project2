@@ -1,22 +1,21 @@
 package com.cskaoyan.service;
 
-import com.cskaoyan.bean.generalize.GrouponRules;
+import com.cskaoyan.bean.generalize.Coupon;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.Product;
+import com.cskaoyan.bean.goods.System;
+import com.cskaoyan.bean.goods.SystemExample;
+import com.cskaoyan.bean.mall.address.MallAddress;
+import com.cskaoyan.bean.mall.address.MallAddressExample;
 import com.cskaoyan.bean.user.Cart;
 import com.cskaoyan.bean.user.CartExample;
+import com.cskaoyan.bean.user.CouponRequest;
 import com.cskaoyan.bean.wx_index.CartIndex;
-import com.cskaoyan.mapper.CartMapper;
-import com.cskaoyan.mapper.GoodsMapper;
-import com.cskaoyan.mapper.GrouponRulesMapper;
-import com.cskaoyan.mapper.ProductMapper;
+import com.cskaoyan.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -28,6 +27,12 @@ public class CartServiceImpl implements CartService {
     ProductMapper productMapper;
     @Autowired
     GrouponRulesMapper grouponRulesMapper;
+    @Autowired
+    SystemMapper systemMapper;
+    @Autowired
+    UserService userService;
+    @Autowired
+    MallAddressMapper addressMapper;
 
     @Override
     public CartIndex.CartTotalBean getCartTotal(Integer userId) {
@@ -145,15 +150,84 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Map<String, Object> checkout(Integer cartId, Integer addressId, Integer couponId, Integer grouponRulesId) {
+        // 获取运费满减最低消费、规定运费金额
+        List<System> systems = systemMapper.selectByExample(new SystemExample());
+        BigDecimal minFreight = new BigDecimal("0");
+        BigDecimal freightValue = new BigDecimal("0");
+        for (System system : systems) {
+            if ("cskaoyan_mall_express_freight_min".equals(system.getKeyName())) {
+                 minFreight = new BigDecimal(system.getKeyValue());
+            }
+            if ("cskaoyan_mall_express_freight_value".equals(system.getKeyName())) {
+                freightValue = new BigDecimal(system.getKeyValue());
+            }
+        }
+
+        // 判断是否拼团并得出商品总价和拼团优惠金额
         BigDecimal goodsTotalPrice = getGoodsTotalPrice(8, cartId, grouponRulesId);
-        return null;
+        BigDecimal grouponPrice = new BigDecimal("0");
+        if (grouponRulesId != 0) {
+            grouponPrice = grouponRulesMapper.selectByPrimaryKey(grouponRulesId).getDiscount();
+        }
+
+        // 判断是否需要运费
+        BigDecimal freightPrice = new BigDecimal("0");
+        if (goodsTotalPrice.compareTo(minFreight) > 0) {
+            freightPrice = freightValue;
+        }
+
+        // 获取可以使用的优惠券列表
+        CouponRequest couponRequest = new CouponRequest();
+        couponRequest.setCartId(cartId);
+        List<Coupon> coupons = userService.couponSelectList(couponRequest);
+        int availableCouponLength = coupons.size();
+
+        // 获取优惠券金额
+        BigDecimal couponPrice = new BigDecimal("0");
+        if (availableCouponLength != 0) {
+            Coupon coupon = coupons.get(0);
+            couponId = coupon.getId();
+            couponPrice = new BigDecimal(coupon.getDiscount());
+        }
+
+        // 获取用户地址信息
+        MallAddress address = addressMapper.selectByPrimaryKey(addressId);
+
+        // 获取下单的商品信息
+        CartExample cartExample = new CartExample();
+        cartExample.createCriteria().andUserIdEqualTo(8).andCheckedEqualTo(true).andDeletedEqualTo(false);
+        List<Cart> carts = new ArrayList<>();
+        if (cartId != 0) {
+            carts.add(cartMapper.selectByPrimaryKey(cartId));
+        }
+        carts = cartMapper.selectByExample(cartExample);
+
+        // 算出订单最终实付价格
+        BigDecimal finalPrice = goodsTotalPrice.add(freightPrice).subtract(couponPrice);
+
+        // 构造返回数据
+        Map<String, Object> map = new HashMap<>();
+        map.put("actualPrice", finalPrice);
+        map.put("addressId", addressId);
+        map.put("availableCouponLength", availableCouponLength);
+        map.put("checkedAddress", address);
+        map.put("checkedGoodsList", carts);
+        map.put("couponId", couponId);
+        map.put("couponPrice", couponPrice);
+        map.put("freightPrice", freightPrice);
+        map.put("goodsTotalPrice", goodsTotalPrice);
+        map.put("grouponPrice", grouponPrice);
+        map.put("grouponRulesId", grouponRulesId);
+        map.put("orderTotalPrice", finalPrice);
+
+        return map;
     }
 
-    private BigDecimal getGoodsTotalPrice(int userId, int cartId, int grouponRulesId) {
+    private BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
         BigDecimal goodsTotalPrice;
         if (cartId == 0) {
             CartExample cartExample = new CartExample();
-            cartExample.createCriteria().andDeletedEqualTo(false).andCheckedEqualTo(true).andUserIdEqualTo(userId);
+            cartExample.createCriteria().andDeletedEqualTo(false).andCheckedEqualTo(true).andUserIdEqualTo(8);
             List<Cart> carts = cartMapper.selectByExample(cartExample);
             goodsTotalPrice = new BigDecimal("0");
             for (Cart cart : carts) {
