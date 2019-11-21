@@ -2,7 +2,6 @@ package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.user.Cart;
-import com.cskaoyan.bean.user.CartExample;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
