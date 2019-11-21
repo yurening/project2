@@ -12,7 +12,7 @@ public class User {
     private String password;
 
     private Byte gender;
-
+    @JsonFormat(pattern = "yyyy-MM-dd ")
     private Date birthday;
 
     private Date lastLoginTime;
@@ -31,10 +31,10 @@ public class User {
 
     private Byte status;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT + 8")
+    @JsonFormat(pattern = "yyyy-MM-dd ")
     private Date addTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT + 8")
+    @JsonFormat(pattern = "yyyy-MM-dd ")
     private Date updateTime;
 
     private Boolean deleted;
