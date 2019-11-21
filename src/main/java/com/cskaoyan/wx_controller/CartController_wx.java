@@ -2,7 +2,6 @@ package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.user.Cart;
-import com.cskaoyan.bean.user.CartExample;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,8 @@ public class CartController_wx {
     @RequestMapping("index")
     public BaseReqVo cartIndex() {
         CartIndex cartIndex = new CartIndex();
-        cartIndex.setCartTotal(cartService.getCartTotal(8));
-        cartIndex.setCartList(cartService.getCartListByUserId(8));
+        cartIndex.setCartTotal(cartService.getCartTotal());
+        cartIndex.setCartList(cartService.getCartListByUserId());
         BaseReqVo<CartIndex> baseReqVo = new BaseReqVo<>();
         baseReqVo.setErrmsg("成功");
         baseReqVo.setData(cartIndex);
@@ -33,7 +32,7 @@ public class CartController_wx {
     public BaseReqVo updateChecked(@RequestBody Map<String, Object> map) {
         List<Integer> productIds = (List<Integer>) map.get("productIds");
         int isChecked = (int) map.get("isChecked");
-        cartService.updateChecked(8, productIds, isChecked);
+        cartService.updateChecked( productIds, isChecked);
         return cartIndex();
     }
 
@@ -52,7 +51,7 @@ public class CartController_wx {
     @RequestMapping("delete")
     public BaseReqVo deleteCart(@RequestBody Map<String, List<Integer>> map) {
         List<Integer> productIds = map.get("productIds");
-        cartService.deleteCartByUserIdAndProductIdS(8, productIds);
+        cartService.deleteCartByUserIdAndProductIdS( productIds);
         return cartIndex();
     }
 
@@ -60,7 +59,7 @@ public class CartController_wx {
     public BaseReqVo getGoodsCount() {
         BaseReqVo<Integer> baseReqVo = new BaseReqVo<>();
         baseReqVo.setErrmsg("成功");
-        baseReqVo.setData(cartService.getGoodsCount(8));
+        baseReqVo.setData(cartService.getGoodsCount());
         return baseReqVo;
     }
 
@@ -72,7 +71,7 @@ public class CartController_wx {
             baseReqVo.setErrmsg("库存不足");
         } else {
             baseReqVo.setErrmsg("成功");
-            baseReqVo.setData(cartService.getGoodsCount(8));
+            baseReqVo.setData(cartService.getGoodsCount());
         }
         return baseReqVo;
     }

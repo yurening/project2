@@ -54,6 +54,9 @@ public interface GoodsService {
     //微信按照是否熱賣取商品
     ResponseType getGoodsByIsNew(boolean isNew,Integer page,Integer size,String order,String sort,Integer categoryId);
 
+    //足迹添加
+    ResponseType addFootPrint(Integer id);
+
     List<HomeIndex.ChannelBean> getChannel();
 
     List<HomeIndex.HotGoodsListBean> getHotGoodsList();

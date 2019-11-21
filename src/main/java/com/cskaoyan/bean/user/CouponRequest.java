@@ -11,4 +11,5 @@ public class CouponRequest {
     int cartId;
     int groupResultId;
     String code;
+    int grouponRulesId;
 }

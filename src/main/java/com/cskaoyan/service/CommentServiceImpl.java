@@ -10,6 +10,7 @@ import com.cskaoyan.mapper.UserMapper;
 import com.cskaoyan.utils.TransferDateUtils;
 import com.github.pagehelper.PageHelper;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -153,8 +154,10 @@ public class CommentServiceImpl implements CommentService{
     }
 
     public ResponseType addComment(Comment comment) {
-        //先給定死
-        comment.setUserId(1);
+        Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        Integer id = principal.getId();
+        comment.setUserId(id);
         //添加時間
         comment.setAddTime(new Date());
         int insert = commentMapper.insert(comment);

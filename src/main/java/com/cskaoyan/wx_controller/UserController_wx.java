@@ -1,7 +1,11 @@
 package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
+
+import com.cskaoyan.bean.generalize.Coupon;
+
 import com.cskaoyan.bean.mall.BaseRespVo;
+
 import com.cskaoyan.bean.mall.region.MallRegion;
 import com.cskaoyan.bean.user.CouponRequest;
 import com.cskaoyan.bean.user.User;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -96,7 +101,12 @@ public class UserController_wx {
     @RequestMapping("wx/coupon/list")
     public BaseReqVo couponList(UserRequest userRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
-        objectBaseReqVo.setData(userService.selectCoupon(userRequest));
+        List<Coupon> coupons = userService.selectCoupon(userRequest);
+        int size = coupons.size();
+        Map<String, Object> objectObjectHashMap = new HashMap<>();
+        objectObjectHashMap.put("data",coupons);
+        objectObjectHashMap.put("count",size);
+        objectBaseReqVo.setData(objectObjectHashMap);
         objectBaseReqVo.setErrno(0);
         objectBaseReqVo.setErrmsg("成功");
         return objectBaseReqVo;
@@ -123,6 +133,9 @@ public class UserController_wx {
         }else if(userService.couponReceive(couponRequest)==2) {
             objectBaseReqVo.setErrno(507);
             objectBaseReqVo.setErrmsg("优惠券已领完");
+        }else if(userService.couponReceive(couponRequest)==3) {
+            objectBaseReqVo.setErrno(507);
+            objectBaseReqVo.setErrmsg("优惠券已过期");
         }
 
         return objectBaseReqVo;
@@ -143,17 +156,23 @@ public class UserController_wx {
     }
 
     @RequestMapping("wx/coupon/exchange")
-    public BaseReqVo couponExchange(@RequestBody CouponRequest couponRequest, ServletRequest servletRequest){
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+    public BaseReqVo couponExchange(@RequestBody CouponRequest couponRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
-        int i = userService.couponExchange(couponRequest,request);
-        if(i==0){
+        int i = userService.couponExchange(couponRequest);
+        if(i==1){
+            objectBaseReqVo.setErrno(0);
+            objectBaseReqVo.setErrmsg("成功");
+        }else if(i==0) {
             objectBaseReqVo.setErrno(507);
-            objectBaseReqVo.setErrmsg("领取失败");
-            return objectBaseReqVo;
+            objectBaseReqVo.setErrmsg("您已经领取过了");
+        }else if(i==2) {
+            objectBaseReqVo.setErrno(507);
+            objectBaseReqVo.setErrmsg("优惠券已领完");
+        }else if(i==3) {
+            objectBaseReqVo.setErrno(507);
+            objectBaseReqVo.setErrmsg("优惠券已过期");
         }
-        objectBaseReqVo.setErrno(0);
-        objectBaseReqVo.setErrmsg("成功");
+
         return objectBaseReqVo;
     }
 
