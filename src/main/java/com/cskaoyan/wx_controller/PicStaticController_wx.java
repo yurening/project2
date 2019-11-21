@@ -1,34 +1,25 @@
-package com.cskaoyan.controller;
+package com.cskaoyan.wx_controller;
 
 import com.aliyun.oss.OSSClient;
-import com.cskaoyan.bean.goods.PicStatic;
 import com.cskaoyan.bean.goods.ResponseType;
 import com.cskaoyan.bean.goods.StaticPhoto;
 import com.cskaoyan.service.PicStaticService;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
 @Controller
 @ResponseBody
-@RequestMapping("admin")
-public class PicStaticController {
+@RequestMapping("wx")
+public class PicStaticController_wx {
     @Autowired
     PicStaticService picStaticService;
-    @RequestMapping("storage/create")
-    @RequiresPermissions(value = {"admin:storage:create","admin:groupon:create","admin:ad:create",
-    "admin:topic:create","admin:coupon:create","admin:admin:create","admin:role:create",
-    "admin:brand:create","admin:keyword:create","admin:category:create","admin:issue:create",
-    "admin:goods:create"},logical = Logical.OR)
+    @RequestMapping("storage/upload")
     public ResponseType picStatic(MultipartFile file) throws IOException {
         //阿里云
         String accessKeyId="LTAI4FkEFjiCLX5NWuaCreE7";

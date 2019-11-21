@@ -122,6 +122,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<FootPrint> selectFootprintByExample(FootPrintRequest footPrintRequest, FootPrintExample example) {
         PageHelper.startPage(footPrintRequest.getPage(),footPrintRequest.getLimit());
+        example.setOrderByClause("add_time desc");
         List<FootPrint> footPrints = userMapper.selectFootprintByExample(example);
         return footPrints;
     }

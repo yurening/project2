@@ -101,6 +101,9 @@
     </if>
   </delete>
   <insert id="insertSelective" parameterType="com.cskaoyan.bean.user.Cart">
+    <selectKey order="AFTER" keyColumn="id" keyProperty="id" resultType="int">
+      select LAST_INSERT_ID() as id;
+    </selectKey>
     insert into cskaoyan_mall_cart
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

@@ -1,12 +1,15 @@
 package com.cskaoyan.wx_controller;
 
 
+import com.cskaoyan.bean.goods.Comment;
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.BaseRespVo;
+import com.cskaoyan.bean.mall.order.MallOrderGoods;
 import com.cskaoyan.bean.mall.wx_order.WxFromChart;
 import com.cskaoyan.bean.mall.wx_order.WxOrder;
 import com.cskaoyan.bean.mall.wx_order.WxId;
 import com.cskaoyan.bean.mall.wx_order.WxOrderDetail;
+import com.cskaoyan.service.CommentService;
 import com.cskaoyan.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController_wx {
     @Autowired
     OrderService orderService;
+    @Autowired
+    CommentService commentService;
 
     @RequestMapping("list")
     public BaseRespVo getOrderList(Integer showType, Integer page, Integer size,@RequestHeader("X-cskaoyanmall-Admin-Token") String  token){
@@ -42,6 +47,7 @@ public class OrderController_wx {
     @RequestMapping("cancel")
     public BaseRespVo cancelOrder(@RequestBody WxId wxOrder){
         orderService.cancelOrder(wxOrder.getOrderId());
+        orderService.addNumber(wxOrder.getOrderId());
         return BaseRespVo.ok(null);
     }
 
@@ -69,4 +75,15 @@ public class OrderController_wx {
         return BaseRespVo.ok(wxId);
     }
 
+    @RequestMapping("goods")
+    public BaseRespVo getCommentGoods(Integer orderId,Integer goodsId){
+        MallOrderGoods mallOrderGoods = orderService.getCommentGoods(orderId,goodsId);
+        return BaseRespVo.ok(mallOrderGoods);
+    }
+
+    @RequestMapping("comment")
+    public BaseRespVo commentOrderGoods(@RequestBody Comment comment){
+        commentService.commentOrderGoods(comment);
+        return BaseRespVo.ok(null);
+    }
 }
