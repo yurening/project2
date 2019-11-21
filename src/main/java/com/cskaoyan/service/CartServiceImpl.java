@@ -16,7 +16,13 @@ import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.mapper.*;
 import org.apache.shiro.SecurityUtils;
+
+
 import org.apache.shiro.subject.Subject;
+
+
+import org.apache.shiro.subject.Subject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -268,7 +274,10 @@ public class CartServiceImpl implements CartService {
         return map;
     }
 
-     BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+
+
+    public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         Integer userId = user.getId();
         BigDecimal goodsTotalPrice;
