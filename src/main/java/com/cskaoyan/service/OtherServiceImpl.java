@@ -1,10 +1,9 @@
 package com.cskaoyan.service;
 
-import com.cskaoyan.bean.user.Feedback;
-import com.cskaoyan.bean.user.FootPrint;
 import com.cskaoyan.bean.user.FootPrintExample;
 import com.cskaoyan.bean.user.FootprintForList;
-import com.cskaoyan.mapper.FeedbackMapper;
+import com.cskaoyan.bean.wx.FeedBack;
+import com.cskaoyan.mapper.FeedBackMapper;
 import com.cskaoyan.mapper.FootPrintMapper;
 import com.cskaoyan.mapper.UserMapper;
 import com.github.pagehelper.PageHelper;
@@ -19,16 +18,16 @@ import java.util.List;
 public class OtherServiceImpl implements OtherService {
 
     @Autowired
-    FeedbackMapper feedbackMapper;
-
-    @Autowired
     UserMapper userMapper;
 
     @Autowired
     FootPrintMapper footPrintMapper;
 
+    @Autowired
+    FeedBackMapper feedBackMapper;
+
     @Override
-    public void feedbackSubmit(Feedback feedback, Integer userId) {
+    public void feedBackSubmit(FeedBack feedback, Integer userId) {
         feedback.setAddTime(new Date());
         feedback.setDeleted(false);
         feedback.setUserId(userId);
@@ -36,7 +35,7 @@ public class OtherServiceImpl implements OtherService {
         feedback.setStatus(0);
         String s = userMapper.selectNameById(userId);
         feedback.setUsername(s);
-        feedbackMapper.insert(feedback);
+        feedBackMapper.insert(feedback);
     }
 
     @Override

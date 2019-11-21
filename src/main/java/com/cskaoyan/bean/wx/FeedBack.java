@@ -1,10 +1,8 @@
-package com.cskaoyan.bean.user;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
+package com.cskaoyan.bean.wx;
 
 import java.util.Date;
 
-public class Feedback {
+public class FeedBack {
     private Integer id;
 
     private Integer userId;
@@ -23,10 +21,8 @@ public class Feedback {
 
     private String[] picUrls;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date addTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     private Boolean deleted;
