@@ -576,7 +576,10 @@ public class UserServiceImpl implements UserService{
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
         List<Coupon> coupons = new ArrayList<>();
         for (CouponUser couponUser : couponUsers) {
-            coupons.add(couponMapper.selectByPrimaryKey(couponUser.getCouponId()));
+            Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
+            coupon.setStartTime(couponUser.getStartTime());
+            coupon.setEndTime(couponUser.getEndTime());
+            coupons.add(coupon);
         }
         ReturnData returnData = new ReturnData();
         returnData.setData(coupons);
@@ -658,7 +661,33 @@ public class UserServiceImpl implements UserService{
                 coupons.add(coupon);
             }
         }
-       return coupons;
+        Coupon[] arrayCoupons = new Coupon[coupons.size()];
+        int size = 0;
+        for (Coupon coupon : coupons) {
+            arrayCoupons[size] = coupon;
+            size++;
+        }
+        //使用冒泡排序，将coupons按照从大到小的顺序排序
+        for(int i = 0;i<arrayCoupons.length-1;i++){
+            for (int j=0;j<arrayCoupons.length-i-1;j++){
+                BigDecimal bigDecimal = new BigDecimal(arrayCoupons[j].getDiscount());
+                BigDecimal bigDecimal1 = new BigDecimal(arrayCoupons[j+1].getDiscount());
+                System.out.println("a:"+bigDecimal);
+                System.out.println("b:"+bigDecimal1);
+                if(bigDecimal.compareTo(bigDecimal1)==-1){
+                    Coupon coupon = new Coupon();
+                    coupon = arrayCoupons[j];
+                    arrayCoupons[j] = arrayCoupons[j+1];
+                    arrayCoupons[j+1] = coupon;
+                }
+            }
+        }
+        List<Coupon> couponList = new ArrayList<>();
+        for (Coupon arrayCoupon : arrayCoupons) {
+            couponList.add(arrayCoupon);
+        }
+
+       return couponList;
     }
 
     public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
