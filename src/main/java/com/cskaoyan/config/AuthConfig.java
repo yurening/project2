@@ -42,7 +42,7 @@ public class AuthConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 //        shiroFilterFactoryBean.setLoginUrl("/admin/auth/redirect");//认证失败重定向的url
         shiroFilterFactoryBean.setLoginUrl("/admin/redirect");//认证失败重定向的url
-        //配置的是拦截器 shiro提供的filter
+        // 配置的是拦截器 shiro提供的filter
         //这儿一定要使用linkedHashMap 否则，chain的顺序会有问题
         LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 

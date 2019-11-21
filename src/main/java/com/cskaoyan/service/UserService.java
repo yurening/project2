@@ -60,7 +60,8 @@ public interface UserService {
     GrouponDetail.DataBean grouponDetail(int grouponId);
 
     //coupon
-    Map selectCoupon(UserRequest userRequest);
+
+    List<Coupon> selectCoupon(UserRequest userRequest);
 
     ReturnData couponMyList(CouponRequest couponRequest);
 
@@ -75,4 +76,6 @@ public interface UserService {
     User getUserByMobile(String mobile);
 
     boolean resetPasswordBymolibe(String password, String mobile);
+
+    int couponExchange(CouponRequest couponRequest);
 }

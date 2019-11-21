@@ -64,9 +64,9 @@ public class AuthController_wx {
      *     "errmsg": "成功"
      * }
      * */
-    @RequestMapping("login")
-    public BaseReqVo login(@RequestBody User user) throws Exception {
-        AuthToken authenticationToken = new AuthToken(user.getUsername(), AuthUtils.encrypt(user.getPassword()),"wx");
+    public BaseReqVo login(@RequestBody User user) {
+        AuthToken authenticationToken = new AuthToken(user.getUsername(), user.getPassword(),"wx");
+        //AuthToken authenticationToken = new AuthToken(username, password,"wx");
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(authenticationToken);
@@ -82,6 +82,7 @@ public class AuthController_wx {
         Serializable sessionId = subject.getSession().getId();
         LocalDateTime date = LocalDateTime.now();
         date.plusDays(1);
+        //userService.updateLoginTime(user.getId());
         userService.updateLoginTime(userLogin.getId());
 
         HashMap<String, Object> map = new HashMap<>();

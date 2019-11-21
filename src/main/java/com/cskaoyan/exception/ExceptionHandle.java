@@ -6,6 +6,7 @@
  */
 package com.cskaoyan.exception;
 
+import com.cskaoyan.bean.BaseReqVo;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
@@ -19,8 +20,11 @@ public class ExceptionHandle {
 
     //    @ResponseBody
     @ExceptionHandler(UnauthorizedException.class)
-    public String handleShiroException(Exception ex) {
-        return "redirect:/error/403";
+    public BaseReqVo handleShiroException(Exception ex) {
+        BaseReqVo baseReqVo = new BaseReqVo();
+        baseReqVo.setErrno(506);
+        baseReqVo.setErrmsg("无操作权限");
+        return baseReqVo;
     }
 
     //    @ResponseBody
@@ -28,4 +32,13 @@ public class ExceptionHandle {
     public String AuthorizationException(Exception ex) {
         return "redirect:/error/401";
     }
+
+    @ExceptionHandler(Exception.class)
+    public BaseReqVo exception(Exception ex){
+        BaseReqVo baseReqVo = new BaseReqVo();
+        baseReqVo.setErrno(507);
+        baseReqVo.setErrmsg("网络出问题喽");
+        return baseReqVo;
+    }
+
 }

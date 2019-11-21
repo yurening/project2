@@ -42,6 +42,8 @@ public class GoodsServiceImpl implements GoodsService {
     SearchHistoryMapper searchHistoryMapper;
     @Autowired
     CollectMapper collectMapper;
+    @Autowired
+    FootPrintMapper footPrintMapper;
 
     @Override
     public ResponseType getAllGoods(Integer page,Integer limit,
@@ -407,7 +409,9 @@ public class GoodsServiceImpl implements GoodsService {
         //goods
         Goods good = goodsMapper.selectByPrimaryKey(id);
         //用户是否已经收藏：获取用户id后去对应收藏表去查找
-        Integer userId = 1;
+        Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        Integer userId = principal.getId();
         CollectExample collectExample = new CollectExample();
         collectExample.createCriteria().andUserIdEqualTo(userId).andValueIdEqualTo(id);
         List<Collect> collects = collectMapper.selectByExample(collectExample);
@@ -430,8 +434,10 @@ public class GoodsServiceImpl implements GoodsService {
         returnMap.put("brand",brand);
         returnMap.put("productList",products);
         returnMap.put("info",good);
+        returnMap.put("isGroupon", false);
         returnMap.put("isGroupon",isGroupon);
         //拼返回的类
+        returnMap.put("isGroupon",isGroupon);
         ResponseType responseType = new ResponseType();
         responseType.setData(returnMap);
         responseType.setErrmsg("成功");
@@ -536,7 +542,10 @@ public class GoodsServiceImpl implements GoodsService {
         Integer id = principal.getId();*/
 
         SearchHistory searchHistory = new SearchHistory();
-        searchHistory.setUserId(1);//用戶寫死了
+        Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        Integer id = principal.getId();
+        searchHistory.setUserId(id);//用戶寫死了
         searchHistory.setKeyword(trim);
         searchHistory.setFrom("wx");
         searchHistory.setDeleted(false);
@@ -659,6 +668,33 @@ public class GoodsServiceImpl implements GoodsService {
         return responseType;
     }
 
+    @Override
+    public ResponseType addFootPrint(Integer goods_id) {
+        Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        Integer userId = principal.getId();
+
+        FootPrint footPrint = new FootPrint();
+        footPrint.setGoodsId(goods_id);
+        footPrint.setUserId(userId);
+        footPrint.setDeleted(false);
+
+        FootPrintExample footPrintExample = new FootPrintExample();
+        footPrintExample.createCriteria().andUserIdEqualTo(userId).andGoodsIdEqualTo(goods_id);
+        List<FootPrint> footPrints = footPrintMapper.selectByExample(footPrintExample);
+        int footSize = footPrints.size();
+        if (footSize==0){
+            footPrint.setAddTime(new Date());
+            footPrintMapper.insert(footPrint);
+        }else{
+            FootPrint footPrint1 = footPrints.get(0);
+            footPrint1.setUpdateTime(new Date());
+            footPrintMapper.updateByPrimaryKey(footPrint1);
+        }
+        ResponseType responseType = new ResponseType();
+        return responseType;
+    }
+
 
     public List<HomeIndex.NewGoodsListBean> getNewGoodsList() {
         GoodsExample goodsExample = new GoodsExample();
@@ -746,4 +782,5 @@ public class GoodsServiceImpl implements GoodsService {
         }
         return floorGoodsList;
     }
+
 }
