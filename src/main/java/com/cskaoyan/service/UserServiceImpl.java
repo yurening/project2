@@ -453,7 +453,6 @@ public class UserServiceImpl implements UserService{
     public List<Coupon> selectCoupon(UserRequest userRequest) {
         Subject subject = SecurityUtils.getSubject();
         User userLogin = (User) subject.getPrincipal();
-        PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
         //新用户时长 7天
         //判断是否是新用户，新用户显示新用户劵，不是新用户不显示
         //获得时间差
@@ -462,6 +461,7 @@ public class UserServiceImpl implements UserService{
         List<User> users = userMapper.selectUserByExample(userExample);
         User user = users.get(0);
         long time = (new Date()).getTime() - (user.getAddTime()).getTime();
+        PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
         List<Coupon> coupons = couponMapper.selectByExample(new CouponExample());
         List<Coupon> couponsReturn = new ArrayList<>();
         //不是新用户
@@ -576,7 +576,10 @@ public class UserServiceImpl implements UserService{
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
         List<Coupon> coupons = new ArrayList<>();
         for (CouponUser couponUser : couponUsers) {
-            coupons.add(couponMapper.selectByPrimaryKey(couponUser.getCouponId()));
+            Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
+            coupon.setStartTime(couponUser.getStartTime());
+            coupon.setEndTime(couponUser.getEndTime());
+            coupons.add(coupon);
         }
         ReturnData returnData = new ReturnData();
         returnData.setData(coupons);
@@ -621,8 +624,18 @@ public class UserServiceImpl implements UserService{
         couponUser.setCouponId(couponRequest.getCouponId());
         couponUser.setStatus((short)0);
         Coupon coupon = couponMapper.selectByPrimaryKey(couponRequest.getCouponId());
-        couponUser.setStartTime(coupon.getStartTime());
-        couponUser.setEndTime(coupon.getEndTime());
+        if(coupon1.getTimeType()==1){
+            couponUser.setStartTime(coupon.getStartTime());
+            couponUser.setEndTime(coupon.getEndTime());
+
+        }else {
+            couponUser.setStartTime(new Date());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DATE,Integer.parseInt(coupon.getDays()));
+            couponUser.setEndTime(calendar.getTime());
+        }
+
         couponUser.setAddTime(new Date());
         couponUser.setUpdateTime(new Date());
         couponUserMapper.insert(couponUser);
@@ -635,24 +648,71 @@ public class UserServiceImpl implements UserService{
         Subject subject = SecurityUtils.getSubject();
         User userLogin = (User) subject.getPrincipal();
         CartServiceImpl cartService = new CartServiceImpl();
-        BigDecimal goodsTotalPrice = cartService.getGoodsTotalPrice(couponRequest.getCartId(), couponRequest.getGrouponRulesId());
-        Cart cart = cartMapper.selectByPrimaryKey(couponRequest.getCartId());
+        BigDecimal goodsTotalPrice = getGoodsTotalPrice(couponRequest.getCartId(), couponRequest.getGrouponRulesId());
         CouponUserExample couponUserExample = new CouponUserExample();
         couponUserExample.createCriteria().andUserIdEqualTo(userLogin.getId()).andStatusEqualTo((short)0);
         List<CouponUser> couponUsers = couponUserMapper.selectByExample(couponUserExample);
         List<Coupon> coupons = new ArrayList<>();
-        double price = cart.getPrice().doubleValue();
         for (CouponUser couponUser : couponUsers) {
             //判断购物车商品的价格是否大于优惠券的最低消费额，如果小于，则不能使用优惠券，如果大于，可以使用优惠券
             Coupon coupon = couponMapper.selectByPrimaryKey(couponUser.getCouponId());
             //当优惠券未使用时可以显示出来以供使用
-            if((goodsTotalPrice.intValue()>=Integer.parseInt(coupon.getMin()))&&(coupon.getStatus()==0)){
+            if((goodsTotalPrice.doubleValue()>=Double.parseDouble(coupon.getMin()))&&(coupon.getStatus()==0)){
                 coupons.add(coupon);
             }
         }
-       return coupons;
+        Coupon[] arrayCoupons = new Coupon[coupons.size()];
+        int size = 0;
+        for (Coupon coupon : coupons) {
+            arrayCoupons[size] = coupon;
+            size++;
+        }
+        //使用冒泡排序，将coupons按照从大到小的顺序排序
+        for(int i = 0;i<arrayCoupons.length-1;i++){
+            for (int j=0;j<arrayCoupons.length-i-1;j++){
+                BigDecimal bigDecimal = new BigDecimal(arrayCoupons[j].getDiscount());
+                BigDecimal bigDecimal1 = new BigDecimal(arrayCoupons[j+1].getDiscount());
+                System.out.println("a:"+bigDecimal);
+                System.out.println("b:"+bigDecimal1);
+                if(bigDecimal.compareTo(bigDecimal1)==-1){
+                    Coupon coupon = new Coupon();
+                    coupon = arrayCoupons[j];
+                    arrayCoupons[j] = arrayCoupons[j+1];
+                    arrayCoupons[j+1] = coupon;
+                }
+            }
+        }
+        List<Coupon> couponList = new ArrayList<>();
+        for (Coupon arrayCoupon : arrayCoupons) {
+            couponList.add(arrayCoupon);
+        }
+
+       return couponList;
     }
 
+    public BigDecimal getGoodsTotalPrice(int cartId, int grouponRulesId) {
+
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        Integer userId = user.getId();
+        BigDecimal goodsTotalPrice;
+        if (cartId == 0) {
+            CartExample cartExample = new CartExample();
+            cartExample.createCriteria().andDeletedEqualTo(false).andCheckedEqualTo(true).andUserIdEqualTo(userId);
+            List<Cart> carts = cartMapper.selectByExample(cartExample);
+            goodsTotalPrice = new BigDecimal("0");
+            for (Cart cart : carts) {
+                goodsTotalPrice =  goodsTotalPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
+            }
+        } else {
+            Cart cart = cartMapper.selectByPrimaryKey(cartId);
+            BigDecimal number = new BigDecimal(cart.getNumber());
+            goodsTotalPrice = cart.getPrice().multiply(number);
+            if (grouponRulesId != 0) {
+                goodsTotalPrice = goodsTotalPrice.subtract(grouponRulesMapper.selectByPrimaryKey(grouponRulesId).getDiscount().multiply(number));
+            }
+        }
+        return goodsTotalPrice;
+    }
     @Override
     public int couponExchange(CouponRequest couponRequest) {
         Subject subject = SecurityUtils.getSubject();

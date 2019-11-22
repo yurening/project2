@@ -32,4 +32,13 @@ public class ExceptionHandle {
     public String AuthorizationException(Exception ex) {
         return "redirect:/error/401";
     }
+
+    @ExceptionHandler(Exception.class)
+    public BaseReqVo exception(Exception ex){
+        BaseReqVo baseReqVo = new BaseReqVo();
+        baseReqVo.setErrno(507);
+        baseReqVo.setErrmsg("网络出问题喽");
+        return baseReqVo;
+    }
+
 }

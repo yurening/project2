@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Map;
+
 @Controller
 @ResponseBody
 @RequestMapping("admin")
@@ -30,6 +32,16 @@ public class CommentController {
     @RequiresPermissions(value={"admin:comment:delete"})
     public ResponseType deleteComments(@RequestBody Comment comment){
         ResponseType responseType = commentService.deleteByLogic(comment);
+        return responseType;
+    }
+
+    @RequestMapping("order/reply")
+    @RequiresPermissions(value={"admin:order:reply"})
+    public ResponseType orderReply(@RequestBody Map map){
+        ResponseType responseType = new ResponseType();
+        responseType.setErrno(507);
+        responseType.setErrmsg("暂未支持该功能，敬请期待");
+        responseType.setData(null);
         return responseType;
     }
 

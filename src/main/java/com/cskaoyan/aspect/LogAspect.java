@@ -128,7 +128,7 @@ public class LogAspect {
                     log.setAdmin(admin.getUsername());
                 }
                 if (log.getAdmin() != null) {
-                    if (!request.getMethod().toLowerCase().equals("OPTIONS")) {
+                    if (!request.getMethod().toLowerCase().equals("options")) {
                         if (requestURI.contains("options")
                         ||  requestURI.contains("login")
                         ||  requestURI.contains("logout")
