@@ -407,7 +407,7 @@ public class OrderServiceImpl implements OrderService {
         if(grouponRulesId!=0 && grouponRulesId != -1){
             int i1 = grouponMapper.lastInsert();
             Groupon groupon = new Groupon();
-            groupon.setOrderId(1);
+            groupon.setOrderId(i);
             groupon.setGrouponId(i1+1);
             groupon.setRulesId(grouponRulesId);
             groupon.setUserId(userID);
