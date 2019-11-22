@@ -7,17 +7,15 @@ import com.cskaoyan.bean.mall.address.MallAddress;
 import com.cskaoyan.bean.mall.cart.MallCart;
 import com.cskaoyan.bean.mall.cart.MallCartExample;
 import com.cskaoyan.bean.mall.coupon.MallCoupon;
+import com.cskaoyan.bean.mall.order.*;
 import com.cskaoyan.bean.mall.system.MallSystem;
 import com.cskaoyan.bean.mall.system.MallSystemExample;
 import com.cskaoyan.bean.mall.wx_order.WxHandleOption;
 import java.util.Date;
-import com.cskaoyan.bean.mall.order.MallOrderGoods;
-import com.cskaoyan.bean.mall.order.MallOrderGoodsExample;
+
 import com.cskaoyan.bean.mall.wx_order.*;
 
 import com.cskaoyan.bean.mall.BaseListInfo;
-import com.cskaoyan.bean.mall.order.MallOrder;
-import com.cskaoyan.bean.mall.order.MallOrderExample;
 import com.cskaoyan.bean.user.Cart;
 import com.cskaoyan.bean.user.CartExample;
 import com.cskaoyan.bean.user.User;
@@ -407,8 +405,10 @@ public class OrderServiceImpl implements OrderService {
 
         //新增团购
         if(grouponRulesId!=0 && grouponRulesId != -1){
+            int i1 = grouponMapper.lastInsert();
             Groupon groupon = new Groupon();
             groupon.setOrderId(1);
+            groupon.setGrouponId(i1+1);
             groupon.setRulesId(grouponRulesId);
             groupon.setUserId(userID);
             groupon.setCreatorUserId(userID);
@@ -464,5 +464,19 @@ public class OrderServiceImpl implements OrderService {
             product.setNumber(product.getNumber()-number);
             productMapper.updateByPrimaryKey(product);
         }
+    }
+
+    @Override
+    public OrderPay orderPayByTime(Integer id, int i) {
+        OrderPay orderPay = new OrderPay();
+        MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(id);
+        Date date = new Date();
+        Date addTime = mallOrder.getAddTime();
+        if(addTime !=null&&(date.getTime()-addTime.getTime())>i){
+            orderPay.setStatus(true);
+        }else {
+            orderPay.setStatus(true);
+        }
+        return  orderPay;
     }
 }

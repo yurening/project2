@@ -5,6 +5,7 @@ import com.cskaoyan.bean.goods.Comment;
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.BaseRespVo;
 import com.cskaoyan.bean.mall.order.MallOrderGoods;
+import com.cskaoyan.bean.mall.order.OrderPay;
 import com.cskaoyan.bean.mall.wx_order.WxFromChart;
 import com.cskaoyan.bean.mall.wx_order.WxOrder;
 import com.cskaoyan.bean.mall.wx_order.WxId;
@@ -40,7 +41,8 @@ public class OrderController_wx {
     }
 
     @RequestMapping("prepay")
-    public BaseRespVo orderPrepay(Integer orderId){
+    public BaseRespVo orderPrepay(@RequestBody WxId wxId){
+        OrderPay orderPay = orderService.orderPayByTime(wxId.getOrderId(),5000);
         return BaseRespVo.fail(724,"订单不能支付");
     }
 
