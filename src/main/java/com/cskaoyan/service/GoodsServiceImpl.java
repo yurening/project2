@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -133,15 +134,20 @@ public class GoodsServiceImpl implements GoodsService {
         }
         //判断填写的内容是不是数字且位数在6到10位之间
         if (!goodsSn.matches("^[0-9]{6,10}")){
-            responseType.setErrno(500);
+            responseType.setErrno(507);
+            responseType.setErrmsg("商品编号参数不正确");
             return responseType;
         }
         //判断商品名是否为空，空则返回错误信息
         String name = goods.getName();
         if (StringUtils.isEmpty(name)){
-            responseType.setErrno(500);
+            responseType.setErrno(507);
+            responseType.setErrmsg("必填项没有填写");
             return responseType;
         }
+        BigDecimal retailPrice = goods.getRetailPrice();
+        BigDecimal counterPrice = goods.getCounterPrice();
+        //retailPrice.toString().matches()
 
         goods.setAddTime(new Date());
         goodsMapper.insertSelective(goods);
