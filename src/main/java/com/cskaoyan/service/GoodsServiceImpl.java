@@ -149,8 +149,8 @@ public class GoodsServiceImpl implements GoodsService {
             responseType.setErrmsg("必填项没有填写");
             return responseType;
         }
-        BigDecimal retailPrice = goods.getRetailPrice();
-        BigDecimal counterPrice = goods.getCounterPrice();
+        /*BigDecimal retailPrice = goods.getRetailPrice();
+        BigDecimal counterPrice = goods.getCounterPrice();*/
         //retailPrice.toString().matches()
 
         goods.setAddTime(new Date());
@@ -174,6 +174,7 @@ public class GoodsServiceImpl implements GoodsService {
             attributeMapper.insertSelective(attribute);
         }
         for (Product product : products) {
+            product.setId(0);
             product.setGoodsId(goodsId);
             product.setAddTime(new Date());
             productMapper.insertSelective(product);
