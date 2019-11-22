@@ -82,7 +82,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, `desc`, tag, total, discount, min, limit, type, status, goods_type, goods_value,
+    id, name, `desc`, tag, total, discount, min, `limit`, type, status, goods_type, goods_value,
     code, time_type, days, start_time, end_time, add_time, update_time, deleted
   </sql>
   <select id="selectByExample" parameterType="com.cskaoyan.bean.mall.coupon.MallCouponExample" resultMap="BaseResultMap">
@@ -130,7 +130,7 @@
         min,
       </if>
       <if test="limit != null">
-        limit,
+        `limit`,
       </if>
       <if test="type != null">
         type,
@@ -263,7 +263,7 @@
         min = #{record.min,jdbcType=DECIMAL},
       </if>
       <if test="record.limit != null">
-        limit = #{record.limit,jdbcType=SMALLINT},
+        `limit` = #{record.limit,jdbcType=SMALLINT},
       </if>
       <if test="record.type != null">
         type = #{record.type,jdbcType=SMALLINT},
@@ -315,7 +315,7 @@
       total = #{record.total,jdbcType=INTEGER},
       discount = #{record.discount,jdbcType=DECIMAL},
       min = #{record.min,jdbcType=DECIMAL},
-      limit = #{record.limit,jdbcType=SMALLINT},
+      `limit` = #{record.limit,jdbcType=SMALLINT},
       type = #{record.type,jdbcType=SMALLINT},
       status = #{record.status,jdbcType=SMALLINT},
       goods_type = #{record.goodsType,jdbcType=SMALLINT},
@@ -354,7 +354,7 @@
         min = #{min,jdbcType=DECIMAL},
       </if>
       <if test="limit != null">
-        limit = #{limit,jdbcType=SMALLINT},
+        `limit` = #{limit,jdbcType=SMALLINT},
       </if>
       <if test="type != null">
         type = #{type,jdbcType=SMALLINT},
