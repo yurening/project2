@@ -9,6 +9,8 @@ import java.util.List;
 public interface SystemService {
     HashMap<String,Object> adminList(Integer page, Integer limit, String username, String sort, String order);
 
+    List<Admin> adminList();
+
     List<Role> roleOptions();
 
     Admin adminCreate(Admin admin);
