@@ -131,10 +131,14 @@ public class OrderServiceImpl implements OrderService {
                         mallOrderMapper.updateByPrimaryKey(mallOrder);
                         x.setHandleOption(new WxHandleOption((short) 103));
                     }
-                }
-                String orderStatusText1 = x.getOrderStatusText();
-                if(orderStatusText1.equals(orderStatusText)){
-                    newOrders.add(x);
+                    if("未付款".equals(x.getOrderStatusText())){
+                        newOrders.add(x);
+                    }
+                }else {
+                    String orderStatusText1 = x.getOrderStatusText();
+                    if (orderStatusText1.equals(orderStatusText)) {
+                        newOrders.add(x);
+                    }
                 }
             }
 
@@ -327,8 +331,11 @@ public class OrderServiceImpl implements OrderService {
             mallOrderGoods.setAddTime(new Date());
             mallOrderGoods.setUpdateTime(new Date());
             mallOrderGoods.setDeleted(false);
-            orderGoods.add(mallOrderGoods);
             mallOrderGoodsMapper.insert(mallOrderGoods);
+            int i = mallOrderGoodsMapper.lastInsert();
+            mallOrderGoods.setId(i);
+            orderGoods.add(mallOrderGoods);
+
 
         }
         //设置新订单价格
@@ -389,6 +396,12 @@ public class OrderServiceImpl implements OrderService {
         //插入订单
         mallOrderMapper.insert(newOrder);
         int i = mallOrderMapper.lastInsert();
+
+        //将orderGoods的orderid设置
+        for(MallOrderGoods x:orderGoods){
+            x.setOrderId(i);
+            mallOrderGoodsMapper.updateByPrimaryKey(x);
+        }
 
         WxId wxId = new WxId();
         wxId.setOrderId(i);

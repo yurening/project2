@@ -311,4 +311,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="lastInsert" resultType="int">
+    select last_insert_id()
+  </select>
 </mapper>

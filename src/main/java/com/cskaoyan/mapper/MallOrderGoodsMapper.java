@@ -74,4 +74,6 @@ public interface MallOrderGoodsMapper {
         "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(MallOrderGoods record);
+
+    int lastInsert();
 }
