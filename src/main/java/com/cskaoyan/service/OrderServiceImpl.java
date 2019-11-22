@@ -1,8 +1,11 @@
 package com.cskaoyan.service;
+import com.cskaoyan.bean.generalize.Coupon;
 import com.cskaoyan.bean.generalize.Groupon;
 import com.cskaoyan.bean.generalize.GrouponRules;
 import com.cskaoyan.bean.goods.Product;
 import com.cskaoyan.bean.mall.address.MallAddress;
+import com.cskaoyan.bean.mall.cart.MallCart;
+import com.cskaoyan.bean.mall.cart.MallCartExample;
 import com.cskaoyan.bean.mall.coupon.MallCoupon;
 import com.cskaoyan.bean.mall.system.MallSystem;
 import com.cskaoyan.bean.mall.system.MallSystemExample;
@@ -40,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     MallAddressMapper addressMapper;
     @Autowired
-    CartMapper cartMapper;
+    MallCartMapper cartMapper;
     @Autowired
     MallCouponMapper couponMapper;
     @Autowired
@@ -273,122 +276,110 @@ public class OrderServiceImpl implements OrderService {
         mallOrderMapper.updateByPrimaryKey(mallOrder);
     }
 
+
     @Override
-    public WxId submitOrder(WxFromChart wxFromChart, String token) {
-        //获取请求信息
-        int addressId = wxFromChart.getAddressId();
+    public WxId submitOrder(WxFromChart wxFromChart) {
+        //获取cart,并逻辑删除
         int cartId = wxFromChart.getCartId();
-        int couponId = wxFromChart.getCouponId();
-        int grouponLinkId = wxFromChart.getGrouponLinkId();
-        int grouponRulesId = wxFromChart.getGrouponRulesId();
-        String message = wxFromChart.getMessage();
-
-        //获取userId
-        Integer userId = getUserID();
-
-        //分为立即购买和购物车购买(cartId 非0和0)
-
-        //立即购买：cartId 找到一条cart信息，
-        //购物车购买，使用userId并且选择为true找到多条cart消息。
-        List<Cart> carts = new ArrayList<>();
+        Integer userID = getUserID();
+        List<MallCart> carts = new ArrayList<>();
         if(cartId!=0){
             carts.add(cartMapper.selectByPrimaryKey(cartId));
         }else {
-            CartExample cartExample = new CartExample();
-            cartExample.createCriteria().andUserIdEqualTo(userId).andCheckedEqualTo(true).andDeletedEqualTo(true);
+            MallCartExample cartExample = new MallCartExample();
+            cartExample.createCriteria().andUserIdEqualTo(userID).andCheckedEqualTo(true).andDeletedEqualTo(false);
             carts=cartMapper.selectByExample(cartExample);
+            System.out.println(carts);
+        }
+        for(MallCart x:carts){
+            x.setDeleted(true);
+            cartMapper.updateByPrimaryKey(x);
         }
 
-        //使用cart信息拼订单商品表.
-        List<MallOrderGoods> orderGoods = insertOrderGoodsByCarts(carts);
-        deleteProduct(orderGoods);
 
-        //根据订单商品表最终获得一条订单信息插入
-        MallOrder resultOrder = new MallOrder();
-        resultOrder.setMessage(message);
-        resultOrder = setOrderAddress(resultOrder,addressId);
-        resultOrder = setOrderCoupon(resultOrder,couponId);
-        resultOrder = setOrdergroupon(resultOrder,grouponRulesId);
-        resultOrder.setIntegralPrice(new BigDecimal(0));
-        resultOrder = setOrderGoodsPrice(resultOrder,orderGoods);
+        MallOrder newOrder = new MallOrder();
 
-        mallOrderMapper.insert(resultOrder);
-        int resultOrderId = mallOrderMapper.lastInsert();
+        newOrder.setUserId(userID);
+        newOrder.setOrderSn(Long.toString(new Date().getTime()));
+        newOrder.setOrderStatus((short)101);
 
-        //设置团购的，商品的相关订单id
+        //找地址
+        MallAddress mallAddress = addressMapper.selectByPrimaryKey(wxFromChart.getAddressId());
+        newOrder.setConsignee(mallAddress.getName());
+        newOrder.setMobile(mallAddress.getMobile());
+        newOrder.setAddress(mallAddress.getAddress());
+        newOrder.setMessage(wxFromChart.getMessage());
+
+        //找订单商品
+        List<MallOrderGoods> orderGoods = new ArrayList<>();
+        for(MallCart x:carts){
+            MallOrderGoods mallOrderGoods = new MallOrderGoods();
+            mallOrderGoods.setOrderId(0);
+            mallOrderGoods.setGoodsId(x.getGoodsId());
+            mallOrderGoods.setGoodsName(x.getGoodsName());
+            mallOrderGoods.setGoodsSn(x.getGoodsSn());
+            mallOrderGoods.setProductId(x.getProductId());
+            mallOrderGoods.setNumber(x.getNumber());
+            mallOrderGoods.setPrice(x.getPrice());
+            mallOrderGoods.setSpecifications(x.getSpecifications());
+            mallOrderGoods.setPicUrl(x.getPicUrl());
+            mallOrderGoods.setComment(0);
+            mallOrderGoods.setAddTime(new Date());
+            mallOrderGoods.setUpdateTime(new Date());
+            mallOrderGoods.setDeleted(false);
+            orderGoods.add(mallOrderGoods);
+            mallOrderGoodsMapper.insert(mallOrderGoods);
+
+        }
+        //设置新订单价格
+        BigDecimal goodPrice = new BigDecimal(0);
         for(MallOrderGoods x:orderGoods){
-            x.setOrderId(resultOrderId);
-            mallOrderGoodsMapper.updateByPrimaryKey(x);
+            goodPrice.add(x.getPrice());
         }
-        Groupon groupon = grouponMapper.selectByPrimaryKey(grouponLinkId);
-        groupon.setOrderId(resultOrderId);
-        grouponMapper.updateByPrimaryKey(groupon);
+        newOrder.setGoodsPrice(goodPrice);
+
+        //找运费
+        MallSystemExample mallSystemExample = new MallSystemExample();
+        mallSystemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_express_freight_value");
+        List<MallSystem> mallSystems = systemMapper.selectByExample(mallSystemExample);
+        MallSystem mallSystem = mallSystems.get(0);
+        newOrder.setFreightPrice(BigDecimal.valueOf(Long.parseLong(mallSystem.getKeyValue())));
+
+        //设置团购和优惠相关
+        newOrder.setCouponPrice(new BigDecimal("0"));
+        newOrder.setIntegralPrice(new BigDecimal("0"));
+        newOrder.setGrouponPrice(new BigDecimal("0"));
+
+        //设置订单实际价格
+        newOrder.setOrderPrice(newOrder.getGoodsPrice().add(newOrder.getFreightPrice()));
+        newOrder.setActualPrice(newOrder.getOrderPrice());
+
+        //设置支付
+        newOrder.setPayId(Integer.toString(userID));
+        newOrder.setPayTime(null);
+        newOrder.setShipSn("");
+        newOrder.setShipChannel("");
+        newOrder.setShipTime(new Date());
+
+        newOrder.setConfirmTime(null);
+        newOrder.setComments((short)0);
+        newOrder.setEndTime(null);
+        newOrder.setAddTime(new Date());
+        newOrder.setUpdateTime(new Date());
+        newOrder.setDeleted(false);
+        newOrder.setHandleOption(new WxHandleOption((short) 101));
+        newOrder.setExpCode("");
+        newOrder.setExpNo("");
+        newOrder.setOrderStatusText("未支付");
+
+        //插入订单
+        mallOrderMapper.insert(newOrder);
+        int i = mallOrderMapper.lastInsert();
 
         WxId wxId = new WxId();
-        wxId.setOrderId(resultOrderId);
+        wxId.setOrderId(i);
+
         return wxId;
-    }
-
-
-
-    private MallOrder setOrderGoodsPrice(MallOrder resultOrder, List<MallOrderGoods> orderGoods) {
-        int orderPrice=0;
-        int actualPrice=0;
-        int goodsTotalPrice=0;
-        for(MallOrderGoods x:orderGoods) {
-            goodsTotalPrice += x.getPrice().intValue();
-        }
-        actualPrice = goodsTotalPrice - resultOrder.getCouponPrice().intValue() /*- resultOrder.getGrouponPrice().intValue()*/;
-        orderPrice = actualPrice;
-        resultOrder.setActualPrice(new BigDecimal(actualPrice));
-        resultOrder.setOrderPrice(new BigDecimal(orderPrice));
-        return resultOrder;
-    }
-
-    private MallOrder setOrdergroupon(MallOrder resultOrder,  int grouponRulesId) {
-        GrouponRules grouponRules = grouponRulesMapper.selectByPrimaryKey(grouponRulesId);
-        if(grouponRules!=null){
-            resultOrder.setGrouponPrice(grouponRules.getDiscount());
-        }else {
-            resultOrder.setGrouponPrice(new BigDecimal(0));
-        }
-        return resultOrder;
-    }
-
-    private MallOrder setOrderCoupon(MallOrder resultOrder, int couponId) {
-        MallCoupon coupon = couponMapper.selectByPrimaryKey(couponId);
-        resultOrder.setCouponPrice(coupon.getDiscount());
-        return resultOrder;
-    }
-
-    private MallOrder setOrderAddress(MallOrder resultOrder, int addressId) {
-        MallAddress mallAddress = addressMapper.selectByPrimaryKey(addressId);
-        resultOrder.setConsignee(mallAddress.getName());
-        resultOrder.setMobile(mallAddress.getMobile());
-        resultOrder.setAddress(mallAddress.getAddress());
-        return resultOrder;
-    }
-
-    private List<MallOrderGoods> insertOrderGoodsByCarts(List<Cart> carts) {
-        List<MallOrderGoods> mallOrderGoods = new ArrayList<>();
-        for(Cart x:carts){
-            MallOrderGoods good = new MallOrderGoods();
-            good.setGoodsId(x.getGoodsId());
-            good.setGoodsName(x.getGoodsName());
-            good.setGoodsSn(x.getGoodsSn());
-            good.setProductId(x.getProductId());
-            good.setNumber(x.getNumber());
-            good.setPrice(x.getPrice());
-            good.setSpecifications(x.getSpecifications().toString());
-            good.setPicUrl(x.getPicUrl());
-            good.setComment(0);
-            good.setAddTime(new Date());
-            good.setUpdateTime(new Date());
-            good.setDeleted(false);
-            mallOrderGoodsMapper.insert(good);
-            mallOrderGoods.add(good);
-        }
-        return mallOrderGoods;
     }
 
     @Override

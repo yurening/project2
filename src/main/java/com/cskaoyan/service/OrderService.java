@@ -24,7 +24,7 @@ public interface OrderService {
 
     void confirmOrder(Integer orderId);
 
-    WxId submitOrder(WxFromChart wxFromChart, String token);
+    WxId submitOrder(WxFromChart wxFromChart);
 
     MallOrderGoods getCommentGoods(Integer orderId, Integer goodsId);
 
