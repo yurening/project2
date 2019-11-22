@@ -42,7 +42,7 @@ public class OrderController_wx {
 
     @RequestMapping("prepay")
     public BaseRespVo orderPrepay(@RequestBody WxId wxId){
-        OrderPay orderPay = orderService.orderPayByTime(wxId.getOrderId(),5000);
+       /* OrderPay orderPay = orderService.orderPayByTime(wxId.getOrderId(),5000);*/
         return BaseRespVo.fail(724,"订单不能支付");
     }
 
