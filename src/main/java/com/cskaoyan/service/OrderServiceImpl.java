@@ -348,6 +348,15 @@ public class OrderServiceImpl implements OrderService {
         MallSystem mallSystem = mallSystems.get(0);
         newOrder.setFreightPrice(BigDecimal.valueOf(Long.parseLong(mallSystem.getKeyValue())));
 
+        //邮费满减
+        mallSystemExample.clear();
+        mallSystemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_express_freight_min");
+        mallSystems = systemMapper.selectByExample(mallSystemExample);
+        mallSystem = mallSystems.get(0);
+        if(goodPrice.compareTo(BigDecimal.valueOf(Long.parseLong(mallSystem.getKeyValue())))>=0){
+            newOrder.setFreightPrice(new BigDecimal(0));
+        }
+
         //设置优惠
         int couponId = wxFromChart.getCouponId();
         newOrder.setCouponPrice(new BigDecimal("0"));
