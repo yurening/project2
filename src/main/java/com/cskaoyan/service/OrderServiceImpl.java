@@ -348,7 +348,7 @@ public class OrderServiceImpl implements OrderService {
         //设置优惠
         int couponId = wxFromChart.getCouponId();
         newOrder.setCouponPrice(new BigDecimal("0"));
-        if(couponId != 0){
+        if(couponId != 0 && couponId != -1){
             MallCoupon mallCoupon = couponMapper.selectByPrimaryKey(couponId);
             newOrder.setCouponPrice(mallCoupon.getDiscount());
         }
