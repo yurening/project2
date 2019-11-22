@@ -1,11 +1,13 @@
 package com.cskaoyan.service;
 
 import com.cskaoyan.bean.goods.*;
+import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.mall.order.MallOrderGoods;
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.bean.user.UserExample;
 import com.cskaoyan.mapper.CommentMapper;
 import com.cskaoyan.mapper.MallOrderGoodsMapper;
+import com.cskaoyan.mapper.MallOrderMapper;
 import com.cskaoyan.mapper.UserMapper;
 import com.cskaoyan.utils.TransferDateUtils;
 import com.github.pagehelper.PageHelper;
@@ -26,6 +28,8 @@ public class CommentServiceImpl implements CommentService{
     UserMapper userMapper;
     @Autowired
     MallOrderGoodsMapper orderGoodsMapper;
+    @Autowired
+    MallOrderMapper orderMapper;
 
     @Override
     public ResponseType getAllComments(Integer page, Integer limit, String order, String sort, Integer userId, Integer valueId) {
@@ -146,6 +150,12 @@ public class CommentServiceImpl implements CommentService{
         mallOrderGoods.setUpdateTime(addTime);
         mallOrderGoods.setComment(lastInsert);
         orderGoodsMapper.updateByPrimaryKey(mallOrderGoods);
+
+        Integer orderId = mallOrderGoods.getOrderId();
+        MallOrder mallOrder = orderMapper.selectByPrimaryKey(orderId);
+        mallOrder.setOrderStatus((short) 402);
+        mallOrder.setUpdateTime(new Date());
+        orderMapper.updateByPrimaryKey(mallOrder);
     }
 
     private Integer getUserID(){

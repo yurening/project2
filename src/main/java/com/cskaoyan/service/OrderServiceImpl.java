@@ -66,10 +66,10 @@ public class OrderServiceImpl implements OrderService {
     public BaseListInfo<WxOrder> getWxOrderList(Integer showType, Integer page, Integer size, String token) {
         //获取用户id
         Integer userId = getUserID();
+
         //分页查询
         PageHelper.startPage(page, size);
         BaseListInfo<WxOrder> baseListInfo = new BaseListInfo<>();
-
         //查到订单信息，写到微信订单中
         List<WxOrder> wxOrders = new ArrayList<>();
         MallOrderExample example = new MallOrderExample();
@@ -92,6 +92,7 @@ public class OrderServiceImpl implements OrderService {
             wxOrders.add(wxOrder);
         }
 
+
         //根据showType对wxOrders进行删减
         wxOrders = changeWxOrders(wxOrders,showType);
         baseListInfo.setData(wxOrders);
@@ -103,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
         return baseListInfo;
     }
 
-    private List<WxOrder> changeWxOrders(List<WxOrder> wxOrders, Integer showType) {
+    private List<WxOrder> changeWxOrders(List<WxOrder> wxOrders ,Integer showType) {
         if(showType!=null&&showType!=0){
             int i = showType.intValue()*100+1;
             String orderStatusText = getWxOrderStatusText((short) i);
