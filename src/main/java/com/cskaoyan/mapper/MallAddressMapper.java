@@ -69,4 +69,6 @@ public interface MallAddressMapper {
         "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(MallAddress record);
+
+    void setOtherDefaultFalse(Integer id);
 }

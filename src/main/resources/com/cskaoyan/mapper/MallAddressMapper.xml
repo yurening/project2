@@ -74,7 +74,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, user_id, province_id, city_id, area_id, address, mobile, is_default, add_time, 
+    id, name, user_id, province_id, city_id, area_id, address, mobile, is_default, add_time,
     update_time, deleted
   </sql>
   <select id="selectByExample" parameterType="com.cskaoyan.bean.mall.address.MallAddressExample" resultMap="BaseResultMap">
@@ -282,5 +282,8 @@
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="setOtherDefaultFalse">
+    update cskaoyan_mall_address set is_default = false where id != #{id}
   </update>
 </mapper>

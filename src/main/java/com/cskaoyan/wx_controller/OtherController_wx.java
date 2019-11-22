@@ -76,8 +76,9 @@ public class OtherController_wx {
     public Object regionList(@RequestBody FeedBack feedBack, HttpServletRequest request){
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipal();
+        String userName = user.getUsername();
         Integer userId = user.getId();
-        otherService.feedBackSubmit(feedBack,userId);
+        otherService.feedBackSubmit(feedBack,userName,userId);
         return BaseRespVo.ok(null);
     }
 

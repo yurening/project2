@@ -70,8 +70,10 @@ public class OrderController_wx {
     }
 
     @RequestMapping("submit")
-    public BaseRespVo submitOrder(@RequestBody WxFromChart wxFromChart,@RequestHeader("X-cskaoyanmall-Admin-Token") String token){
-        WxId wxId = orderService.submitOrder(wxFromChart,token);
+    public BaseRespVo submitOrder(@RequestBody WxFromChart wxFromChart){
+        WxId wxId = orderService.submitOrder(wxFromChart);
+       /* WxId wxId = new WxId();
+        wxId.setOrderId(1);*/
         return BaseRespVo.ok(wxId);
     }
 

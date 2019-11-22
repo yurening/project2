@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cskaoyan.mapper.AuthMapper">
   <select id="selectByUsername" resultType="com.cskaoyan.bean.Admin">
-    select id, username, password, last_login_ip, last_login_time, avatar, add_time, update_time, deleted, role_ids from cskaoyan_mall_admin where username = #{name}
+    select id, username, password, last_login_ip, last_login_time, avatar, add_time, update_time, deleted, role_ids from cskaoyan_mall_admin where username = #{name} and  deleted = 0
   </select>
   <select id="getRoleNameById" resultType="java.lang.String">
-    select name from cskaoyan_mall_role where id = #{roleId}
+    select name from cskaoyan_mall_role where id = #{roleId} and  deleted = 0
   </select>
   <select id="getPermsNameByRoleId" resultType="java.lang.String">
-     select permission from cskaoyan_mall_permission where role_id = #{roleId}
+     select permission from cskaoyan_mall_permission where role_id = #{roleId} and  deleted = 0
   </select>
 
 
@@ -26,7 +26,7 @@
   </resultMap>
     <select id="getPermsMethodNameByRoleId" resultType="java.lang.String">
       select api from cskaoyan_mall_permission cmp left join cskaoyan_mall_system_permissions cmsp
-      on cmp.permission = cmsp.id where role_id = #{roleId}
+      on cmp.permission = cmsp.id where role_id = #{roleId} and deleted = 0
   </select>
     <!--<sql id="Example_Where_Clause">
       <where>

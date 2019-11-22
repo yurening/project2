@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
+@Mapper
 public interface MallOrderGoodsMapper {
     long countByExample(MallOrderGoodsExample example);
 
@@ -73,4 +74,6 @@ public interface MallOrderGoodsMapper {
         "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(MallOrderGoods record);
+
+    int lastInsert();
 }

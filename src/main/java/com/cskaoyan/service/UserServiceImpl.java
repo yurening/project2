@@ -1,5 +1,6 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.Wx_register;
 import com.cskaoyan.bean.user.FootPrint;
 import com.cskaoyan.bean.user.FootPrintExample;
 import com.cskaoyan.bean.user.Feedback;
@@ -15,8 +16,6 @@ import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.user.*;
 import com.cskaoyan.bean.user.groupon.GrouponDetail;
 import com.cskaoyan.mapper.*;
-import com.cskaoyan.teacherCode.UserTokenManager;
-import com.cskaoyan.utils.TransferDateUtils;
 import com.cskaoyan.utils.TransferUtils_wx;
 import com.github.pagehelper.PageHelper;
 import org.apache.shiro.SecurityUtils;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -171,7 +169,7 @@ public class UserServiceImpl implements UserService{
         historyExample.createCriteria().andUserIdEqualTo(userLogin.getId());
         List<History> histories = userMapper.selectHistoryByExample(historyExample);
         List<MallKeyword> mallKeywords = mallKeywordMapper.selectByExample(mallKeywordExample);
-        mallKeywordExample.createCriteria().andSortOrderEqualTo(userLogin.getId());
+        mallKeywordExample.createCriteria().andIsDefaultEqualTo(true);
         List<MallKeyword> mallKeywords1 = mallKeywordMapper.selectByExample(mallKeywordExample);
         objectHashMap.put("defaultKeyword",mallKeywords1.get(0));
         objectHashMap.put("hotKeywordList",mallKeywords);
@@ -729,5 +727,20 @@ public class UserServiceImpl implements UserService{
         return i;
     }
 
+    @Override
+    public Boolean registerInsertUser(Wx_register wxRegister, String randomAvatar, String randomNickName) {
+        userMapper.registerInsertUser(wxRegister,randomAvatar,randomNickName);
+        return true;
+    }
 
+    @Override
+    public User getUserByMobile(String mobile) {
+        return  userMapper.getUserByMobile(mobile);
+    }
+
+    @Override
+    public boolean resetPasswordBymolibe(String password, String mobile) {
+        userMapper.resetPasswordBymolibe(password,mobile);
+        return true;
+    }
 }

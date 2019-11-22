@@ -410,4 +410,22 @@
     <update id="updateLoginTime">
         update cskaoyan_mall_user set last_login_time = now() where id = #{id}
     </update>
+    <insert id="registerInsertUser">
+        insert into cskaoyan_mall_user (username,password,nickname,birthday,mobile,avatar,weixin_openid,add_time,update_time) values (
+              #{wxRegister.username},
+              #{wxRegister.password},
+              #{nickname},
+              now(),
+              #{wxRegister.mobile},
+              #{avatar},
+              #{wxRegister.mobile},
+              now(),
+              now())
+    </insert>
+    <select id="getUserByMobile" resultMap="UserBaseResultMap">
+        select id,username from cskaoyan_mall_user where mobile = #{mobile} and deleted = 0
+    </select>
+    <update id="resetPasswordBymolibe">
+         update cskaoyan_mall_user set password = #{password} where mobile = #{mobile} and deleted = 0
+    </update>
 </mapper>
