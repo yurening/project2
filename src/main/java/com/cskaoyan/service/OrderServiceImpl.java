@@ -357,6 +357,8 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setCouponPrice(new BigDecimal("0"));
         if(couponId != 0 && couponId != -1){
             MallCoupon mallCoupon = couponMapper.selectByPrimaryKey(couponId);
+            mallCoupon.setStatus((short) 1);
+            couponMapper.updateByPrimaryKey(mallCoupon);
             newOrder.setCouponPrice(mallCoupon.getDiscount());
         }
         newOrder.setIntegralPrice(new BigDecimal("0"));
