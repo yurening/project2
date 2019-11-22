@@ -69,9 +69,7 @@ public interface UserService {
 
     List<Coupon> couponSelectList(CouponRequest couponRequest);
 
-    int couponExchange(CouponRequest couponRequest, HttpServletRequest request);
-
-    Boolean registerInsertUser(Wx_register wxRegister,String randomAvatar);
+    Boolean registerInsertUser(Wx_register wxRegister, String randomAvatar, String randomNickName);
 
     User getUserByMobile(String mobile);
 

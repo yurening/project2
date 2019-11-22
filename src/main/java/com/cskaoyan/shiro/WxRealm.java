@@ -45,7 +45,7 @@ public class WxRealm extends AuthorizingRealm {
         String username = primaryPrincipal.getUsername();
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         List<String> permissions = new ArrayList<>();
-        permissions.add("*");
+//        permissions.add("*");
 //        authorizationInfo.addStringPermission("user:query");
         authorizationInfo.addStringPermissions(permissions);
         return authorizationInfo;

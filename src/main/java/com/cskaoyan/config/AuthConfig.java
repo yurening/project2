@@ -49,12 +49,20 @@ public class AuthConfig {
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
         filters.put("authc", new FormAuthFilter());
         //第一个参数是请求url 第二个参数是过滤器
-//        filterChainDefinitionMap.put("/admin/auth/login","anon");
-//        filterChainDefinitionMap.put("/admin/auth/info","perms");
-//        filterChainDefinitionMap.put("/admin/dashboard","perms");
-////        filterChainDefinitionMap.put("/admin/stat/**", "roles");
-//        filterChainDefinitionMap.put("/admin/stat/**", "authc");
-        filterChainDefinitionMap.put("/**", "anon");
+       filterChainDefinitionMap.put("/admin/auth/**","anon");
+       filterChainDefinitionMap.put("/wx/auth/**","anon");
+       filterChainDefinitionMap.put("/wx/home/index","anon");
+       filterChainDefinitionMap.put("/wx/catalog/**","anon");
+       filterChainDefinitionMap.put("/wx/goods/**","anon");
+       filterChainDefinitionMap.put("/wx/brand/**","anon");
+       filterChainDefinitionMap.put("/wx/comment/**","anon");
+       filterChainDefinitionMap.put("/wx/topic/**","anon");
+       filterChainDefinitionMap.put("/wx/search/**","anon");
+       filterChainDefinitionMap.put("/wx/region/list","anon");
+       filterChainDefinitionMap.put("/wx/coupon/**","anon");
+       filterChainDefinitionMap.put("/wx/groupon/**","anon");
+
+        filterChainDefinitionMap.put("/**", "authc");
         shiroFilterFactoryBean.setFilters(filters);
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;

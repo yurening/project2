@@ -51,7 +51,7 @@ public class AdminRealm extends AuthorizingRealm {
                 List<String> perms = authMapper.getPermsNameByRoleId(roleid);
                 permissions.addAll(perms);
             }
-            permissions.add("*"); //先拥有全部权限
+//            permissions.add("*"); //先拥有全部权限
         }
 //      authorizationInfo.addStringPermission("user:query");
         authorizationInfo.addStringPermissions(permissions);

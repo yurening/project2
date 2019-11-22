@@ -8,6 +8,7 @@ package com.cskaoyan.wx_controller;
 
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.bean.Wx_register;
+import com.cskaoyan.bean.Wx_wx_login;
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.service.UserService;
 import com.cskaoyan.shiro.AuthToken;
@@ -64,9 +65,10 @@ public class AuthController_wx {
      *     "errmsg": "成功"
      * }
      * */
-    public BaseReqVo login(@RequestBody User user) {
+    @RequestMapping("login")
+    public BaseReqVo login(@RequestBody User user) throws Exception {
+//        AuthToken authenticationToken = new AuthToken(user.getUsername(), AuthUtils.encrypt(user.getPassword()),"wx");
         AuthToken authenticationToken = new AuthToken(user.getUsername(), user.getPassword(),"wx");
-        //AuthToken authenticationToken = new AuthToken(username, password,"wx");
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(authenticationToken);
@@ -129,9 +131,11 @@ public class AuthController_wx {
         }else if (userService.getUserByMobile(mobile) != null ) {
             return BaseReqVo.fail(508,"该手机已注册");
         }
-        wxRegister.setPassword(AuthUtils.encrypt(password));
+//        wxRegister.setPassword(AuthUtils.encrypt(password));
+        wxRegister.setPassword(password);
         String randomAvatar = RandomUtils.getRandomAvater();
-        Boolean state = userService.registerInsertUser(wxRegister,randomAvatar);
+        String randomNickName = RandomUtils.getRandomNickName();
+        Boolean state = userService.registerInsertUser(wxRegister,randomAvatar,randomNickName);
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
@@ -196,8 +200,27 @@ public class AuthController_wx {
      * {"errno":-1,"errmsg":"错误"}
      * */
     @RequestMapping("login_by_weixin")
-    public BaseReqVo login_by_weixin() {
-        return BaseReqVo.ok("123");
+    public BaseReqVo login_by_weixin(@RequestBody Wx_wx_login wx_wx_login) throws Exception {
+        Map<String, Object> map = wx_wx_login.getUserInfo();
+        String nickName = (String) map.get("nickName");
+        User user = userService.getUserByUsername(nickName);
+        if (user != null) {
+            user.setPassword(nickName);
+            return login(user);
+        }else {
+            String avatarUrl = (String) map.get("avatarUrl");
+            Wx_register wxRegister = new Wx_register();
+            wxRegister.setUsername(nickName);
+            String password = nickName;
+//            String password = AuthUtils.encrypt(nickName);
+            wxRegister.setPassword(password);
+            wxRegister.setMobile("88888888888");
+            userService.registerInsertUser(wxRegister,avatarUrl,nickName);
+            User userLogin = new User();
+            userLogin.setUsername(nickName);
+            userLogin.setPassword(nickName);
+            return login(userLogin);
+        }
     }
 
     @RequestMapping("bindPhone")

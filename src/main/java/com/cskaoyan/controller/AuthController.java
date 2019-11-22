@@ -39,7 +39,8 @@ public class AuthController {
     public BaseReqVo login(@RequestBody Admin admin, HttpServletRequest request) throws Exception {
         String username = admin.getUsername();
         if ("".equals(username)) { return BaseReqVo.fail(401,"账号不可为空,请输入"); }
-        AuthToken authenticationToken = new AuthToken(admin.getUsername(), AuthUtils.encrypt(admin.getPassword()),"admin");
+        AuthToken authenticationToken = new AuthToken(admin.getUsername(), admin.getPassword(),"admin");
+//        AuthToken authenticationToken = new AuthToken(admin.getUsername(), AuthUtils.encrypt(admin.getPassword()),"admin");
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(authenticationToken);

@@ -16,7 +16,6 @@ import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.user.*;
 import com.cskaoyan.bean.user.groupon.GrouponDetail;
 import com.cskaoyan.mapper.*;
-import com.cskaoyan.teacherCode.UserTokenManager;
 import com.cskaoyan.utils.TransferUtils_wx;
 import com.github.pagehelper.PageHelper;
 import org.apache.shiro.SecurityUtils;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -730,8 +728,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Boolean registerInsertUser(Wx_register wxRegister,String randomAvatar) {
-        userMapper.registerInsertUser(wxRegister,randomAvatar);
+    public Boolean registerInsertUser(Wx_register wxRegister, String randomAvatar, String randomNickName) {
+        userMapper.registerInsertUser(wxRegister,randomAvatar,randomNickName);
         return true;
     }
 

@@ -411,9 +411,10 @@
         update cskaoyan_mall_user set last_login_time = now() where id = #{id}
     </update>
     <insert id="registerInsertUser">
-        insert into cskaoyan_mall_user (username,password,birthday,mobile,avatar,weixin_openid,add_time,update_time) values (
+        insert into cskaoyan_mall_user (username,password,nickname,birthday,mobile,avatar,weixin_openid,add_time,update_time) values (
               #{wxRegister.username},
               #{wxRegister.password},
+              #{nickname},
               now(),
               #{wxRegister.mobile},
               #{avatar},

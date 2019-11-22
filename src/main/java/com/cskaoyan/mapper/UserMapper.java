@@ -47,7 +47,7 @@ public interface UserMapper {
 
     void updateLoginTime(Integer id);
 
-    Boolean registerInsertUser(@Param("wxRegister")Wx_register wxRegister,@Param("avatar")String avatar);
+    Boolean registerInsertUser(@Param("wxRegister") Wx_register wxRegister, @Param("avatar") String avatar,@Param("nickname") String nickName);
 
     User getUserByMobile(String mobile);
 
