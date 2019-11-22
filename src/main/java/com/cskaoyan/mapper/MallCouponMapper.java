@@ -20,7 +20,7 @@ public interface MallCouponMapper {
     @Insert({
         "insert into cskaoyan_mall_coupon (id, name, ",
         "`desc`, tag, total, ",
-        "discount, min, limit, ",
+        "discount, min, `limit`, ",
         "type, status, ",
         "goods_type, goods_value, ",
         "code, time_type, ",
@@ -45,7 +45,7 @@ public interface MallCouponMapper {
 
     @Select({
         "select",
-        "id, name, `desc`, tag, total, discount, min, limit, type, status, goods_type, ",
+        "id, name, `desc`, tag, total, discount, min, `limit`, type, status, goods_type, ",
         "goods_value, code, time_type, days, start_time, end_time, add_time, update_time, ",
         "deleted",
         "from cskaoyan_mall_coupon",
@@ -68,7 +68,7 @@ public interface MallCouponMapper {
           "total = #{total,jdbcType=INTEGER},",
           "discount = #{discount,jdbcType=DECIMAL},",
           "min = #{min,jdbcType=DECIMAL},",
-          "limit = #{limit,jdbcType=SMALLINT},",
+          "`limit` = #{limit,jdbcType=SMALLINT},",
           "type = #{type,jdbcType=SMALLINT},",
           "status = #{status,jdbcType=SMALLINT},",
           "goods_type = #{goodsType,jdbcType=SMALLINT},",
