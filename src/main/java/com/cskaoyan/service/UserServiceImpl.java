@@ -268,7 +268,7 @@ public class UserServiceImpl implements UserService{
             long l = grouponMapper.countByExample(grouponExample);
             dataBean.setJoinerCount((int)l);
             //设置rules
-            GrouponRules grouponRules = grouponRulesMapper.selectByPrimaryKey(groupon.getRulesId());
+            GrouponRules grouponRules = grouponRulesMapper.selectByPrimaryKey(groupon.getGrouponId());
             dataBean.setRules(grouponRules);
             //设置id
             dataBean.setId(groupon.getId());
@@ -353,6 +353,7 @@ public class UserServiceImpl implements UserService{
         orderInfoBean.setOrderSn(mallOrder.getOrderSn());
         orderInfoBean.setMobile(mallOrder.getMobile());
         orderInfoBean.setId(mallOrder.getId());
+        orderInfoBean.setActualPrice(mallOrder.getActualPrice().doubleValue());
         orderInfoBean.setFreightPrice(mallOrder.getFreightPrice().doubleValue());
         //从order表中取出orderStatus,在order_status表中查出orderStatusText
         StatusExample statusExample = new StatusExample();
