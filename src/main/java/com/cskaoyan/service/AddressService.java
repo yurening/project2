@@ -15,4 +15,6 @@ public interface AddressService {
     void deleteAddress(Integer id);
 
     void saveNewAddress(MallAddress mallAddress);
+
+    void setOtherAddressDefaultFalse(Integer id);
 }
