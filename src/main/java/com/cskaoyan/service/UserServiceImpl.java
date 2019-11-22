@@ -453,7 +453,6 @@ public class UserServiceImpl implements UserService{
     public List<Coupon> selectCoupon(UserRequest userRequest) {
         Subject subject = SecurityUtils.getSubject();
         User userLogin = (User) subject.getPrincipal();
-        PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
         //新用户时长 7天
         //判断是否是新用户，新用户显示新用户劵，不是新用户不显示
         //获得时间差
@@ -462,6 +461,7 @@ public class UserServiceImpl implements UserService{
         List<User> users = userMapper.selectUserByExample(userExample);
         User user = users.get(0);
         long time = (new Date()).getTime() - (user.getAddTime()).getTime();
+        PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
         List<Coupon> coupons = couponMapper.selectByExample(new CouponExample());
         List<Coupon> couponsReturn = new ArrayList<>();
         //不是新用户

@@ -3,9 +3,12 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.*;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.GoodsExample;
+import com.cskaoyan.bean.goods.SystemExample;
+import com.cskaoyan.bean.user.UserRequest;
 import com.cskaoyan.bean.wx_index.HomeIndex;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -36,6 +39,12 @@ public class GeneralizeServiceImpl implements GeneralizeService{
 
     @Autowired
     GoodsMapper goodsMapper;
+
+    @Autowired
+    SystemMapper systemMapper;
+
+    @Autowired
+    UserService userService;
 
     @Override
     public HashMap<String,Object> queryAd(Integer page, Integer limit, String name, String content, String sort, String order) {
@@ -377,9 +386,17 @@ public class GeneralizeServiceImpl implements GeneralizeService{
 
     @Override
     public List<HomeIndex.CouponListBean> getCouponList() {
-        CouponExample couponExample = new CouponExample();
-        couponExample.createCriteria().andDeletedEqualTo(false);
-        List<Coupon> coupons = couponMapper.selectByExample(couponExample);
+        List<Coupon> coupons;
+        if (SecurityUtils.getSubject().getPrincipal() == null) {
+            CouponExample couponExample = new CouponExample();
+            couponExample.createCriteria().andDeletedEqualTo(false);
+            coupons = couponMapper.selectByExample(couponExample);
+        } else {
+            UserRequest request = new UserRequest();
+            request.setPage(0);
+            request.setLimit(4);
+            coupons = userService.selectCoupon(request);
+        }
         List<HomeIndex.CouponListBean> couponList = new ArrayList<>();
         for (Coupon coupon : coupons) {
             HomeIndex.CouponListBean couponListBean = new HomeIndex.CouponListBean();
@@ -422,9 +439,15 @@ public class GeneralizeServiceImpl implements GeneralizeService{
 
     @Override
     public List<HomeIndex.TopicListBean> getTopicList() {
+        SystemExample systemExample = new SystemExample();
+        systemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_wx_index_topic");
+        int limit = Integer.parseInt(systemMapper.selectByExample(systemExample).get(0).getKeyValue());
         TopicExample topicExample = new TopicExample();
         topicExample.createCriteria().andDeletedEqualTo(false);
         List<Topic> topics = topicMapper.selectByExample(topicExample);
+        if (topics.size() > limit) {
+            topics = topics.subList(0, limit);
+        }
         List<HomeIndex.TopicListBean> topicList = new ArrayList<>();
         for (Topic topic : topics) {
             HomeIndex.TopicListBean topicListBean = new HomeIndex.TopicListBean();
