@@ -75,4 +75,9 @@ public class AddressServiceImpl implements AddressService {
     public void deleteAddress(Integer id) {
         addressMapper.deleteByPrimaryKey(id);
     }
+
+    @Override
+    public void setOtherAddressDefaultFalse(Integer id) {
+        addressMapper.setOtherDefaultFalse(id);
+    }
 }

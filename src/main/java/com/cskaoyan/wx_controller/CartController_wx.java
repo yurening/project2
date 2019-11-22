@@ -23,6 +23,7 @@ public class CartController_wx {
         CartIndex cartIndex = new CartIndex();
         cartIndex.setCartTotal(cartService.getCartTotal());
         cartIndex.setCartList(cartService.getCartListByUserId());
+        cartIndex.setManmian(cartService.getManmian());
         BaseReqVo<CartIndex> baseReqVo = new BaseReqVo<>();
         baseReqVo.setErrmsg("成功");
         baseReqVo.setData(cartIndex);

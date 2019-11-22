@@ -277,7 +277,14 @@ public class CartServiceImpl implements CartService {
 
     }
 
-        public BigDecimal getGoodsTotalPrice ( int cartId, int grouponRulesId){
+    @Override
+    public double getManmian() {
+        SystemExample systemExample = new SystemExample();
+        systemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_express_freight_min");
+        return Integer.parseInt(systemMapper.selectByExample(systemExample).get(0).getKeyValue());
+    }
+
+    public BigDecimal getGoodsTotalPrice ( int cartId, int grouponRulesId){
 
             User user = (User) SecurityUtils.getSubject().getPrincipal();
             Integer userId = user.getId();
