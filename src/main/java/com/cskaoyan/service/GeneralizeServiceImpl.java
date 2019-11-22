@@ -228,6 +228,9 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         List<Goods> goods = goodsMapper.selectByExample(goodsExample);
         if (goods.size() == 0){
             return null;
+        } else if ( grouponRules.getDiscount().intValue() > goods.get(0).getRetailPrice().intValue()){
+           grouponRules.setGoodsId(0);
+           return grouponRules;
         }
         Goods goods1 = goods.get(0);
         grouponRules.setDeleted(false);
@@ -241,7 +244,6 @@ public class GeneralizeServiceImpl implements GeneralizeService{
 
     @Override
     public HashMap<String, Object> grouponListRecord(Integer page, Integer limit, String sort, String order,Integer goodsId) {
-        PageHelper.startPage(page,limit);
         List<HashMap> hashMapList = new ArrayList<>();
         GrouponExample grouponExample = new GrouponExample();
         GrouponExample.Criteria criteria = grouponExample.createCriteria();
@@ -278,8 +280,8 @@ public class GeneralizeServiceImpl implements GeneralizeService{
                 for (Groupon groupon : grouponList) {
                     if (!groupon.getGrouponId().equals(id)) {
                         hashMap.put("subGroupons", subGroupons);
-                        subGroupons = new ArrayList<>();
                         hashMapList.add(hashMap);
+                        subGroupons = new ArrayList<>();
                         hashMap = new HashMap<>();
                         id = groupon.getGrouponId();
                         hashMap.put("groupon", groupon);
@@ -344,7 +346,13 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         int total = hashMapList.size();
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("total",total);
-        hashMap.put("items",hashMapList);
+        List<HashMap> hashMaps = new ArrayList<>();
+        for (int i = 0; i < limit.intValue();i++){
+            if (hashMapList.size() > (page.intValue() - 1 ) * limit.intValue() + i){
+                hashMaps.add(hashMapList.get((page.intValue() - 1) * limit.intValue() + i));
+            }
+        }
+        hashMap.put("items",hashMaps);
         return hashMap;
     }
 
@@ -356,6 +364,9 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         List<Goods> goods = goodsMapper.selectByExample(goodsExample);
         if (goods.size() == 0){
             return null;
+        } else if ( grouponRules.getDiscount().intValue() > goods.get(0).getRetailPrice().intValue()){
+            grouponRules.setGoodsId(0);
+            return grouponRules;
         }
         Goods g = goods.get(0);
         grouponRules.setUpdateTime(new Date());
