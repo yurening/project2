@@ -231,46 +231,48 @@ public class CartServiceImpl implements CartService {
             if (couponId <= 0) {
                 coupon = coupons.get(0);
             } else {
-                coupon = couponMapper.selectByPrimaryKey(couponId)
-            couponId = coupon.getId();
-            couponPrice = new BigDecimal(coupon.getDiscount());
-        }
+                coupon = couponMapper.selectByPrimaryKey(couponId);
+                couponId = coupon.getId();
+                couponPrice = new BigDecimal(coupon.getDiscount());
+            }
 
-        // 获取用户地址信息
-        if (addressId == 0) {
-            addressId = addressMapper.selectByExample(new MallAddressExample()).get(0).getId();
-        }
-        MallAddress address = addressMapper.selectByPrimaryKey(addressId);
+            // 获取用户地址信息
+            if (addressId == 0) {
+                addressId = addressMapper.selectByExample(new MallAddressExample()).get(0).getId();
+            }
+            MallAddress address = addressMapper.selectByPrimaryKey(addressId);
 
-        // 获取下单的商品信息
-        List<Cart> carts = new ArrayList<>();
-        if (cartId != 0) {
-            carts.add(cartMapper.selectByPrimaryKey(cartId));
-        } else {
-            CartExample cartExample = new CartExample();
-            cartExample.createCriteria().andUserIdEqualTo(userId).andCheckedEqualTo(true).andDeletedEqualTo(false);
-            carts = cartMapper.selectByExample(cartExample);
-        }
+            // 获取下单的商品信息
+            List<Cart> carts = new ArrayList<>();
+            if (cartId != 0) {
+                carts.add(cartMapper.selectByPrimaryKey(cartId));
+            } else {
+                CartExample cartExample = new CartExample();
+                cartExample.createCriteria().andUserIdEqualTo(userId).andCheckedEqualTo(true).andDeletedEqualTo(false);
+                carts = cartMapper.selectByExample(cartExample);
+            }
 
-        // 算出订单最终实付价格
-        BigDecimal finalPrice = goodsTotalPrice.add(freightPrice).subtract(couponPrice);
 
-        // 构造返回数据
-        Map<String, Object> map = new HashMap<>();
-        map.put("actualPrice", finalPrice);
-        map.put("addressId", addressId);
-        map.put("availableCouponLength", availableCouponLength);
-        map.put("checkedAddress", address);
-        map.put("checkedGoodsList", carts);
-        map.put("couponId", couponId);
-        map.put("couponPrice", couponPrice);
-        map.put("freightPrice", freightPrice);
-        map.put("goodsTotalPrice", goodsTotalPrice);
-        map.put("grouponPrice", grouponPrice);
-        map.put("grouponRulesId", grouponRulesId);
-        map.put("orderTotalPrice", finalPrice);
+            // 算出订单最终实付价格
+            BigDecimal finalPrice = goodsTotalPrice.add(freightPrice).subtract(couponPrice);
 
-        return map;
+            // 构造返回数据
+            Map<String, Object> map = new HashMap<>();
+            map.put("actualPrice", finalPrice);
+            map.put("addressId", addressId);
+            map.put("availableCouponLength", availableCouponLength);
+            map.put("checkedAddress", address);
+            map.put("checkedGoodsList", carts);
+            map.put("couponId", couponId);
+            map.put("couponPrice", couponPrice);
+            map.put("freightPrice", freightPrice);
+            map.put("goodsTotalPrice", goodsTotalPrice);
+            map.put("grouponPrice", grouponPrice);
+            map.put("grouponRulesId", grouponRulesId);
+            map.put("orderTotalPrice", finalPrice);
+
+            return map;
+        
     }
 
 

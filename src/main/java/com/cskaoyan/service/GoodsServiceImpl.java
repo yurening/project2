@@ -544,24 +544,26 @@ public class GoodsServiceImpl implements GoodsService {
         SearchHistory searchHistory = new SearchHistory();
         Subject subject = SecurityUtils.getSubject();
         User principal = (User) subject.getPrincipal();
-        Integer id = principal.getId();
-        searchHistory.setUserId(id);//用戶寫死了
-        searchHistory.setKeyword(trim);
-        searchHistory.setFrom("wx");
-        searchHistory.setDeleted(false);
-        //判斷是否是空
-        SearchHistoryExample searchHistoryExample = new SearchHistoryExample();
-        searchHistoryExample.createCriteria().andUserIdEqualTo(1).andKeywordEqualTo(trim);
-        List<SearchHistory> searchHistories = searchHistoryMapper.selectByExample(searchHistoryExample);
-        if (searchHistories.size()==0){
-            searchHistory.setAddTime(new Date());
-            searchHistoryMapper.insert(searchHistory);
-        }else{
-            SearchHistory searchHistory1 = searchHistories.get(0);
-            searchHistory1.setUpdateTime(new Date());
-            searchHistoryMapper.updateByPrimaryKey(searchHistory1);
-        }
+        if (principal!=null){
+            Integer id = principal.getId();
+            searchHistory.setUserId(id);//用戶寫死了
+            searchHistory.setKeyword(trim);
+            searchHistory.setFrom("wx");
+            searchHistory.setDeleted(false);
 
+            //判斷是否是空
+            SearchHistoryExample searchHistoryExample = new SearchHistoryExample();
+            searchHistoryExample.createCriteria().andUserIdEqualTo(1).andKeywordEqualTo(trim);
+            List<SearchHistory> searchHistories = searchHistoryMapper.selectByExample(searchHistoryExample);
+            if (searchHistories.size()==0){
+                searchHistory.setAddTime(new Date());
+                searchHistoryMapper.insert(searchHistory);
+            }else{
+                SearchHistory searchHistory1 = searchHistories.get(0);
+                searchHistory1.setUpdateTime(new Date());
+                searchHistoryMapper.updateByPrimaryKey(searchHistory1);
+            }
+        }
         List<Category> list = new ArrayList<>();
         List<String> nameList = new ArrayList<>();
         for (Goods good : goods) {
