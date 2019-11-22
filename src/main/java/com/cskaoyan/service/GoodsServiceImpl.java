@@ -3,6 +3,7 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.GrouponRules;
 import com.cskaoyan.bean.generalize.GrouponRulesExample;
 import com.cskaoyan.bean.goods.*;
+import com.cskaoyan.bean.goods.System;
 import com.cskaoyan.bean.user.*;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.bean.wx_index.HomeIndex;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -44,6 +46,9 @@ public class GoodsServiceImpl implements GoodsService {
     CollectMapper collectMapper;
     @Autowired
     FootPrintMapper footPrintMapper;
+    @Autowired
+    SystemMapper systemMapper;
+
 
     @Override
     public ResponseType getAllGoods(Integer page,Integer limit,
@@ -133,15 +138,20 @@ public class GoodsServiceImpl implements GoodsService {
         }
         //判断填写的内容是不是数字且位数在6到10位之间
         if (!goodsSn.matches("^[0-9]{6,10}")){
-            responseType.setErrno(500);
+            responseType.setErrno(507);
+            responseType.setErrmsg("商品编号参数不正确");
             return responseType;
         }
         //判断商品名是否为空，空则返回错误信息
         String name = goods.getName();
         if (StringUtils.isEmpty(name)){
-            responseType.setErrno(500);
+            responseType.setErrno(507);
+            responseType.setErrmsg("必填项没有填写");
             return responseType;
         }
+        /*BigDecimal retailPrice = goods.getRetailPrice();
+        BigDecimal counterPrice = goods.getCounterPrice();*/
+        //retailPrice.toString().matches()
 
         goods.setAddTime(new Date());
         goodsMapper.insertSelective(goods);
@@ -164,6 +174,7 @@ public class GoodsServiceImpl implements GoodsService {
             attributeMapper.insertSelective(attribute);
         }
         for (Product product : products) {
+            product.setId(0);
             product.setGoodsId(goodsId);
             product.setAddTime(new Date());
             productMapper.insertSelective(product);
@@ -544,24 +555,26 @@ public class GoodsServiceImpl implements GoodsService {
         SearchHistory searchHistory = new SearchHistory();
         Subject subject = SecurityUtils.getSubject();
         User principal = (User) subject.getPrincipal();
-        Integer id = principal.getId();
-        searchHistory.setUserId(id);//用戶寫死了
-        searchHistory.setKeyword(trim);
-        searchHistory.setFrom("wx");
-        searchHistory.setDeleted(false);
-        //判斷是否是空
-        SearchHistoryExample searchHistoryExample = new SearchHistoryExample();
-        searchHistoryExample.createCriteria().andUserIdEqualTo(1).andKeywordEqualTo(trim);
-        List<SearchHistory> searchHistories = searchHistoryMapper.selectByExample(searchHistoryExample);
-        if (searchHistories.size()==0){
-            searchHistory.setAddTime(new Date());
-            searchHistoryMapper.insert(searchHistory);
-        }else{
-            SearchHistory searchHistory1 = searchHistories.get(0);
-            searchHistory1.setUpdateTime(new Date());
-            searchHistoryMapper.updateByPrimaryKey(searchHistory1);
-        }
+        if (principal!=null){
+            Integer id = principal.getId();
+            searchHistory.setUserId(id);//用戶寫死了
+            searchHistory.setKeyword(trim);
+            searchHistory.setFrom("wx");
+            searchHistory.setDeleted(false);
 
+            //判斷是否是空
+            SearchHistoryExample searchHistoryExample = new SearchHistoryExample();
+            searchHistoryExample.createCriteria().andUserIdEqualTo(1).andKeywordEqualTo(trim);
+            List<SearchHistory> searchHistories = searchHistoryMapper.selectByExample(searchHistoryExample);
+            if (searchHistories.size()==0){
+                searchHistory.setAddTime(new Date());
+                searchHistoryMapper.insert(searchHistory);
+            }else{
+                SearchHistory searchHistory1 = searchHistories.get(0);
+                searchHistory1.setUpdateTime(new Date());
+                searchHistoryMapper.updateByPrimaryKey(searchHistory1);
+            }
+        }
         List<Category> list = new ArrayList<>();
         List<String> nameList = new ArrayList<>();
         for (Goods good : goods) {
@@ -697,9 +710,15 @@ public class GoodsServiceImpl implements GoodsService {
 
 
     public List<HomeIndex.NewGoodsListBean> getNewGoodsList() {
+        SystemExample systemExample = new SystemExample();
+        systemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_wx_index_new");
+        int limit = Integer.parseInt(systemMapper.selectByExample(systemExample).get(0).getKeyValue());
         GoodsExample goodsExample = new GoodsExample();
         goodsExample.createCriteria().andIsNewEqualTo(true).andDeletedEqualTo(false);
         List<Goods> goodsList = goodsMapper.selectByExample(goodsExample);
+        if (goodsList.size() > limit) {
+            goodsList = goodsList.subList(0, limit);
+        }
         List<HomeIndex.NewGoodsListBean> newGoodsList = new ArrayList<>();
         for (Goods goods : goodsList) {
             HomeIndex.NewGoodsListBean newGoodsListBean = new HomeIndex.NewGoodsListBean();
@@ -734,9 +753,15 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public List<HomeIndex.HotGoodsListBean> getHotGoodsList() {
+        SystemExample systemExample = new SystemExample();
+        systemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_wx_index_hot");
+        int limit = Integer.parseInt(systemMapper.selectByExample(systemExample).get(0).getKeyValue());
         GoodsExample goodsExample = new GoodsExample();
         goodsExample.createCriteria().andIsHotEqualTo(true).andDeletedEqualTo(false);
         List<Goods> goodsList = goodsMapper.selectByExample(goodsExample);
+        if (goodsList.size() > limit) {
+            goodsList = goodsList.subList(0, limit);
+        }
         List<HomeIndex.HotGoodsListBean> hotGoodsList = new ArrayList<>();
         for (Goods goods : goodsList) {
             HomeIndex.HotGoodsListBean hotGoodsListBean = new HomeIndex.HotGoodsListBean();
@@ -755,9 +780,18 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public List<HomeIndex.FloorGoodsListBean> getFloorGoodsList() {
+        SystemExample systemExample = new SystemExample();
+        systemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_wx_catlog_list");
+        int limit1 = Integer.parseInt(systemMapper.selectByExample(systemExample).get(0).getKeyValue());
+        systemExample.clear();
+        systemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_wx_catlog_goods");
+        int limit2 = Integer.parseInt(systemMapper.selectByExample(systemExample).get(0).getKeyValue());
         CategoryExample categoryExample = new CategoryExample();
         categoryExample.createCriteria().andLevelEqualTo("L1").andDeletedEqualTo(false);
         List<Category> categories = categoryMapper.selectByExample(categoryExample);
+        if (categories.size() > limit1) {
+            categories = categories.subList(0, limit1);
+        }
         List<HomeIndex.FloorGoodsListBean> floorGoodsList = new ArrayList<>();
         for (Category category : categories) {
             categoryExample = new CategoryExample();
@@ -768,7 +802,7 @@ public class GoodsServiceImpl implements GoodsService {
                 GoodsExample goodsExample = new GoodsExample();
                 goodsExample.createCriteria().andCategoryIdEqualTo(categorySec.getId()).andDeletedEqualTo(false);
                 for (Goods goodsSec : goodsMapper.selectByExample(goodsExample)) {
-                    if (goods.size() >= 6) {
+                    if (goods.size() >= limit2) {
                         break outer;
                     }
                     goods.add(goodsSec);

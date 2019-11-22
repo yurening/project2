@@ -3,9 +3,12 @@ package com.cskaoyan.service;
 import com.cskaoyan.bean.generalize.*;
 import com.cskaoyan.bean.goods.Goods;
 import com.cskaoyan.bean.goods.GoodsExample;
+import com.cskaoyan.bean.goods.SystemExample;
+import com.cskaoyan.bean.user.UserRequest;
 import com.cskaoyan.bean.wx_index.HomeIndex;
 import com.cskaoyan.mapper.*;
 import com.github.pagehelper.PageHelper;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -36,6 +39,12 @@ public class GeneralizeServiceImpl implements GeneralizeService{
 
     @Autowired
     GoodsMapper goodsMapper;
+
+    @Autowired
+    SystemMapper systemMapper;
+
+    @Autowired
+    UserService userService;
 
     @Override
     public HashMap<String,Object> queryAd(Integer page, Integer limit, String name, String content, String sort, String order) {
@@ -228,6 +237,9 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         List<Goods> goods = goodsMapper.selectByExample(goodsExample);
         if (goods.size() == 0){
             return null;
+        } else if ( grouponRules.getDiscount().intValue() > goods.get(0).getRetailPrice().intValue()){
+           grouponRules.setGoodsId(0);
+           return grouponRules;
         }
         Goods goods1 = goods.get(0);
         grouponRules.setDeleted(false);
@@ -241,7 +253,6 @@ public class GeneralizeServiceImpl implements GeneralizeService{
 
     @Override
     public HashMap<String, Object> grouponListRecord(Integer page, Integer limit, String sort, String order,Integer goodsId) {
-        PageHelper.startPage(page,limit);
         List<HashMap> hashMapList = new ArrayList<>();
         GrouponExample grouponExample = new GrouponExample();
         GrouponExample.Criteria criteria = grouponExample.createCriteria();
@@ -278,8 +289,8 @@ public class GeneralizeServiceImpl implements GeneralizeService{
                 for (Groupon groupon : grouponList) {
                     if (!groupon.getGrouponId().equals(id)) {
                         hashMap.put("subGroupons", subGroupons);
-                        subGroupons = new ArrayList<>();
                         hashMapList.add(hashMap);
+                        subGroupons = new ArrayList<>();
                         hashMap = new HashMap<>();
                         id = groupon.getGrouponId();
                         hashMap.put("groupon", groupon);
@@ -344,7 +355,13 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         int total = hashMapList.size();
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("total",total);
-        hashMap.put("items",hashMapList);
+        List<HashMap> hashMaps = new ArrayList<>();
+        for (int i = 0; i < limit.intValue();i++){
+            if (hashMapList.size() > (page.intValue() - 1 ) * limit.intValue() + i){
+                hashMaps.add(hashMapList.get((page.intValue() - 1) * limit.intValue() + i));
+            }
+        }
+        hashMap.put("items",hashMaps);
         return hashMap;
     }
 
@@ -356,6 +373,9 @@ public class GeneralizeServiceImpl implements GeneralizeService{
         List<Goods> goods = goodsMapper.selectByExample(goodsExample);
         if (goods.size() == 0){
             return null;
+        } else if ( grouponRules.getDiscount().intValue() > goods.get(0).getRetailPrice().intValue()){
+            grouponRules.setGoodsId(0);
+            return grouponRules;
         }
         Goods g = goods.get(0);
         grouponRules.setUpdateTime(new Date());
@@ -377,9 +397,17 @@ public class GeneralizeServiceImpl implements GeneralizeService{
 
     @Override
     public List<HomeIndex.CouponListBean> getCouponList() {
-        CouponExample couponExample = new CouponExample();
-        couponExample.createCriteria().andDeletedEqualTo(false);
-        List<Coupon> coupons = couponMapper.selectByExample(couponExample);
+        List<Coupon> coupons;
+        if (SecurityUtils.getSubject().getPrincipal() == null) {
+            CouponExample couponExample = new CouponExample();
+            couponExample.createCriteria().andDeletedEqualTo(false);
+            coupons = couponMapper.selectByExample(couponExample);
+        } else {
+            UserRequest request = new UserRequest();
+            request.setPage(0);
+            request.setLimit(4);
+            coupons = userService.selectCoupon(request);
+        }
         List<HomeIndex.CouponListBean> couponList = new ArrayList<>();
         for (Coupon coupon : coupons) {
             HomeIndex.CouponListBean couponListBean = new HomeIndex.CouponListBean();
@@ -422,9 +450,15 @@ public class GeneralizeServiceImpl implements GeneralizeService{
 
     @Override
     public List<HomeIndex.TopicListBean> getTopicList() {
+        SystemExample systemExample = new SystemExample();
+        systemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_wx_index_topic");
+        int limit = Integer.parseInt(systemMapper.selectByExample(systemExample).get(0).getKeyValue());
         TopicExample topicExample = new TopicExample();
         topicExample.createCriteria().andDeletedEqualTo(false);
         List<Topic> topics = topicMapper.selectByExample(topicExample);
+        if (topics.size() > limit) {
+            topics = topics.subList(0, limit);
+        }
         List<HomeIndex.TopicListBean> topicList = new ArrayList<>();
         for (Topic topic : topics) {
             HomeIndex.TopicListBean topicListBean = new HomeIndex.TopicListBean();

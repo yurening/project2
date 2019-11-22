@@ -54,6 +54,13 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    public List<Admin> adminList() {
+        AdminExample adminExample = new AdminExample();
+        List<Admin> adminList = adminMapper.selectByExample(adminExample);
+        return adminList;
+    }
+
+    @Override
     public List<Role> roleOptions() {
         RoleExample roleExample = new RoleExample();
         RoleExample.Criteria criteria = roleExample.createCriteria();

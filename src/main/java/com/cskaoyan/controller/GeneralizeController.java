@@ -294,10 +294,16 @@ public class GeneralizeController {
             baseReqVo.setErrno(500);
             return baseReqVo;
         }
-        baseReqVo.setData(g);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        if (g.getGoodsId().equals(0)){
+            baseReqVo.setErrmsg("优惠不能大于原价");
+            baseReqVo.setErrno(500);
+            return baseReqVo;
+        }else {
+            baseReqVo.setData(g);
+            baseReqVo.setErrmsg("成功");
+            baseReqVo.setErrno(0);
+            return baseReqVo;
+        }
     }
 
     @RequestMapping("groupon/update")
@@ -310,10 +316,16 @@ public class GeneralizeController {
             baseReqVo.setErrno(500);
             return baseReqVo;
         }
-        baseReqVo.setData(g);
-        baseReqVo.setErrmsg("成功");
-        baseReqVo.setErrno(0);
-        return baseReqVo;
+        if (g.getGoodsId().equals(0)){
+            baseReqVo.setErrmsg("优惠不能大于原价");
+            baseReqVo.setErrno(500);
+            return baseReqVo;
+        } else {
+            baseReqVo.setData(g);
+            baseReqVo.setErrmsg("成功");
+            baseReqVo.setErrno(0);
+            return baseReqVo;
+        }
     }
 
     @RequestMapping("groupon/delete")

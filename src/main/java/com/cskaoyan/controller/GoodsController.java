@@ -55,11 +55,8 @@ public class GoodsController {
 
     @RequestMapping("goods/create")
     @RequiresPermissions(value={"admin:goods:create"})
-    public ResponseType createGoods(@RequestBody CreateGoods createGoods){
+    public ResponseType createGoods(@RequestBody CreateGoods createGoods) throws Exception{
         ResponseType goods = goodsService.createGoods(createGoods);
-        /*ResponseType responseType = new ResponseType();
-        responseType.setErrmsg("成功");
-        responseType.setErrno(0);*/
         return goods;
     }
 
