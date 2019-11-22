@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService{
         historyExample.createCriteria().andUserIdEqualTo(userLogin.getId());
         List<History> histories = userMapper.selectHistoryByExample(historyExample);
         List<MallKeyword> mallKeywords = mallKeywordMapper.selectByExample(mallKeywordExample);
-        mallKeywordExample.createCriteria().andSortOrderEqualTo(userLogin.getId());
+        mallKeywordExample.createCriteria().andIsDefaultEqualTo(true);
         List<MallKeyword> mallKeywords1 = mallKeywordMapper.selectByExample(mallKeywordExample);
         objectHashMap.put("defaultKeyword",mallKeywords1.get(0));
         objectHashMap.put("hotKeywordList",mallKeywords);
