@@ -18,22 +18,16 @@ import javax.servlet.ServletResponse;
 public class FormAuthFilter extends FormAuthenticationFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-       Subject subject = getSubject(request, response);
-       if (subject.getPrincipal() == null) {
-           return false;
-       }
        if (isLoginRequest(request, response)) {
             if (isLoginSubmission(request, response)) {
                 return executeLogin(request, response);
             } else {
                 return true;
-
             }
-        } else {
-            WebUtils.toHttp(response).setContentType("application/json; charset=utf-8");
-            WebUtils.toHttp(response).getWriter().print(BaseReqVo.fail(507,"权限不足,请联系超级管理员"));
-            return false;
-        }
+        }else {
+           return executeLogin(request, response);
+       }
+
     }
 
     @Override

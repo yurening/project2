@@ -50,6 +50,7 @@ public class AuthConfig {
         filters.put("authc", new FormAuthFilter());
         //第一个参数是请求url 第二个参数是过滤器
        filterChainDefinitionMap.put("/admin/auth/**","anon");
+       filterChainDefinitionMap.put("/static/**","anon");
        filterChainDefinitionMap.put("/wx/auth/**","anon");
        filterChainDefinitionMap.put("/wx/home/index","anon");
        filterChainDefinitionMap.put("/wx/catalog/**","anon");
