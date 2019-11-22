@@ -8,6 +8,7 @@ package com.cskaoyan.config;
 
 import com.cskaoyan.filter.FormAuthFilter;
 import com.cskaoyan.shiro.*;
+import org.apache.shiro.crypto.hash.Hash;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -47,12 +49,20 @@ public class AuthConfig {
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
         filters.put("authc", new FormAuthFilter());
         //第一个参数是请求url 第二个参数是过滤器
-//        filterChainDefinitionMap.put("/admin/auth/login","anon");
-//        filterChainDefinitionMap.put("/admin/auth/info","perms");
-//        filterChainDefinitionMap.put("/admin/dashboard","perms");
-////        filterChainDefinitionMap.put("/admin/stat/**", "roles");
-//        filterChainDefinitionMap.put("/admin/stat/**", "authc");
-        filterChainDefinitionMap.put("/**", "anon");
+       filterChainDefinitionMap.put("/admin/auth/**","anon");
+       filterChainDefinitionMap.put("/wx/auth/**","anon");
+       filterChainDefinitionMap.put("/wx/home/index","anon");
+       filterChainDefinitionMap.put("/wx/catalog/**","anon");
+       filterChainDefinitionMap.put("/wx/goods/**","anon");
+       filterChainDefinitionMap.put("/wx/brand/**","anon");
+       filterChainDefinitionMap.put("/wx/comment/**","anon");
+       filterChainDefinitionMap.put("/wx/topic/**","anon");
+       filterChainDefinitionMap.put("/wx/search/**","anon");
+       filterChainDefinitionMap.put("/wx/region/list","anon");
+       filterChainDefinitionMap.put("/wx/coupon/**","anon");
+       filterChainDefinitionMap.put("/wx/groupon/**","anon");
+
+        filterChainDefinitionMap.put("/**", "authc");
         shiroFilterFactoryBean.setFilters(filters);
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
@@ -115,7 +125,7 @@ public class AuthConfig {
     public AuthSessionManager sessionManager(){
         AuthSessionManager authSessionManager = new AuthSessionManager();
         authSessionManager.setDeleteInvalidSessions(true);
-        authSessionManager.setGlobalSessionTimeout(600000);
+        authSessionManager.setGlobalSessionTimeout(600000000);
         return authSessionManager;
     }
 
@@ -137,5 +147,11 @@ public class AuthConfig {
         realms.add(wxRealm);
         authRealmAuthorticator.setRealms(realms);
         return authRealmAuthorticator;
+    }
+
+    @Bean("mymap")
+    public Map<String,Object> getMap(){
+        Map<String, Object> map = new HashMap<>();
+        return map;
     }
 }

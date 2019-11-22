@@ -10,6 +10,7 @@ import com.cskaoyan.bean.Admin;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.shiro.AuthToken;
 import com.cskaoyan.service.AuthService;
+import com.cskaoyan.utils.AuthUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.annotation.Logical;
@@ -35,10 +36,11 @@ public class AuthController {
     AuthService authService;
 
     @RequestMapping("login")
-    public BaseReqVo login(@RequestBody Admin admin, HttpServletRequest request) {
+    public BaseReqVo login(@RequestBody Admin admin, HttpServletRequest request) throws Exception {
         String username = admin.getUsername();
         if ("".equals(username)) { return BaseReqVo.fail(401,"账号不可为空,请输入"); }
         AuthToken authenticationToken = new AuthToken(admin.getUsername(), admin.getPassword(),"admin");
+//        AuthToken authenticationToken = new AuthToken(admin.getUsername(), AuthUtils.encrypt(admin.getPassword()),"admin");
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(authenticationToken);

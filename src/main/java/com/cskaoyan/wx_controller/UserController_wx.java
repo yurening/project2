@@ -43,6 +43,7 @@ public class UserController_wx {
 
     @RequestMapping("wx/search/index")
     public BaseReqVo searchIndex(){
+        User principal = (User) SecurityUtils.getSubject().getPrincipal();
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         objectBaseReqVo.setData(userService.selectSearchIndex());
         objectBaseReqVo.setErrno(0);

@@ -6,14 +6,14 @@
     <select id="getUserDayCount" resultType="com.cskaoyan.bean.stat.UserCount">
         <!--select add_time as day,count(1) as users from `cskaoyan_mall_user` group by add_time-->
         SELECT left(add_time,10) AS day,count(1) as users
-        FROM `cskaoyan_mall_user`
+        FROM `cskaoyan_mall_user` where deleted = 0
         GROUP BY left(add_time,10)
     </select>
     <select id="getOrderDayCount" resultType="com.cskaoyan.bean.stat.OrderCount">
         SELECT left(add_time,10) AS day,count(distinct user_id) as customers,
 				sum(actual_price) as amount,
 				count(1) as orders
-        FROM `cskaoyan_mall_order`
+        FROM `cskaoyan_mall_order` where deleted = 0
         GROUP BY left(add_time,10)
     </select>
     <select id="getGoodsDayCount" resultType="com.cskaoyan.bean.stat.GoodsCount">
@@ -21,7 +21,7 @@
 				sum(number) as products,
 				count(1) as orders,
 				(price*number) as amount
-        FROM `cskaoyan_mall_order_goods`
+        FROM `cskaoyan_mall_order_goods` where deleted = 0
         GROUP BY left(add_time,10)
     </select>
 </mapper>

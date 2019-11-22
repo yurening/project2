@@ -1,5 +1,6 @@
 package com.cskaoyan.mapper;
 
+import com.cskaoyan.bean.Wx_register;
 import com.cskaoyan.bean.user.FootPrint;
 import com.cskaoyan.bean.user.FootPrintExample;
 import com.cskaoyan.bean.user.Feedback;
@@ -45,4 +46,10 @@ public interface UserMapper {
     User getUserByUsername(String username);
 
     void updateLoginTime(Integer id);
+
+    Boolean registerInsertUser(@Param("wxRegister") Wx_register wxRegister, @Param("avatar") String avatar,@Param("nickname") String nickName);
+
+    User getUserByMobile(String mobile);
+
+    void resetPasswordBymolibe(@Param("password")String password, @Param("mobile")String mobile);
 }

@@ -2,6 +2,7 @@ package com.cskaoyan.shiro;
 
 import com.cskaoyan.bean.Admin;
 import com.cskaoyan.mapper.AuthMapper;
+import com.cskaoyan.utils.AuthUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -24,9 +25,13 @@ public class AdminRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         String username = token.getUsername();
-
         Admin admin = authMapper.selectByUsername(username);
-        String passwordFromDb = admin.getPassword();
+        String passwordFromDb = null;
+        try {
+            passwordFromDb = admin.getPassword();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(admin, passwordFromDb, getName());
 
         return authenticationInfo;
@@ -46,7 +51,7 @@ public class AdminRealm extends AuthorizingRealm {
                 List<String> perms = authMapper.getPermsNameByRoleId(roleid);
                 permissions.addAll(perms);
             }
-            permissions.add("*"); //先拥有全部权限
+//            permissions.add("*"); //先拥有全部权限
         }
 //      authorizationInfo.addStringPermission("user:query");
         authorizationInfo.addStringPermissions(permissions);
