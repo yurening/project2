@@ -74,9 +74,13 @@ public class OrderServiceImpl implements OrderService {
         List<WxOrder> wxOrders = new ArrayList<>();
         MallOrderExample example = new MallOrderExample();
         MallOrderExample.Criteria criteria = example.createCriteria();
-       /* if(orderStatus!=null) {
+        Short orderStatus = null;
+        if(showType!=null&&showType!=0){
+            orderStatus = (short) (showType.intValue()*100+1);
+        }
+        if(orderStatus!=null) {
             criteria.andOrderStatusEqualTo(orderStatus);
-        }*/
+        }
         criteria.andUserIdEqualTo(userId);
         List<MallOrder> mallOrders = mallOrderMapper.selectByExample(example);
         for (MallOrder x:mallOrders) {
@@ -94,7 +98,10 @@ public class OrderServiceImpl implements OrderService {
 
 
         //根据showType对wxOrders进行删减
-        wxOrders = changeWxOrders(wxOrders,showType);
+        /*wxOrders = changeWxOrders(wxOrders,showType);*/
+        if(orderStatus!=null&&orderStatus==101){
+            wxOrders= changeWxOrders(wxOrders,showType);
+        }
         baseListInfo.setData(wxOrders);
 
         PageInfo<MallOrder> pageInfo = new PageInfo<>(mallOrders);
@@ -105,13 +112,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private List<WxOrder> changeWxOrders(List<WxOrder> wxOrders ,Integer showType) {
-        if(showType!=null&&showType!=0){
             int i = showType.intValue()*100+1;
             String orderStatusText = getWxOrderStatusText((short) i);
             List<WxOrder> newOrders = new ArrayList<>();
             for(WxOrder x:wxOrders){
                 //i==101即未付款时候，检查是否超时，超时则系统取消
-                if(i==101){
                     int orderId = x.getId();
                     MallOrder mallOrder = mallOrderMapper.selectByPrimaryKey(orderId);
                     //取出现在时间和订单修改时间对比。如果相差大于设定时间，则改为系统取消
@@ -130,21 +135,11 @@ public class OrderServiceImpl implements OrderService {
                         mallOrderMapper.updateByPrimaryKey(mallOrder);
                         x.setHandleOption(new WxHandleOption((short) 103));
                     }
-                    if("未付款".equals(x.getOrderStatusText())){
+                    if(orderStatusText.equals(x.getOrderStatusText())){
                         newOrders.add(x);
                     }
-                }else {
-                    String orderStatusText1 = x.getOrderStatusText();
-                    if (orderStatusText1.equals(orderStatusText)) {
-                        newOrders.add(x);
-                    }
-                }
             }
-
-
             return newOrders;
-        }
-        return wxOrders;
     }
 
 
@@ -165,6 +160,7 @@ public class OrderServiceImpl implements OrderService {
         return wxGoods;
     }
 
+    //根据状态编码获取订单中文状态
     private String getWxOrderStatusText(Short orderStatus) {
         switch (orderStatus){
             case 101:
@@ -202,6 +198,7 @@ public class OrderServiceImpl implements OrderService {
         MallOrderGoodsExample mallOrderGoodsExample = new MallOrderGoodsExample();
         mallOrderGoodsExample.createCriteria().andOrderIdEqualTo(orderId);
         List<MallOrderGoods> mallOrderGoods = mallOrderGoodsMapper.selectByExample(mallOrderGoodsExample);
+
         wxOrderDetail.setOrderGoods(mallOrderGoods);
 
 
@@ -392,7 +389,7 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setHandleOption(new WxHandleOption((short) 101));
         newOrder.setExpCode("");
         newOrder.setExpNo("");
-        newOrder.setOrderStatusText("未支付");
+        newOrder.setOrderStatusText("未付款");
 
         //插入订单
         mallOrderMapper.insert(newOrder);
