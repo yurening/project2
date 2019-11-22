@@ -123,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
                     List<MallSystem> mallSystems = systemMapper.selectByExample(mallSystemExample);
                     String keyValue = mallSystems.get(0).getKeyValue();
                     int i1 = Integer.parseInt(keyValue) * 60 * 1000;
-                    if(i1 < (nowDate.getTime() - updateTime.getTime())){
+                    if(updateTime!=null||i1 < (nowDate.getTime() - updateTime.getTime())){
                         mallOrder.setOrderStatus((short) 103);
                         x.setOrderStatusText("系统取消");
                         addNumber(mallOrder.getId());
