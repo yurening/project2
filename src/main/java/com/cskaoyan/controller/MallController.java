@@ -47,7 +47,7 @@ public class MallController {
     }
 
 
-    @RequiresPermissions("admin:brand:update")
+    @RequiresPermissions("admin:brand:list:update")
     @RequestMapping("admin/brand/create")
     public BaseRespVo creatBrand(@RequestBody MallBrand mallBrand){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -58,7 +58,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:brand:update")
+    @RequiresPermissions("admin:brand:list:update")
     @RequestMapping("admin/brand/update")
     public BaseRespVo updateBrand(@RequestBody MallBrand mallBrand){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -69,7 +69,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:brand:delete")
+    @RequiresPermissions("admin:brand:list:delete")
     @RequestMapping("admin/brand/delete")
     public BaseRespVo deleteBrand(@RequestBody MallBrand mallBrand){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -90,7 +90,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:order:read")
+    @RequiresPermissions("admin:order:list:read")
     @RequestMapping("admin/order/detail")
     public BaseRespVo getOrderDetail(Integer id){
         MallOrderDetails mallOrderDetails = mallService.checkOrderDetails(id);
@@ -124,7 +124,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:category:create")
+    @RequiresPermissions("admin:category:list:create")
     @RequestMapping("admin/category/create")
     public BaseRespVo createCategory(@RequestBody MallCategory mallCategory){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -141,7 +141,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:category:delete")
+    @RequiresPermissions("admin:category:list:delete")
     @RequestMapping("admin/category/delete")
     public BaseRespVo deleteCategory(@RequestBody MallCategory mallCategory){
         mallService.deleteCategory(mallCategory);
@@ -151,7 +151,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:category:update")
+    @RequiresPermissions("admin:category:list:update")
     @RequestMapping("admin/category/update")
     public BaseRespVo updateCategory(@RequestBody MallCategory mallCategory){
         BaseRespVo baseRespVo = new BaseRespVo();
@@ -179,7 +179,7 @@ public class MallController {
     }
 
 
-    @RequiresPermissions("admin:issue:create")
+    @RequiresPermissions("admin:issue:list:create")
     @RequestMapping("admin/issue/create")
     public BaseRespVo createIssue(@RequestBody MallIssue mallIssue){
         MallIssue newIssue = mallService.insertIssue(mallIssue);
@@ -190,7 +190,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:issue:delete")
+    @RequiresPermissions("admin:issue:list:delete")
     @RequestMapping("admin/issue/delete")
     public BaseRespVo deleteIssue(@RequestBody MallIssue mallIssue){
         mallService.deleteIssue(mallIssue);
@@ -200,7 +200,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:issue:update")
+    @RequiresPermissions("admin:issue:list:update")
     @RequestMapping("admin/issue/update")
     public BaseRespVo updateIssue(@RequestBody MallIssue mallIssue){
         MallIssue newIssue = mallService.updateIssue(mallIssue);
@@ -222,18 +222,23 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:keyword:create")
+    @RequiresPermissions("admin:keyword:list:create")
     @RequestMapping("admin/keyword/create")
     public BaseRespVo createKeyword(@RequestBody MallKeyword mallKeyword){
-        MallKeyword newKeyword = mallService.insertKeyword(mallKeyword);
         BaseRespVo baseRespVo = new BaseRespVo();
-        baseRespVo.setData(newKeyword);
-        baseRespVo.setErrmsg("成功");
-        baseRespVo.setErrno(0);
+        if(mallKeyword.getIsHot()==null||mallKeyword.getIsDefault()==null){
+            baseRespVo.setErrno(507);
+            baseRespVo.setErrmsg("请选择默认或推荐");
+        }else {
+            MallKeyword newKeyword = mallService.insertKeyword(mallKeyword);
+            baseRespVo.setData(newKeyword);
+            baseRespVo.setErrmsg("成功");
+            baseRespVo.setErrno(0);
+        }
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:keyword:delete")
+    @RequiresPermissions("admin:keyword:list:delete")
     @RequestMapping("admin/keyword/delete")
     public BaseRespVo deleteKeyword(@RequestBody MallKeyword mallKeyword){
         mallService.deleteKeyword(mallKeyword);
@@ -243,7 +248,7 @@ public class MallController {
         return baseRespVo;
     }
 
-    @RequiresPermissions("admin:keyword:update")
+    @RequiresPermissions("admin:keyword:list:update")
     @RequestMapping("admin/keyword/update")
     public BaseRespVo updateKeyword(@RequestBody MallKeyword mallKeyword){
         MallKeyword newKeyword = mallService.updateKeyword(mallKeyword);
