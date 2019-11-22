@@ -48,7 +48,7 @@ public class PicStaticController_wx {
         staticPhoto.setName(originalFilename);
         staticPhoto.setSize((int) file.getSize());
         staticPhoto.setType(file.getContentType());
-        staticPhoto.setUrl("http://localhost:8080/wx/storage/fetch/"+fileName);
+        staticPhoto.setUrl("http://192.168.4.17:8080/wx/storage/fetch/"+fileName);
 
         StaticPhoto staticPhoto1 = picStaticService.addFile(staticPhoto);
 

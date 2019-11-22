@@ -100,8 +100,18 @@ public class UserController_wx {
 
     //coupon
     @RequestMapping("wx/coupon/list")
-    public BaseReqVo couponList(UserRequest userRequest){
+    public BaseReqVo couponList(UserRequest userRequest,ServletRequest servletRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
+        //如果用户没有登录，直接返回501，去登录
+       /* HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String header = request.getHeader("X-Litemall-Token");
+        String header1 = request.getHeader("X-cskaoyanmall-Admin-Token");*/
+        Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        if(principal==null){
+            objectBaseReqVo.setErrno(501);
+            return objectBaseReqVo;
+        }
         List<Coupon> coupons = userService.selectCoupon(userRequest);
         int size = coupons.size();
         Map<String, Object> objectObjectHashMap = new HashMap<>();
