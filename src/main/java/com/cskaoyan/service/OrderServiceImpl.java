@@ -366,7 +366,7 @@ public class OrderServiceImpl implements OrderService {
         //设置团购
         int grouponRulesId = wxFromChart.getGrouponRulesId();
         newOrder.setGrouponPrice(new BigDecimal("0"));
-        if(grouponRulesId!=0){
+        if(grouponRulesId!=0 && grouponRulesId != -1){
             GrouponRules grouponRules = grouponRulesMapper.selectByPrimaryKey(grouponRulesId);
             newOrder.setGrouponPrice(grouponRules.getDiscount());
         }
@@ -403,6 +403,21 @@ public class OrderServiceImpl implements OrderService {
         for(MallOrderGoods x:orderGoods){
             x.setOrderId(i);
             mallOrderGoodsMapper.updateByPrimaryKey(x);
+        }
+
+        //新增团购
+        if(grouponRulesId!=0 && grouponRulesId != -1){
+            Groupon groupon = new Groupon();
+            groupon.setOrderId(1);
+            groupon.setRulesId(grouponRulesId);
+            groupon.setUserId(userID);
+            groupon.setCreatorUserId(userID);
+            groupon.setAddTime(new Date());
+            groupon.setUpdateTime(new Date());
+            groupon.setShareUrl("");
+            groupon.setPayed(false);
+            groupon.setDeleted(false);
+            grouponMapper.insert(groupon);
         }
 
         WxId wxId = new WxId();
