@@ -20,12 +20,12 @@ import org.springframework.stereotype.Component;
 public class SmsUtils {
 
     public static String regCaptchaTool(String PhoneNumbers) {
-       /* String accessKeyId = "LTAI4Fr5gfYhcVjLMqeRGbuT";
+        String accessKeyId = "LTAI4Fr5gfYhcVjLMqeRGbuT";
         String accessSecret = "IrkcHu6dZyrjPZRushgO76P5392HJ1";
         DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessSecret);
-        IAcsClient client = new DefaultAcsClient(profile);*/
+        IAcsClient client = new DefaultAcsClient(profile);
         String code = RandomUtils.getRandomNum(6);
-       /* CommonRequest request = new CommonRequest();
+        CommonRequest request = new CommonRequest();
         request.setMethod(MethodType.POST);
         request.setDomain("dysmsapi.aliyuncs.com");
         request.setVersion("2017-05-25");
@@ -40,7 +40,7 @@ public class SmsUtils {
             System.out.println(response.getData());
         } catch (ClientException e) {
             e.printStackTrace();
-        }*/
+        }
         return code;
 
     }
