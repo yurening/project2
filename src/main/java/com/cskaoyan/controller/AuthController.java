@@ -116,11 +116,13 @@ public class AuthController {
                 permsList.addAll(perms);
             }
         }
+        if (permsList.size() == 0){
+            permsList.add("");
+        }
         map.put("roles", roleNames);    //所有权限
         map.put("perms", permsList);    //许可路径
         map.put("name", admin.getUsername());         //名称
         map.put("avatar",admin.getAvatar());    //头像
-
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         baseReqVo.setErrno(0);
         baseReqVo.setData(map);
