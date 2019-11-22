@@ -129,16 +129,18 @@ public class LogAspect {
                 }
                 if (log.getAdmin() != null) {
                     if (!request.getMethod().toLowerCase().equals("options")) {
-                        if (requestURI.contains("options")
-                        ||  requestURI.contains("login")
-                        ||  requestURI.contains("logout")
-                        ||  requestURI.contains("create")
-                        ||  requestURI.contains("update")
-                        ||  requestURI.contains("delete")
-                        ||  requestURI.contains("read")
-                        ||  requestURI.contains("config")
-                        ||  requestURI.contains("role/permissions")) {
-                            systemService.insertLog(log);
+                        if (!requestURI.contains("role/option")) {
+                            if (requestURI.contains("options")
+                                    || requestURI.contains("login")
+                                    || requestURI.contains("logout")
+                                    || requestURI.contains("create")
+                                    || requestURI.contains("update")
+                                    || requestURI.contains("delete")
+                                    || requestURI.contains("read")
+                                    || requestURI.contains("config")
+                                    || requestURI.contains("role/permissions")) {
+                                systemService.insertLog(log);
+                            }
                         }
                     }
                 }
@@ -172,16 +174,18 @@ public class LogAspect {
             if (requestURI.contains("admin")) {
                 if (log.getAdmin() != null) {
                     if (!request.getMethod().toLowerCase().equals("OPTIONS")) {
-                        if (requestURI.contains("options")
-                        ||  requestURI.contains("login")
-                        ||  requestURI.contains("logout")
-                        ||  requestURI.contains("create")
-                        ||  requestURI.contains("update")
-                        ||  requestURI.contains("delete")
-                        ||  requestURI.contains("read")
-                        ||  requestURI.contains("config")
-                        ||  requestURI.contains("role/permissions")) {
-                            systemService.insertLog(log);
+                        if (!requestURI.contains("role/option")) {
+                            if (requestURI.contains("options")
+                                    || requestURI.contains("login")
+                                    || requestURI.contains("logout")
+                                    || requestURI.contains("create")
+                                    || requestURI.contains("update")
+                                    || requestURI.contains("delete")
+                                    || requestURI.contains("read")
+                                    || requestURI.contains("config")
+                                    || requestURI.contains("role/permissions")) {
+                                systemService.insertLog(log);
+                            }
                         }
                     }
                 }

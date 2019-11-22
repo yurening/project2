@@ -264,7 +264,7 @@ public class UserServiceImpl implements UserService{
             dataBean.setActualPrice(mallOrder.getActualPrice().doubleValue());
             //设置joinerCount
             GrouponExample grouponExample = new GrouponExample();
-            grouponExample.createCriteria().andGrouponIdEqualTo(groupon.getGrouponId());
+            grouponExample.createCriteria().andGrouponIdEqualTo(groupon.getRulesId());
             long l = grouponMapper.countByExample(grouponExample);
             dataBean.setJoinerCount((int)l);
             //设置rules
