@@ -2,6 +2,7 @@ package com.cskaoyan.service;
 
 import com.cskaoyan.bean.user.FootPrintExample;
 import com.cskaoyan.bean.user.FootprintForList;
+import com.cskaoyan.bean.user.UserExample;
 import com.cskaoyan.bean.wx.FeedBack;
 import com.cskaoyan.mapper.FeedBackMapper;
 import com.cskaoyan.mapper.FootPrintMapper;
@@ -27,14 +28,13 @@ public class OtherServiceImpl implements OtherService {
     FeedBackMapper feedBackMapper;
 
     @Override
-    public void feedBackSubmit(FeedBack feedback, Integer userId) {
+    public void feedBackSubmit(FeedBack feedback, String userName,Integer userId) {
         feedback.setAddTime(new Date());
         feedback.setDeleted(false);
         feedback.setUserId(userId);
         feedback.setUpdateTime(new Date());
         feedback.setStatus(0);
-        String s = userMapper.selectNameById(userId);
-        feedback.setUsername(s);
+        feedback.setUsername(userName);
         feedBackMapper.insert(feedback);
     }
 
