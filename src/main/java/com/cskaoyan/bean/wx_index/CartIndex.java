@@ -12,6 +12,14 @@ public class CartIndex {
 
     private CartTotalBean cartTotal;
     private List<Cart> cartList;
+    private double manmian;
+
+    public void setManmian(double manmian) {
+        this.manmian = manmian;
+    }
+    public double getManmian() {
+        return manmian;
+    }
 
     public CartTotalBean getCartTotal() {
         return cartTotal;

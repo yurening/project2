@@ -25,4 +25,6 @@ public interface CartService {
     Integer fastAddCart(Cart cart, Boolean deleted);
 
     Map<String, Object> checkout(Integer cartId, Integer addressId, Integer couponId, Integer grouponRulesId);
+
+    double getManmian();
 }
