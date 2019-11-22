@@ -345,14 +345,28 @@ public class OrderServiceImpl implements OrderService {
         MallSystem mallSystem = mallSystems.get(0);
         newOrder.setFreightPrice(BigDecimal.valueOf(Long.parseLong(mallSystem.getKeyValue())));
 
-        //设置团购和优惠相关
+        //设置优惠
+        int couponId = wxFromChart.getCouponId();
         newOrder.setCouponPrice(new BigDecimal("0"));
+        if(couponId != 0){
+            MallCoupon mallCoupon = couponMapper.selectByPrimaryKey(couponId);
+            newOrder.setCouponPrice(mallCoupon.getDiscount());
+        }
         newOrder.setIntegralPrice(new BigDecimal("0"));
+
+        //设置团购
+        int grouponRulesId = wxFromChart.getGrouponRulesId();
         newOrder.setGrouponPrice(new BigDecimal("0"));
+        if(grouponRulesId!=0){
+            GrouponRules grouponRules = grouponRulesMapper.selectByPrimaryKey(grouponRulesId);
+            newOrder.setGrouponPrice(grouponRules.getDiscount());
+        }
 
         //设置订单实际价格
-        newOrder.setOrderPrice(newOrder.getGoodsPrice().add(newOrder.getFreightPrice()));
-        newOrder.setActualPrice(newOrder.getOrderPrice());
+        BigDecimal orderPrice = newOrder.getGoodsPrice().subtract(newOrder.getCouponPrice()).subtract(newOrder.getGrouponPrice());
+        newOrder.setOrderPrice(orderPrice);
+        BigDecimal actualPrice = newOrder.getOrderPrice().add(newOrder.getFreightPrice());
+        newOrder.setActualPrice(actualPrice);
 
         //设置支付
         newOrder.setPayId(Integer.toString(userID));
