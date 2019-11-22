@@ -3,6 +3,7 @@ package com.cskaoyan.service;
 import java.util.Date;
 
 import com.cskaoyan.bean.goods.CategoryExample;
+import com.cskaoyan.bean.goods.SystemExample;
 import com.cskaoyan.bean.mall.BaseListInfo;
 import com.cskaoyan.bean.mall.brand.MallBrand;
 import com.cskaoyan.bean.mall.brand.MallBrandExample;
@@ -47,7 +48,8 @@ public class MallServiceImpl implements MallService {
     MallIssueMapper mallIssueMapper;
     @Autowired
     MallKeywordMapper mallKeywordMapper;
-
+    @Autowired
+    SystemMapper systemMapper;
 
     @Override
     public List<MallRegion> getAllRegion() {
@@ -331,10 +333,16 @@ public class MallServiceImpl implements MallService {
 
     @Override
     public List<HomeIndex.BrandListBean> getBrandList() {
+        SystemExample systemExample = new SystemExample();
+        systemExample.createCriteria().andKeyNameEqualTo("cskaoyan_mall_wx_index_brand");
+        int limit = Integer.parseInt(systemMapper.selectByExample(systemExample).get(0).getKeyValue());
         MallBrandExample brandExample = new MallBrandExample();
         brandExample.createCriteria().andDeletedEqualTo(false);
         List<HomeIndex.BrandListBean> brandList = new ArrayList<>();
         List<MallBrand> mallBrands = mallBrandMapper.selectByExample(brandExample);
+        if (mallBrands.size() > limit) {
+            mallBrands = mallBrands.subList(0, limit);
+        }
         for (MallBrand mallBrand : mallBrands) {
             HomeIndex.BrandListBean brandListBean = new HomeIndex.BrandListBean();
             brandListBean.setId(mallBrand.getId());

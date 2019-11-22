@@ -10,6 +10,7 @@ import com.cskaoyan.bean.Admin;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.shiro.AuthToken;
 import com.cskaoyan.service.AuthService;
+import com.cskaoyan.utils.AuthUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.annotation.Logical;
@@ -35,10 +36,11 @@ public class AuthController {
     AuthService authService;
 
     @RequestMapping("login")
-    public BaseReqVo login(@RequestBody Admin admin, HttpServletRequest request) {
+    public BaseReqVo login(@RequestBody Admin admin, HttpServletRequest request) throws Exception {
         String username = admin.getUsername();
         if ("".equals(username)) { return BaseReqVo.fail(401,"账号不可为空,请输入"); }
         AuthToken authenticationToken = new AuthToken(admin.getUsername(), admin.getPassword(),"admin");
+//        AuthToken authenticationToken = new AuthToken(admin.getUsername(), AuthUtils.encrypt(admin.getPassword()),"admin");
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(authenticationToken);
@@ -116,11 +118,13 @@ public class AuthController {
                 permsList.addAll(perms);
             }
         }
+        if (permsList.size() == 0){
+            permsList.add("");
+        }
         map.put("roles", roleNames);    //所有权限
         map.put("perms", permsList);    //许可路径
         map.put("name", admin.getUsername());         //名称
         map.put("avatar",admin.getAvatar());    //头像
-
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         baseReqVo.setErrno(0);
         baseReqVo.setData(map);

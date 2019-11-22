@@ -37,6 +37,7 @@ public class ConfigController {
      * }
      * */
     @GetMapping("mall")
+    @RequiresPermissions(value = {"admin:config:mall:list"}, logical = Logical.OR)
     public BaseReqVo mallGet() {
         SystemBean system = configService.getSystemMall();
         if (system == null){
@@ -61,6 +62,7 @@ public class ConfigController {
      * }
      */
     @PostMapping("mall")
+    @RequiresPermissions(value = {"admin:config:mall:updateConfigs"}, logical = Logical.OR)
     public BaseReqVo mallPost(@RequestBody SystemBean systemBean) {
         int state = configService.updateSystemMall(systemBean);
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
@@ -87,6 +89,7 @@ public class ConfigController {
      * }
      * */
     @GetMapping("express")
+    @RequiresPermissions(value = {"admin:config:express:list"}, logical = Logical.OR)
     public BaseReqVo expressGet() {
         SystemBean system = configService.getSystemExpress();
         if (system == null){
@@ -109,6 +112,7 @@ public class ConfigController {
      * }
      * */
     @PostMapping("express")
+    @RequiresPermissions(value = {"admin:config:express:updateConfigs"}, logical = Logical.OR)
     public BaseReqVo expressPost(@RequestBody SystemBean systemBean) {
         int state = configService.updateSystemExpress(systemBean);
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
@@ -134,6 +138,7 @@ public class ConfigController {
      * }
      * */
     @GetMapping("order")
+    @RequiresPermissions(value = {"admin:config:order:list"}, logical = Logical.OR)
     public BaseReqVo orderGet() {
         SystemBean system = configService.getSystemOrder();
         if (system == null){
@@ -157,6 +162,7 @@ public class ConfigController {
      * }
      * */
     @PostMapping("order")
+    @RequiresPermissions(value = {"admin:config:order:updateConfigs"}, logical = Logical.OR)
     public BaseReqVo orderPost(@RequestBody SystemBean systemBean) {
         int state = configService.updateSystemOrder(systemBean);
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
@@ -191,6 +197,7 @@ public class ConfigController {
      * }
      * */
     @GetMapping("wx")
+    @RequiresPermissions(value = {"admin:config:wx:list"}, logical = Logical.OR)
     public BaseReqVo wxGet() {
         SystemBean system = configService.getSystemWx();
         if (system == null){
@@ -218,6 +225,7 @@ public class ConfigController {
      * }
      * */
     @PostMapping("wx")
+    @RequiresPermissions(value = {"admin:config:wx:updateConfigs"}, logical = Logical.OR)
     public BaseReqVo wxPost(@RequestBody SystemBean systemBean) {
         int state = configService.updateSystemWx(systemBean);
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();

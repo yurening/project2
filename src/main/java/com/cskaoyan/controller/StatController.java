@@ -46,7 +46,7 @@ public class StatController {
      * }
      * */
     @RequestMapping("user")
-    @RequiresPermissions(value = {"user:query","*"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"admin:stat:user"}, logical = Logical.OR)
     public BaseReqVo user() {
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         List<Object> stringList = new ArrayList<>();
@@ -129,6 +129,7 @@ public class StatController {
      * 	"errmsg": "成功"
      * }*/
     @RequestMapping("order")
+    @RequiresPermissions(value = {"admin:stat:order"}, logical = Logical.OR)
     public BaseReqVo order() {
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         List<Object> stringList = new ArrayList<>();
@@ -206,6 +207,7 @@ public class StatController {
      * 	"errmsg": "成功"
      * }*/
     @RequestMapping("goods")
+    @RequiresPermissions(value = {"admin:stat:goods"}, logical = Logical.OR)
     public BaseReqVo goods() {
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
         List<Object> stringList = new ArrayList<>();

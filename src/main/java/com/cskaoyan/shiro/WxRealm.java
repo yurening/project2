@@ -8,6 +8,7 @@ package com.cskaoyan.shiro;
 
 import com.cskaoyan.bean.user.User;
 import com.cskaoyan.mapper.UserMapper;
+import com.cskaoyan.utils.AuthUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -28,9 +29,13 @@ public class WxRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         String username = token.getUsername();
-
         User user = userMapper.getUserByUsername(username);
-        String passwordFromDb = user.getPassword();
+        String passwordFromDb = null;
+        try {
+            passwordFromDb =user.getPassword();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(user, passwordFromDb, getName());
         return authenticationInfo;
     }
@@ -40,7 +45,7 @@ public class WxRealm extends AuthorizingRealm {
         String username = primaryPrincipal.getUsername();
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         List<String> permissions = new ArrayList<>();
-        permissions.add("*");
+//        permissions.add("*");
 //        authorizationInfo.addStringPermission("user:query");
         authorizationInfo.addStringPermissions(permissions);
         return authorizationInfo;

@@ -8,6 +8,7 @@ import com.cskaoyan.bean.user.Collect;
 import com.cskaoyan.bean.user.CollectExample;
 import com.cskaoyan.bean.user.*;
 import com.cskaoyan.service.UserService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ public class UserController {
 
 
     @RequestMapping("admin/user/list")
+    @RequiresPermissions(value = {"admin:user:list"})
     public BaseReqVo list(UserRequest userRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         UserExample userExample = new UserExample();
@@ -47,6 +49,7 @@ public class UserController {
     }
 
     @RequestMapping("admin/address/list")
+    @RequiresPermissions(value = {"admin:address:list"})
     public BaseReqVo address(AddressRequest addressRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         AddressExample addressExample = new AddressExample();
@@ -70,6 +73,7 @@ public class UserController {
     }
 
     @RequestMapping("admin/collect/list")
+    @RequiresPermissions(value = {"admin:collect:list"})
     public BaseReqVo collect(CollectRequest collectRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         CollectExample collectExample = new CollectExample();
@@ -94,6 +98,7 @@ public class UserController {
     }
 
     @RequestMapping("admin/footprint/list")
+    @RequiresPermissions(value = {"admin:footprint:list"})
     public BaseReqVo footprint(FootPrintRequest footPrintRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         FootPrintExample footPrintExample = new FootPrintExample();
@@ -118,6 +123,7 @@ public class UserController {
 
 
     @RequestMapping("admin/history/list")
+    @RequiresPermissions(value = {"admin:history:list"})
     public BaseReqVo history(HistoryRequest historyRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         HistoryExample historyExample = new HistoryExample();
@@ -141,6 +147,7 @@ public class UserController {
     }
 
     @RequestMapping("admin/feedback/list")
+    @RequiresPermissions(value = {"admin:feedback:list"})
     public BaseReqVo feedback(FeedBackRequest feedBackRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
         FeedbackExample feedbackExample = new FeedbackExample();

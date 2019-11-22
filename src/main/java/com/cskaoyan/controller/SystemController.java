@@ -188,7 +188,23 @@ public class SystemController {
     @RequestMapping("role/delete")
     @RequiresPermissions(value = {"admin:role:delete"})
     public BaseReqVo roleDelete(@RequestBody Role role){
+        List<Admin> adminList = systemService.adminList();
         BaseReqVo<Object> baseReqVo = new BaseReqVo<>();
+        if (role.getId().equals(1)){
+            baseReqVo.setErrno(500);
+            baseReqVo.setErrmsg("你不能删除超级管理员");
+            return baseReqVo;
+        }
+        for (Admin admin : adminList) {
+            Integer[] roleIds = admin.getRoleIds();
+            for (Integer roleId : roleIds) {
+                if(role.getId().equals(roleId)){
+                    baseReqVo.setErrno(642);
+                    baseReqVo.setErrmsg("当前角色存在管理员，不能删除");
+                    return baseReqVo;
+                }
+            }
+        }
         systemService.roleDelete(role);
         baseReqVo.setErrno(0);
         baseReqVo.setErrmsg("成功");

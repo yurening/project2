@@ -1,5 +1,6 @@
 package com.cskaoyan.service;
 
+import com.cskaoyan.bean.Wx_register;
 import com.cskaoyan.bean.user.FootPrint;
 import com.cskaoyan.bean.user.FootPrintExample;
 import com.cskaoyan.bean.user.Feedback;
@@ -15,8 +16,6 @@ import com.cskaoyan.bean.mall.order.MallOrder;
 import com.cskaoyan.bean.user.*;
 import com.cskaoyan.bean.user.groupon.GrouponDetail;
 import com.cskaoyan.mapper.*;
-import com.cskaoyan.teacherCode.UserTokenManager;
-import com.cskaoyan.utils.TransferDateUtils;
 import com.cskaoyan.utils.TransferUtils_wx;
 import com.github.pagehelper.PageHelper;
 import org.apache.shiro.SecurityUtils;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -453,7 +451,6 @@ public class UserServiceImpl implements UserService{
     public List<Coupon> selectCoupon(UserRequest userRequest) {
         Subject subject = SecurityUtils.getSubject();
         User userLogin = (User) subject.getPrincipal();
-        PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
         //新用户时长 7天
         //判断是否是新用户，新用户显示新用户劵，不是新用户不显示
         //获得时间差
@@ -462,6 +459,7 @@ public class UserServiceImpl implements UserService{
         List<User> users = userMapper.selectUserByExample(userExample);
         User user = users.get(0);
         long time = (new Date()).getTime() - (user.getAddTime()).getTime();
+        PageHelper.startPage(userRequest.getPage(),userRequest.getLimit());
         List<Coupon> coupons = couponMapper.selectByExample(new CouponExample());
         List<Coupon> couponsReturn = new ArrayList<>();
         //不是新用户
@@ -729,5 +727,20 @@ public class UserServiceImpl implements UserService{
         return i;
     }
 
+    @Override
+    public Boolean registerInsertUser(Wx_register wxRegister, String randomAvatar, String randomNickName) {
+        userMapper.registerInsertUser(wxRegister,randomAvatar,randomNickName);
+        return true;
+    }
 
+    @Override
+    public User getUserByMobile(String mobile) {
+        return  userMapper.getUserByMobile(mobile);
+    }
+
+    @Override
+    public boolean resetPasswordBymolibe(String password, String mobile) {
+        userMapper.resetPasswordBymolibe(password,mobile);
+        return true;
+    }
 }
