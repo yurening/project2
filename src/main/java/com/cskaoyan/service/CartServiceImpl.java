@@ -9,10 +9,7 @@ import com.cskaoyan.bean.goods.System;
 import com.cskaoyan.bean.goods.SystemExample;
 import com.cskaoyan.bean.mall.address.MallAddress;
 import com.cskaoyan.bean.mall.address.MallAddressExample;
-import com.cskaoyan.bean.user.Cart;
-import com.cskaoyan.bean.user.CartExample;
-import com.cskaoyan.bean.user.CouponRequest;
-import com.cskaoyan.bean.user.User;
+import com.cskaoyan.bean.user.*;
 import com.cskaoyan.bean.wx_index.CartIndex;
 import com.cskaoyan.mapper.*;
 import org.apache.shiro.SecurityUtils;
@@ -227,7 +224,7 @@ public class CartServiceImpl implements CartService {
 //        }
         BigDecimal couponPrice = new BigDecimal("0");
         if (availableCouponLength != 0) {
-            Coupon coupon = null;
+            Coupon coupon;
             if (couponId <= 0) {
                 coupon = coupons.get(0);
             } else {
@@ -238,24 +235,25 @@ public class CartServiceImpl implements CartService {
         }
 
             // 获取用户地址信息
-        if (addressId == 0) {
-            MallAddressExample addressExample = new MallAddressExample();
-            addressExample.createCriteria().andUserIdEqualTo(userId);
-            List<MallAddress> addresses = addressMapper.selectByExample(addressExample);
-            if (addresses.size() != 0) {
-                for (MallAddress address : addresses) {
-                    if (address.getIsDefault()) {
-                        addressId = address.getId();
-                        break;
+            if (addressId == 0) {
+                MallAddressExample addressExample = new MallAddressExample();
+                addressExample.createCriteria().andUserIdEqualTo(userId).andDeletedEqualTo(false);
+                List<MallAddress> addresses = addressMapper.selectByExample(addressExample);
+                if (addresses.size() != 0) {
+                    for (MallAddress address : addresses) {
+                        if (address.getIsDefault()) {
+                            addressId = address.getId();
+                            break;
+                        }
                     }
+                    if (addressId == 0) {
+                        addressId = addresses.get(0).getId();
+                    }
+                } else {
+                    addressId = addressMapper.selectByPrimaryKey(999).getId();
                 }
-                if (addressId == 0) {
-                    addressId = addresses.get(0).getId();
-                }
-            } else {
-                addressId = addressMapper.selectByPrimaryKey(999).getId();
             }
-        }
+
             MallAddress address = addressMapper.selectByPrimaryKey(addressId);
 
             // 获取下单的商品信息
