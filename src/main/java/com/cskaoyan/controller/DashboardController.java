@@ -7,6 +7,7 @@
 package com.cskaoyan.controller;
 
 import com.cskaoyan.bean.Admin;
+import com.cskaoyan.bean.Admin_reset;
 import com.cskaoyan.bean.BaseReqVo;
 import com.cskaoyan.service.AuthService;
 import com.cskaoyan.shiro.AuthToken;
@@ -17,6 +18,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,4 +74,15 @@ public class DashboardController {
 //        return BaseReqVo.fail(507,"权限不足,请联系超级管理员");
         return "redirect:http://localhost:9527/login";
     }
+
+//    @RequestMapping("admin/profile/password")
+//    public BaseReqVo password(@RequestBody Admin_reset adminReset) {
+//        Admin admin = (Admin) SecurityUtils.getSubject().getPrincipal();
+//        if (!admin.getPassword().equals(adminReset.getOldPassword())) {
+//            return BaseReqVo.fail(605,"原密码不正确,请重新输入");
+//        }else {
+//            authService.resetAdminPassword(admin);
+//            return BaseReqVo.ok(null);
+//        }
+//    }
 }

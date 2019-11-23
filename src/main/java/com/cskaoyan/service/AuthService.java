@@ -21,4 +21,6 @@ public interface AuthService {
     int getOrderTotal();
 
     List<String> getPermsMethodNameByRoleId(String roleId);
+
+    void resetAdminPassword(Admin admin);
 }

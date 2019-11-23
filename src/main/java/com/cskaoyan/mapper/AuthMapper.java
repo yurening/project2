@@ -63,4 +63,7 @@ public interface AuthMapper {
     int getOrderTotal();
 
     List<String> getPermsMethodNameByRoleId(String roleId);
+
+    @Update({"update cskaoyan_mall_admin set password = #{admin.password} where id = #{admin.id} and deleted = 0"})
+    void resetAdminPassword(@Param("admin") Admin admin);
 }

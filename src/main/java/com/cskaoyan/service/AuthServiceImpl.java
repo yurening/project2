@@ -58,4 +58,9 @@ public class AuthServiceImpl implements AuthService {
     public List<String> getPermsMethodNameByRoleId(String roleId) {
         return mapper.getPermsMethodNameByRoleId(roleId);
     }
+
+    @Override
+    public void resetAdminPassword(Admin admin) {
+        mapper.resetAdminPassword(admin);
+    }
 }

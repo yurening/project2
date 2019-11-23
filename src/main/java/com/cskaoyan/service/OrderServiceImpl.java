@@ -392,7 +392,7 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setHandleOption(new WxHandleOption((short) 101));
         newOrder.setExpCode("");
         newOrder.setExpNo("");
-        newOrder.setOrderStatusText("未支付");
+        newOrder.setOrderStatusText("未付款");
 
         //插入订单
         mallOrderMapper.insert(newOrder);

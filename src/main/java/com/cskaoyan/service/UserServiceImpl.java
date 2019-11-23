@@ -168,7 +168,9 @@ public class UserServiceImpl implements UserService{
         HistoryExample historyExample = new HistoryExample();
         historyExample.createCriteria().andUserIdEqualTo(userLogin.getId());
         List<History> histories = userMapper.selectHistoryByExample(historyExample);
-        List<MallKeyword> mallKeywords = mallKeywordMapper.selectByExample(mallKeywordExample);
+        MallKeywordExample mallKeywordExample1 = new MallKeywordExample();
+        mallKeywordExample1.createCriteria().andIsHotEqualTo(true);
+        List<MallKeyword> mallKeywords = mallKeywordMapper.selectByExample(mallKeywordExample1);
         mallKeywordExample.createCriteria().andIsDefaultEqualTo(true);
         List<MallKeyword> mallKeywords1 = mallKeywordMapper.selectByExample(mallKeywordExample);
         objectHashMap.put("defaultKeyword",mallKeywords1.get(0));
@@ -469,7 +471,7 @@ public class UserServiceImpl implements UserService{
             //根据time_type判断优惠券是基于领取时间的有效天数还是 一段时间内有效，同时新用户不用显示
             for (Coupon coupon : coupons) {
                 //新人劵直接跳过
-                if("新人劵".equals(coupon.getTag())){
+                if("新人券".equals(coupon.getTag())){
                     continue;
                 }
                 //是基于领取时间的有效天数，可以直接显示  time_type = 0

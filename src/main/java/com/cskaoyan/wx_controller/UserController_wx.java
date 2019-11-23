@@ -135,6 +135,13 @@ public class UserController_wx {
     @RequestMapping("wx/coupon/receive")
     public BaseReqVo couponReceive(@RequestBody CouponRequest couponRequest){
         BaseReqVo<Object> objectBaseReqVo = new BaseReqVo<>();
+        Subject subject = SecurityUtils.getSubject();
+        User principal = (User) subject.getPrincipal();
+        if(principal==null){
+            objectBaseReqVo.setErrno(501);
+            //objectBaseReqVo.setErrmsg("成功");
+            return objectBaseReqVo;
+        }
         if(userService.couponReceive(couponRequest)==1){
             objectBaseReqVo.setErrno(0);
             objectBaseReqVo.setErrmsg("成功");

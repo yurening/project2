@@ -238,9 +238,24 @@ public class CartServiceImpl implements CartService {
         }
 
             // 获取用户地址信息
-            if (addressId == 0) {
-                addressId = addressMapper.selectByExample(new MallAddressExample()).get(0).getId();
+        if (addressId == 0) {
+            MallAddressExample addressExample = new MallAddressExample();
+            addressExample.createCriteria().andUserIdEqualTo(userId);
+            List<MallAddress> addresses = addressMapper.selectByExample(addressExample);
+            if (addresses.size() != 0) {
+                for (MallAddress address : addresses) {
+                    if (address.getIsDefault()) {
+                        addressId = address.getId();
+                        break;
+                    }
+                }
+                if (addressId == 0) {
+                    addressId = addresses.get(0).getId();
+                }
+            } else {
+                addressId = addressMapper.selectByPrimaryKey(999).getId();
             }
+        }
             MallAddress address = addressMapper.selectByPrimaryKey(addressId);
 
             // 获取下单的商品信息

@@ -64,6 +64,7 @@ public class GoodsController_wx {
 
     @RequestMapping("goods/detail")
     public ResponseType goodsDetail(Integer id){
+        ResponseType responseType = goodsService.addFootPrint(id);
         ResponseType goodsAndAllById = goodsService.getGoodsAndAllById(id);
         return goodsAndAllById;
     }
