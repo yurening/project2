@@ -22,8 +22,8 @@ public class PicStaticController_wx {
     @RequestMapping("storage/upload")
     public ResponseType picStatic(MultipartFile file) throws IOException {
         //阿里云
-        String accessKeyId="LTAI4FkEFjiCLX5NWuaCreE7";
-        String accessSecret="thisSIrvhvbgp0AE0joz5ZwEe4m0Q2";
+        String accessKeyId="";
+        String accessSecret="";
         String bucket = "mall2";
         String endPoint = "oss-cn-beijing.aliyuncs.com";
         //完成文件key部分的命名
